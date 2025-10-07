@@ -1,0 +1,13 @@
+{
+  "ignore": [
+    "temp_session.json",
+    "uploads/*",
+    "node_modules"
+  ],
+  "watch": [
+    "server.js",
+    "routes/**/*.js"
+  ]
+}
+
+
