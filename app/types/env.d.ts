@@ -1,0 +1,26 @@
+declare module '@env' {
+  export const WORDPRESS_BASE_URL: string;
+  export const WORDPRESS_OAUTH_CLIENT_ID: string;
+  export const WORDPRESS_OAUTH_REDIRECT_URI: string;
+  export const API_BASE_URL: string;
+  export const YOUTUBE_UPLOAD_URL: string;
+  export const APP_NAME: string;
+  export const APP_VERSION: string;
+  export const APP_ENVIRONMENT: string;
+  export const DEEP_LINK_SCHEME: string;
+  export const DEEP_LINK_HOST: string;
+  export const STORAGE_PREFIX: string;
+  export const API_TIMEOUT: string;
+  export const UPLOAD_TIMEOUT: string;
+  export const MAX_VIDEO_DURATION: string;
+  export const VIDEO_QUALITY: string;
+  export const VIDEO_FORMAT: string;
+  export const LOCATION_ACCURACY: string;
+  export const LOCATION_TIMEOUT: string;
+  export const LOCATION_MAX_AGE: string;
+  export const LOGO_URL: string;
+  export const BACKGROUND_URL: string;
+  export const DEBUG_MODE: string;
+  export const LOG_LEVEL: string;
+  export const ENABLE_CONSOLE_LOGS: string;
+}

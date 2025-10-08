@@ -1,50 +1,76 @@
 // Configurações do ambiente
-// Em produção, essas variáveis devem vir do .env
+// Importar variáveis do arquivo .env
+import {
+  WORDPRESS_BASE_URL,
+  WORDPRESS_OAUTH_CLIENT_ID,
+  WORDPRESS_OAUTH_REDIRECT_URI,
+  API_BASE_URL,
+  YOUTUBE_UPLOAD_URL,
+  APP_NAME,
+  APP_VERSION,
+  APP_ENVIRONMENT,
+  DEEP_LINK_SCHEME,
+  DEEP_LINK_HOST,
+  STORAGE_PREFIX,
+  API_TIMEOUT,
+  UPLOAD_TIMEOUT,
+  MAX_VIDEO_DURATION,
+  VIDEO_QUALITY,
+  VIDEO_FORMAT,
+  LOCATION_ACCURACY,
+  LOCATION_TIMEOUT,
+  LOCATION_MAX_AGE,
+  LOGO_URL,
+  BACKGROUND_URL,
+  DEBUG_MODE,
+  LOG_LEVEL,
+  ENABLE_CONSOLE_LOGS,
+} from '@env';
 
 const ENVIRONMENT = {
   // WordPress Configuration
-  WORDPRESS_BASE_URL: process.env.WORDPRESS_BASE_URL || 'https://compostagemterraorganica.com.br',
-  WORDPRESS_OAUTH_CLIENT_ID: process.env.WORDPRESS_OAUTH_CLIENT_ID || 'Ze32LNbEGNx13ouuoZLGupv47MBfvy7M5PsZuYgs',
-  WORDPRESS_OAUTH_REDIRECT_URI: process.env.WORDPRESS_OAUTH_REDIRECT_URI || 'https://stallion-hot-weasel.ngrok-free.app/auth/callback',
+  WORDPRESS_BASE_URL: WORDPRESS_BASE_URL || 'https://compostagemterraorganica.com.br',
+  WORDPRESS_OAUTH_CLIENT_ID: WORDPRESS_OAUTH_CLIENT_ID || 'Ze32LNbEGNx13ouuoZLGupv47MBfvy7M5PsZuYgs',
+  WORDPRESS_OAUTH_REDIRECT_URI: WORDPRESS_OAUTH_REDIRECT_URI || 'https://stallion-hot-weasel.ngrok-free.app/auth/callback',
 
   // API Configuration
-  API_BASE_URL: process.env.API_BASE_URL || 'https://stallion-hot-weasel.ngrok-free.app',
-  YOUTUBE_UPLOAD_URL: process.env.YOUTUBE_UPLOAD_URL || 'https://stallion-hot-weasel.ngrok-free.app/youtube/upload',
+  API_BASE_URL: API_BASE_URL || 'https://stallion-hot-weasel.ngrok-free.app',
+  YOUTUBE_UPLOAD_URL: YOUTUBE_UPLOAD_URL || 'https://stallion-hot-weasel.ngrok-free.app/youtube/upload',
 
   // App Configuration
-  APP_NAME: process.env.APP_NAME || 'Terra Orgânica',
-  APP_VERSION: process.env.APP_VERSION || '1.0.0',
-  APP_ENVIRONMENT: process.env.APP_ENVIRONMENT || 'development',
+  APP_NAME: APP_NAME || 'Terra Orgânica',
+  APP_VERSION: APP_VERSION || '1.0.0',
+  APP_ENVIRONMENT: APP_ENVIRONMENT || 'development',
 
   // Deep Linking Configuration
-  DEEP_LINK_SCHEME: process.env.DEEP_LINK_SCHEME || 'terraorganica',
-  DEEP_LINK_HOST: process.env.DEEP_LINK_HOST || 'app',
+  DEEP_LINK_SCHEME: DEEP_LINK_SCHEME || 'terraorganica',
+  DEEP_LINK_HOST: DEEP_LINK_HOST || 'app',
 
   // Storage Configuration
-  STORAGE_PREFIX: process.env.STORAGE_PREFIX || 'terra_organica_',
+  STORAGE_PREFIX: STORAGE_PREFIX || 'terra_organica_',
 
   // API Timeouts (em milissegundos)
-  API_TIMEOUT: parseInt(process.env.API_TIMEOUT) || 30000,
-  UPLOAD_TIMEOUT: parseInt(process.env.UPLOAD_TIMEOUT) || 300000,
+  API_TIMEOUT: parseInt(API_TIMEOUT || '30000'),
+  UPLOAD_TIMEOUT: parseInt(UPLOAD_TIMEOUT || '300000'),
 
   // Video Configuration
-  MAX_VIDEO_DURATION: parseInt(process.env.MAX_VIDEO_DURATION) || 300,
-  VIDEO_QUALITY: process.env.VIDEO_QUALITY || '720p',
-  VIDEO_FORMAT: process.env.VIDEO_FORMAT || 'mp4',
+  MAX_VIDEO_DURATION: parseInt(MAX_VIDEO_DURATION || '300'),
+  VIDEO_QUALITY: VIDEO_QUALITY || '720p',
+  VIDEO_FORMAT: VIDEO_FORMAT || 'mp4',
 
   // Location Configuration
-  LOCATION_ACCURACY: process.env.LOCATION_ACCURACY || 'high',
-  LOCATION_TIMEOUT: parseInt(process.env.LOCATION_TIMEOUT) || 15000,
-  LOCATION_MAX_AGE: parseInt(process.env.LOCATION_MAX_AGE) || 10000,
+  LOCATION_ACCURACY: LOCATION_ACCURACY || 'high',
+  LOCATION_TIMEOUT: parseInt(LOCATION_TIMEOUT || '15000'),
+  LOCATION_MAX_AGE: parseInt(LOCATION_MAX_AGE || '10000'),
 
   // Assets Configuration
-  LOGO_URL: process.env.LOGO_URL || 'https://compostagemterraorganica.com.br/wp-content/uploads/2020/11/cropped-LOGO_CTO_HORIZ-2.png',
-  BACKGROUND_URL: process.env.BACKGROUND_URL || 'https://compostagemterraorganica.com.br/wp-content/uploads/2021/01/site-principal-red.jpg',
+  LOGO_URL: LOGO_URL || 'https://compostagemterraorganica.com.br/wp-content/uploads/2020/11/cropped-LOGO_CTO_HORIZ-2.png',
+  BACKGROUND_URL: BACKGROUND_URL || 'https://compostagemterraorganica.com.br/wp-content/uploads/2021/01/site-principal-red.jpg',
 
   // Development Configuration
-  DEBUG_MODE: process.env.DEBUG_MODE === 'true' || true,
-  LOG_LEVEL: process.env.LOG_LEVEL || 'debug',
-  ENABLE_CONSOLE_LOGS: process.env.ENABLE_CONSOLE_LOGS === 'true' || false,
+  DEBUG_MODE: DEBUG_MODE === 'true' || true,
+  LOG_LEVEL: LOG_LEVEL || 'debug',
+  ENABLE_CONSOLE_LOGS: ENABLE_CONSOLE_LOGS === 'true' || false,
 };
 
 // Função para obter configuração específica

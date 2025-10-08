@@ -1,8 +1,13 @@
 {
   "expo": {
     "name": "Terra Orgânica",
-    "slug": "appterraorganica",
+    "slug": "terraorganica",
     "version": "1.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "4fb9c308-8299-48dd-bc99-6c37a9005c62"
+      }
+    },
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "icon": "./assets/app-ico.png",
@@ -14,7 +19,7 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "scheme": "appterraorganica",
+    "scheme": "terraorganica",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.terraorganica.app",
