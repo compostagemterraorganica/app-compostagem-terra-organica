@@ -27,7 +27,10 @@ import {
   ENABLE_CONSOLE_LOGS,
 } from '@env';
 
-const ENVIRONMENT = {
+// Importar configuração remota (pode ser atualizada via EAS Update)
+import REMOTE_CONFIG from './remote-config';
+
+const BASE_ENVIRONMENT = {
   // WordPress Configuration
   WORDPRESS_BASE_URL: WORDPRESS_BASE_URL || 'https://compostagemterraorganica.com.br',
   WORDPRESS_OAUTH_CLIENT_ID: WORDPRESS_OAUTH_CLIENT_ID || 'Ze32LNbEGNx13ouuoZLGupv47MBfvy7M5PsZuYgs',
@@ -72,6 +75,14 @@ const ENVIRONMENT = {
   LOG_LEVEL: LOG_LEVEL || 'debug',
   ENABLE_CONSOLE_LOGS: ENABLE_CONSOLE_LOGS === 'true' || false,
 };
+
+// Merge configuração remota (valores não-null sobrescrevem BASE_ENVIRONMENT)
+// Isso permite atualizar configurações via EAS Update sem novo build
+const ENVIRONMENT = Object.keys(BASE_ENVIRONMENT).reduce((acc, key) => {
+  const remoteValue = REMOTE_CONFIG[key];
+  acc[key] = remoteValue !== null && remoteValue !== undefined ? remoteValue : BASE_ENVIRONMENT[key];
+  return acc;
+}, {});
 
 // Função para obter configuração específica
 export const getConfig = (key) => {

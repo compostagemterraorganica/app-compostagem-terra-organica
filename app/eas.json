@@ -23,13 +23,51 @@
       "channel": "preview"
     },
     "production": {
-      "android": {
-        "buildType": "apk"
+      "env": {
+        "APP_ENVIRONMENT": "production",
+        "DEBUG_MODE": "false",
+        "LOG_LEVEL": "error",
+        "ENABLE_CONSOLE_LOGS": "false",
+        "WORDPRESS_BASE_URL": "https://compostagemterraorganica.com.br",
+        "WORDPRESS_OAUTH_CLIENT_ID": "Ze32LNbEGNx13ouuoZLGupv47MBfvy7M5PsZuYgs",
+        "WORDPRESS_OAUTH_REDIRECT_URI": "https://api.compostagemterraorganica.com.br/auth/callback",
+        "API_BASE_URL": "https://api.compostagemterraorganica.com.br",
+        "YOUTUBE_UPLOAD_URL": "https://api.compostagemterraorganica.com.br/youtube/upload",
+        "APP_NAME": "Terra Orgânica",
+        "APP_VERSION": "1.0.0",
+        "DEEP_LINK_SCHEME": "terraorganica",
+        "DEEP_LINK_HOST": "app",
+        "STORAGE_PREFIX": "terra_organica_",
+        "API_TIMEOUT": "30000",
+        "UPLOAD_TIMEOUT": "300000",
+        "MAX_VIDEO_DURATION": "300",
+        "VIDEO_QUALITY": "720p",
+        "VIDEO_FORMAT": "mp4",
+        "LOCATION_ACCURACY": "high",
+        "LOCATION_TIMEOUT": "15000",
+        "LOCATION_MAX_AGE": "10000",
+        "LOGO_URL": "https://compostagemterraorganica.com.br/wp-content/uploads/2020/11/cropped-LOGO_CTO_HORIZ-2.png",
+        "BACKGROUND_URL": "https://compostagemterraorganica.com.br/wp-content/uploads/2021/01/site-principal-red.jpg"
       },
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleRelease"
+      },
+      "autoIncrement": true,
       "ios": {
         "buildConfiguration": "Release"
       },
-      "channel": "production"
+      "channel": "production",
+      "distribution": "internal"
+    },
+    "production-aab": {
+      "android": {
+        "buildType": "app-bundle",
+        "gradleCommand": ":app:bundleRelease"
+      },
+      "autoIncrement": true,
+      "channel": "production",
+      "distribution": "store"
     }
   },
   "submit": {

@@ -108,9 +108,9 @@ router.get('/auth/callback', async (req, res) => {
     // Preparar dados do usuário para passar na URL
     const userDataEncoded = encodeURIComponent(JSON.stringify(userData.data));
     
-    // Construir deep link com JWT
+    // Construir deep link com JWT (usando scheme correto)
     const jwtTokenEncoded = encodeURIComponent(jwtToken);
-    const deepLinkUrl = `appterraorganica://auth/callback?jwt_token=${jwtTokenEncoded}&user_data=${userDataEncoded}`;
+    const deepLinkUrl = `terraorganica://auth/callback?jwt_token=${jwtTokenEncoded}&user_data=${userDataEncoded}`;
     
     console.log('🔗 Deep link construído:', deepLinkUrl);
     console.log('📏 Tamanho da URL:', deepLinkUrl.length);
