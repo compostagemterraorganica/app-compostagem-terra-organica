@@ -40,8 +40,19 @@ const WORDPRESS_CONFIG = {
   clientSecret: process.env.WORDPRESS_CLIENT_SECRET,
   redirectUri: process.env.WORDPRESS_REDIRECT_URI,
   siteUrl: process.env.WORDPRESS_SITE_URL,
-  oauthUrl: process.env.WORDPRESS_OAUTH_URL
+  oauthUrl: process.env.WORDPRESS_OAUTH_URL,
+  email: process.env.WORDPRESS_EMAIL,
+  password: process.env.WORDPRESS_PASS
 };
+
+// Função para gerar Basic Auth header
+function getBasicAuthHeader() {
+  if (!WORDPRESS_CONFIG.email || !WORDPRESS_CONFIG.password) {
+    throw new Error('WORDPRESS_EMAIL e WORDPRESS_PASS devem estar configurados no .env');
+  }
+  const credentials = Buffer.from(`${WORDPRESS_CONFIG.email}:${WORDPRESS_CONFIG.password}`).toString('base64');
+  return `Basic ${credentials}`;
+}
 
 // Rota para receber o código de autorização do WordPress
 router.get('/auth/callback', async (req, res) => {
@@ -291,14 +302,14 @@ router.post('/create-post', verifyJWT, async (req, res) => {
     };
 
     logger.wordpress.info('Sending data to WordPress API', postData);
-    logger.auth.info('Using JWT access_token', { userId: req.user.user_id });
+    logger.auth.info('Using Basic Auth', { email: WORDPRESS_CONFIG.email });
 
     const response = await axios.post(
       `${WORDPRESS_CONFIG.siteUrl}/wp-json/wp/v2/verificacoes-de-volu`,
       postData,
       {
         headers: {
-          'Authorization': `Bearer ${req.user.access_token}`,
+          'Authorization': getBasicAuthHeader(),
           'Content-Type': 'application/json'
         }
       }

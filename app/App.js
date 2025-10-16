@@ -17,27 +17,40 @@ import VideoRecorder from './src/components/VideoRecorder';
 import VideoRecorderWithOverlay from './src/components/VideoRecorderWithOverlay';
 import NativeCameraRecorder from './src/components/NativeCameraRecorder';
 import VideoList from './src/components/VideoList';
+import CentralPosts from './src/components/CentralPosts';
+import UpdateStatus from './src/components/UpdateStatus';
 import { getConfig } from './src/config/environment';
+import updateService from './src/services/updateService';
 
 export default function App() {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
-  const [currentScreen, setCurrentScreen] = useState('home'); // 'home', 'recorder', 'recorder-overlay', 'native-recorder'
+  const [currentScreen, setCurrentScreen] = useState('home'); // 'home', 'recorder', 'recorder-overlay', 'native-recorder', 'central-posts'
   const [videos, setVideos] = useState([]);
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
       try {
+        // Logar variáveis de ambiente na inicialização
         await loadVideos();
         await checkLoginStatus();
         setupDeepLinking();
+        
+        // Inicializar serviço de atualizações
+        await updateService.initialize();
       } catch (error) {
+        console.error('❌ Erro na inicialização do app:', error);
         setHasError(true);
       }
     };
 
     initializeApp();
+
+    // Cleanup ao desmontar o componente
+    return () => {
+      updateService.destroy();
+    };
   }, []);
 
   const setupDeepLinking = () => {
@@ -178,6 +191,14 @@ export default function App() {
     setCurrentScreen('recorder');
   };
 
+  const handleViewCentralPosts = () => {
+    setCurrentScreen('central-posts');
+  };
+
+  const handleBackToHome = () => {
+    setCurrentScreen('home');
+  };
+
   const handleLogout = async () => {
     try {
       // Obter JWT antes de remover
@@ -280,6 +301,16 @@ export default function App() {
     );
   };
 
+  const handleUpdateVideo = (videoId, updateData) => {
+    const updatedVideos = videos.map(video => {
+      if (video.id === videoId) {
+        return { ...video, ...updateData };
+      }
+      return video;
+    });
+    saveVideos(updatedVideos);
+  };
+
   const renderHeader = () => (
     <>
       <View style={styles.header}>
@@ -314,6 +345,13 @@ export default function App() {
           <Text style={styles.recordButtonIcon}>📹</Text>
           <Text style={styles.recordButtonText}>Gravar Vídeo</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.postsButton} onPress={handleViewCentralPosts}>
+          <Text style={styles.postsButtonIcon}>♻️</Text>
+          <Text style={styles.postsButtonText}>Volumes Postados</Text>
+        </TouchableOpacity>
+        
+        <UpdateStatus onCheckUpdate={() => console.log('Verificação de atualização solicitada')} />
         
       </View>
     </>
@@ -337,6 +375,7 @@ export default function App() {
         <VideoList 
           videos={videos}
           onDeleteVideo={handleDeleteVideo}
+          onUpdateVideo={handleUpdateVideo}
           ListHeaderComponent={renderHeader}
           ListFooterComponent={renderFooter}
           userLoggedIn={userLoggedIn}
@@ -398,6 +437,14 @@ export default function App() {
       <NativeCameraRecorder
         onVideoRecorded={handleVideoRecorded}
         onBack={handleCancelRecording}
+      />
+    );
+  }
+
+  if (currentScreen === 'central-posts') {
+    return (
+      <CentralPosts
+        onBack={handleBackToHome}
       />
     );
   }
@@ -483,14 +530,14 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   recordButton: {
-    backgroundColor: '#ff6b6b',
+    backgroundColor: '#4CAF50',
     paddingVertical: 20,
     paddingHorizontal: 30,
     borderRadius: 15,
     alignItems: 'center',
     marginBottom: 30,
     elevation: 5,
-    shadowColor: '#ff6b6b',
+    shadowColor: '#4CAF50',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -503,6 +550,31 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  postsButton: {
+    backgroundColor: '#2196F3',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 30,
+    alignSelf: 'center',
+    elevation: 2,
+    shadowColor: '#2196F3',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  postsButtonIcon: {
+    fontSize: 16,
+    marginRight: 8,
+  },
+  postsButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   loginButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',

@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "ab12a8cc-3774-4044-9124-d00f7ed9ee19"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.compostagemterraorganica.wordpressoauthapi",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    }
+  }
+}

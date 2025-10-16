@@ -75,7 +75,6 @@ export default function VideoRecorderEnhanced({ onVideoRecorded, onCancel }) {
       const { status } = await Location.requestForegroundPermissionsAsync();
       
       if (status !== 'granted') {
-        console.log('Permissão de localização negada');
         Alert.alert(
           'Permissão Necessária',
           'É necessário permitir o acesso à localização para adicionar coordenadas ao vídeo.'
@@ -109,7 +108,6 @@ export default function VideoRecorderEnhanced({ onVideoRecorded, onCancel }) {
       setCurrentLocation(locationInfo);
       
     } catch (error) {
-      console.error('Erro ao obter localização:', error);
       Alert.alert(
         'Erro de Localização',
         'Não foi possível obter a localização atual. O vídeo será gravado sem dados de geolocalização.'
@@ -146,14 +144,16 @@ export default function VideoRecorderEnhanced({ onVideoRecorded, onCancel }) {
       setCurrentLocation(locationInfo);
       
     } catch (error) {
-      console.error('Erro ao atualizar localização em tempo real:', error);
+      Alert.alert(
+        'Erro de Localização',
+        'Não foi possível obter a localização atual. O vídeo será gravado sem dados de geolocalização.'
+      );
     }
   }, []);
 
   const startRecording = async () => {
     if (!cameraRef.current || isRecording || !hasPermission) return;
 
-    console.log('Iniciando gravação com Vision Camera...');
     
     try {
       setIsRecording(true);
@@ -169,21 +169,17 @@ export default function VideoRecorderEnhanced({ onVideoRecorded, onCancel }) {
         flash: 'off',
         videoCodec: 'h264',
         onRecordingFinished: (video) => {
-          console.log('Gravação finalizada:', video.path);
           handleRecordingFinished(video);
         },
         onRecordingError: (error) => {
-          console.error('Erro na gravação:', error);
-          Alert.alert('Erro', 'Não foi possível gravar o vídeo.');
+          Alert.alert('Erro na Gravação', 'Não foi possível gravar o vídeo.');
           handleRecordingError();
         }
       });
       
       setIsRecordingStarted(true);
-      console.log('Gravação iniciada com sucesso');
       
     } catch (error) {
-      console.error('Erro ao iniciar gravação:', error);
       Alert.alert('Erro', 'Não foi possível iniciar a gravação.');
       handleRecordingError();
     }
@@ -191,8 +187,6 @@ export default function VideoRecorderEnhanced({ onVideoRecorded, onCancel }) {
 
   const stopRecording = async () => {
     if (!isRecording || !cameraRef.current) return;
-
-    console.log('Parando gravação...');
     
     try {
       // Parar atualização de localização
@@ -203,8 +197,7 @@ export default function VideoRecorderEnhanced({ onVideoRecorded, onCancel }) {
       
       await cameraRef.current.stopRecording();
     } catch (error) {
-      console.error('Erro ao parar gravação:', error);
-      Alert.alert('Erro', 'Não foi possível parar a gravação.');
+      Alert.alert('Erro na Gravação', 'Não foi possível parar a gravação.');
       handleRecordingError();
     }
   };
@@ -231,11 +224,6 @@ export default function VideoRecorderEnhanced({ onVideoRecorded, onCancel }) {
       } : null,
       watermarkText: generateWatermarkText(currentLocation || location)
     };
-    
-    console.log('Vídeo gravado com sucesso:', video.uri, 'Duração:', duration + 's');
-    if (currentLocation || location) {
-      console.log('Localização:', (currentLocation || location).formattedLocation);
-    }
     
     // Chamar callback para salvar
     onVideoRecorded(videoData);

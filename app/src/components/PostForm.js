@@ -28,12 +28,13 @@ export default function PostForm({ videoData, onSuccess, onCancel }) {
   }, []);
 
   const loadCentrals = async () => {
-    try {
+      try {
       setLoadingCentrals(true);
       const centralsList = await wordpressService.getCentrals();
-      setCentrals(centralsList);
+      setCentrals(centralsList || []); // Garantir que sempre seja um array
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível carregar a lista de centrais.');
+      setCentrals([]); // Definir como array vazio em caso de erro
     } finally {
       setLoadingCentrals(false);
     }
@@ -198,13 +199,15 @@ export default function PostForm({ videoData, onSuccess, onCancel }) {
                 style={styles.picker}
               >
                 <Picker.Item label="Selecione uma central..." value="" />
-                {centrals.map((central) => (
+                {Array.isArray(centrals) && centrals.length > 0 ? centrals.map((central) => (
                   <Picker.Item
                     key={central.id}
                     label={central.name}
                     value={central.id}
                   />
-                ))}
+                )) : (
+                  <Picker.Item label="Nenhuma central disponível" value="" />
+                )}
               </Picker>
             </View>
           )}

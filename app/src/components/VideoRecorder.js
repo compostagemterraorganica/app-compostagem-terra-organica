@@ -30,17 +30,11 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
   const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
 
   useEffect(() => {
-    console.log('Verificando permissões:', {
-      camera: cameraPermission?.granted,
-      microphone: microphonePermission?.granted
-    });
-    
+       
     if (cameraPermission && !cameraPermission.granted) {
-      console.log('Solicitando permissão de câmera...');
       requestCameraPermission();
     }
     if (microphonePermission && !microphonePermission.granted) {
-      console.log('Solicitando permissão de microfone...');
       requestMicrophonePermission();
     }
     getLocation();
@@ -64,11 +58,9 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
       setIsLoading(true);
       
       // Solicitar permissão de localização
-      console.log('Solicitando permissão de localização...');
       const { status } = await Location.requestForegroundPermissionsAsync();
       
       if (status !== 'granted') {
-        console.log('Permissão de localização negada');
         Alert.alert(
           'Permissão Necessária',
           'É necessário permitir o acesso à localização para adicionar coordenadas ao vídeo.'
@@ -76,7 +68,6 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
         return;
       }
       
-      console.log('Obtendo localização atual...');
       const locationData = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
         maximumAge: 10000,
@@ -121,27 +112,18 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
       return;
     }
 
-    console.log('Iniciando gravação...');
-    console.log('Permissões verificadas:', {
-      camera: cameraPermission?.granted,
-      microphone: microphonePermission?.granted
-    });
-    
     try {
       setIsRecording(true);
       setRecordingStartTime(Date.now());
       setIsRecordingStarted(false);
       
       // Iniciar gravação e armazenar promise
-      console.log('Chamando recordAsync...');
       recordingRef.current = cameraRef.current.recordAsync({
         quality: '720p',
       });
-      console.log('recordAsync chamado, promise armazenada');
       
       // Marcar como iniciado imediatamente
       setIsRecordingStarted(true);
-      console.log('Gravação iniciada com sucesso');
       
     } catch (error) {
       console.error('Erro ao iniciar gravação:', error);
@@ -164,16 +146,10 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
 
   const stopRecording = async () => {
     if (!isRecording || !cameraRef.current) {
-      console.log('StopRecording ignorado:', {
-        isRecording,
-        hasCamera: !!cameraRef.current,
-        isStopping: isStoppingRecording
-      });
       return;
     }
 
     if (isStoppingRecording) {
-      console.log('Já está parando, aguardando...');
       return;
     }
 
@@ -187,20 +163,16 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
       return;
     }
 
-    console.log('Parando gravação... Duração atual:', currentDuration + 's');
     setIsStoppingRecording(true);
     
     try {
       // Parar a gravação e aguardar resultado
       if (recordingRef.current) {
-        console.log('Parando câmera...');
         // Parar a câmera primeiro
         cameraRef.current.stopRecording();
-        console.log('Câmera parada, aguardando promise...');
         
         // Aguardar a promise de gravação
         const video = await recordingRef.current;
-        console.log('Promise resolvida, vídeo obtido:', video ? 'sim' : 'não');
         
         if (video && video.uri) {
           // Calcular duração real
@@ -218,12 +190,7 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
               accuracy: location.accuracy
             } : null
           };
-          
-          console.log('Vídeo gravado com sucesso:', video.uri, 'Duração:', duration + 's');
-          if (location) {
-            console.log('Localização:', location.formattedLocation);
-          }
-          
+                    
           // Chamar callback para salvar
           onVideoRecorded(videoData);
           
@@ -266,7 +233,6 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
     try {
       // Se estiver gravando, parar a gravação primeiro
       if (isRecording && cameraRef.current && !isStoppingRecording) {
-        console.log('Cancelando gravação...');
         setIsStoppingRecording(true);
         
         // Parar a gravação sem aguardar o resultado

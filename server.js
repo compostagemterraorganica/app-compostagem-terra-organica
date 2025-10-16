@@ -27,6 +27,7 @@ app.get('/health', (req, res) => {
   });
 });
 
+
 // Iniciar servidor
 app.listen(PORT, () => {
   logger.separator('API SERVER STARTED');

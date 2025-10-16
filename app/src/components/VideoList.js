@@ -15,7 +15,7 @@ import UploadModal from './UploadModal';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-export default function VideoList({ videos, onDeleteVideo, ListHeaderComponent, ListFooterComponent, userLoggedIn, onLogin }) {
+export default function VideoList({ videos, onDeleteVideo, onUpdateVideo, ListHeaderComponent, ListFooterComponent, userLoggedIn, onLogin }) {
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [isVideoModalVisible, setIsVideoModalVisible] = useState(false);
   const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
@@ -77,6 +77,16 @@ export default function VideoList({ videos, onDeleteVideo, ListHeaderComponent, 
     setIsUploadModalVisible(false);
   };
 
+  const handleUploadSuccess = (videoId, uploadData) => {
+    // Atualizar o vídeo com os dados do upload
+    if (onUpdateVideo) {
+      onUpdateVideo(videoId, {
+        uploaded: true,
+        uploadData: uploadData
+      });
+    }
+  };
+
   const renderVideoItem = ({ item }) => (
     <View style={styles.videoItem}>
       <View style={styles.videoHeader}>
@@ -119,11 +129,25 @@ export default function VideoList({ videos, onDeleteVideo, ListHeaderComponent, 
       </View>
       
       <TouchableOpacity
-        style={styles.uploadButton}
-        onPress={() => openUploadModal(item)}
+        style={[
+          styles.uploadButton,
+          item.uploaded && styles.uploadButtonSuccess
+        ]}
+        onPress={() => !item.uploaded && openUploadModal(item)}
+        disabled={item.uploaded}
       >
-        <Text style={styles.uploadButtonIcon}>📤</Text>
-        <Text style={styles.uploadButtonLabel}>Postar Volume</Text>
+        <Text style={[
+          styles.uploadButtonIcon,
+          item.uploaded && styles.uploadButtonIconSuccess
+        ]}>
+          {item.uploaded ? '✅' : '📤'}
+        </Text>
+        <Text style={[
+          styles.uploadButtonLabel,
+          item.uploaded && styles.uploadButtonLabelSuccess
+        ]}>
+          {item.uploaded ? 'Volume Postado' : 'Postar Volume'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -209,6 +233,7 @@ export default function VideoList({ videos, onDeleteVideo, ListHeaderComponent, 
         <UploadModal 
           video={videoToUpload}
           onClose={closeUploadModal}
+          onUploadSuccess={handleUploadSuccess}
         />
       </Modal>
     </View>
@@ -372,10 +397,21 @@ const styles = StyleSheet.create({
   uploadButtonIcon: {
     fontSize: 18,
   },
+  uploadButtonIconSuccess: {
+    fontSize: 18,
+    color: '#ffffff',
+  },
   uploadButtonLabel: {
     color: '#ffffff',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  uploadButtonSuccess: {
+    backgroundColor: '#2E7D32',
+    shadowColor: '#2E7D32',
+  },
+  uploadButtonLabelSuccess: {
+    color: '#ffffff',
   },
   deleteButton: {
     backgroundColor: '#ff6b6b',

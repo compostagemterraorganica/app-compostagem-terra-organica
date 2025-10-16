@@ -3,10 +3,24 @@ import { getConfig } from '../config/environment';
 const WORDPRESS_CONFIG = {
   BASE_URL: getConfig('WORDPRESS_BASE_URL'),
   OAUTH_CLIENT_ID: getConfig('WORDPRESS_OAUTH_CLIENT_ID'),
-  REDIRECT_URI: getConfig('WORDPRESS_OAUTH_REDIRECT_URI')
+  REDIRECT_URI: getConfig('WORDPRESS_OAUTH_REDIRECT_URI'),
+  EMAIL: getConfig('WORDPRESS_EMAIL'),
+  PASSWORD: getConfig('WORDPRESS_PASS')
 };
 
 export const wordpressService = {
+  // Gerar header de autenticação básica
+  getBasicAuthHeader() {
+    if (!WORDPRESS_CONFIG.EMAIL || !WORDPRESS_CONFIG.PASSWORD) {
+      console.warn('⚠️ [wordpressService] WORDPRESS_EMAIL ou WORDPRESS_PASS não configurados');
+      return null;
+    }
+    
+    const credentials = `${WORDPRESS_CONFIG.EMAIL}:${WORDPRESS_CONFIG.PASSWORD}`;
+    const base64Credentials = btoa(credentials);
+    return `Basic ${base64Credentials}`;
+  },
+
   // Gerar URL de autenticação OAuth
   generateAuthUrl() {
     const params = new URLSearchParams({
@@ -42,23 +56,44 @@ export const wordpressService = {
 
   // Obter lista de centrais
   async getCentrals() {
+    const url = `${WORDPRESS_CONFIG.BASE_URL}/wp-json/wp/v2/central?per_page=100`;
+    
+    // Obter header de autenticação
+    const authHeader = this.getBasicAuthHeader();
+    
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (authHeader) {
+      headers['Authorization'] = authHeader;
+    }
+    
     try {
-      const response = await fetch(`${WORDPRESS_CONFIG.BASE_URL}/wp-json/wp/v2/central`, {
+      const response = await fetch(url, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
+        headers: headers
       });
+
 
       if (response.ok) {
         const centrals = await response.json();
-        return centrals.map(central => ({
+        
+        if (!Array.isArray(centrals)) {
+          throw new Error('Resposta da API não é um array válido');
+        }
+        
+        const mappedCentrals = centrals.map(central => ({
           id: central.id,
-          name: central.title.rendered
+          name: central.title?.rendered || central.title || 'Nome não disponível'
         }));
+        
+        return mappedCentrals;
+      } else {
+        const errorText = await response.text();
+        throw new Error(`Erro ao obter centrais: ${response.status} - ${errorText}`);
       }
-      throw new Error('Erro ao obter centrais');
-    } catch (error) {
+    } catch (error) {   
       throw error;
     }
   },

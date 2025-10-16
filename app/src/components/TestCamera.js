@@ -19,17 +19,6 @@ export default function TestCamera({ onClose }) {
   const device = devices.back;
   const { hasPermission, requestPermission } = useCameraPermission();
 
-  // Debug logs
-  React.useEffect(() => {
-    console.log('TestCamera - Debug Info:', {
-      hasPermission,
-      devices: devices ? Object.keys(devices) : 'nenhum',
-      device: device ? 'disponível' : 'não disponível',
-      backDevice: devices?.back ? 'disponível' : 'não disponível',
-      frontDevice: devices?.front ? 'disponível' : 'não disponível'
-    });
-  }, [hasPermission, devices, device]);
-
   const handleTakePhoto = async () => {
     try {
       if (!cameraRef.current) {

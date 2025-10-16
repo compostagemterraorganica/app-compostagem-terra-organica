@@ -4,6 +4,8 @@ import {
   WORDPRESS_BASE_URL,
   WORDPRESS_OAUTH_CLIENT_ID,
   WORDPRESS_OAUTH_REDIRECT_URI,
+  WORDPRESS_EMAIL,
+  WORDPRESS_PASS,
   API_BASE_URL,
   YOUTUBE_UPLOAD_URL,
   APP_NAME,
@@ -34,11 +36,13 @@ const BASE_ENVIRONMENT = {
   // WordPress Configuration
   WORDPRESS_BASE_URL: WORDPRESS_BASE_URL || 'https://compostagemterraorganica.com.br',
   WORDPRESS_OAUTH_CLIENT_ID: WORDPRESS_OAUTH_CLIENT_ID || 'Ze32LNbEGNx13ouuoZLGupv47MBfvy7M5PsZuYgs',
-  WORDPRESS_OAUTH_REDIRECT_URI: WORDPRESS_OAUTH_REDIRECT_URI || 'https://stallion-hot-weasel.ngrok-free.app/auth/callback',
+  WORDPRESS_OAUTH_REDIRECT_URI: WORDPRESS_OAUTH_REDIRECT_URI || 'https://api.compostagemterraorganica.com.br/auth/callback',
+  WORDPRESS_EMAIL: WORDPRESS_EMAIL || '',
+  WORDPRESS_PASS: WORDPRESS_PASS || '',
 
   // API Configuration
-  API_BASE_URL: API_BASE_URL || 'https://stallion-hot-weasel.ngrok-free.app',
-  YOUTUBE_UPLOAD_URL: YOUTUBE_UPLOAD_URL || 'https://stallion-hot-weasel.ngrok-free.app/youtube/upload',
+  API_BASE_URL: API_BASE_URL || 'https://api.compostagemterraorganica.com.br',
+  YOUTUBE_UPLOAD_URL: YOUTUBE_UPLOAD_URL || 'https://api.compostagemterraorganica.com.br/youtube/upload',
 
   // App Configuration
   APP_NAME: APP_NAME || 'Terra Orgânica',
@@ -73,7 +77,7 @@ const BASE_ENVIRONMENT = {
   // Development Configuration
   DEBUG_MODE: DEBUG_MODE === 'true' || true,
   LOG_LEVEL: LOG_LEVEL || 'debug',
-  ENABLE_CONSOLE_LOGS: ENABLE_CONSOLE_LOGS === 'true' || false,
+  ENABLE_CONSOLE_LOGS: ENABLE_CONSOLE_LOGS === 'true' || true, // Habilitado por padrão para debug
 };
 
 // Merge configuração remota (valores não-null sobrescrevem BASE_ENVIRONMENT)
@@ -137,5 +141,6 @@ export const warn = (message, data = null) => {
 export const error = (message, data = null) => {
   log('error', `[ERROR] ${message}`, data);
 };
+
 
 export default ENVIRONMENT;

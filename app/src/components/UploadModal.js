@@ -14,9 +14,10 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { getConfig } from '../config/environment';
+import userCentralService from '../services/userCentralService';
 const API_BASE_URL = getConfig('API_BASE_URL');
 
-export default function UploadModal({ video, onClose }) {
+export default function UploadModal({ video, onClose, onUploadSuccess }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [centrals, setCentrals] = useState([]);
@@ -26,6 +27,24 @@ export default function UploadModal({ video, onClose }) {
   const [uploadProgress, setUploadProgress] = useState('');
   const [showCentralModal, setShowCentralModal] = useState(false);
   const [loadingCentrals, setLoadingCentrals] = useState(true);
+
+  // Função helper para obter o nome da central de forma consistente
+  const getCentralName = (central) => {
+    if (!central) return 'Central não selecionada';
+    
+    // Se tem title.rendered (estrutura da API WordPress direta)
+    if (central.title && central.title.rendered) {
+      return central.title.rendered;
+    }
+    
+    // Se tem name (estrutura do userCentralService)
+    if (central.name) {
+      return central.name;
+    }
+    
+    // Fallback
+    return `Central ${central.id}`;
+  };
 
   useEffect(() => {
     checkLoginStatus();
@@ -71,13 +90,33 @@ export default function UploadModal({ video, onClose }) {
 
 
   const loadCentrals = async () => {
+    setLoadingCentrals(true);
+    
     try {
-      setLoadingCentrals(true);
-      const response = await fetch(`${getConfig('WORDPRESS_BASE_URL')}/wp-json/wp/v2/central`);
-      const data = await response.json();
-      setCentrals(data);
+      // Primeiro, vamos testar todas as relações para debug
+      const allRelations = await userCentralService.getAllRelations();
+      
+      // Agora buscar centrais específicas do usuário logado
+      const userCentrals = await userCentralService.getCurrentUserCentrals();
+      
+      setCentrals(userCentrals);
+      
+      if (userCentrals.length === 0) {
+        Alert.alert(
+          'Aviso', 
+          'Nenhuma central foi encontrada para este usuário. Verifique se o usuário está associado a alguma central.'
+        );
+      } else if (userCentrals.length === 1) {
+        // Se o usuário possui apenas uma central, selecionar automaticamente
+        setSelectedCentral(userCentrals[0]);
+        // Salvar a central selecionada automaticamente
+        AsyncStorage.setItem('saved_central', JSON.stringify(userCentrals[0]));
+      } else {
+      }
+      
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível carregar as centrais.');
+      Alert.alert('Erro', `Não foi possível carregar as centrais do usuário: ${error.message}`);
+      setCentrals([]);
     } finally {
       setLoadingCentrals(false);
     }
@@ -166,13 +205,11 @@ export default function UploadModal({ video, onClose }) {
         });
 
         if (!shouldPostAnyway) {
-          // Log removed
           setUploadProgress('');
           setIsUploading(false);
           return;
         }
 
-        // Log removed
         setUploadProgress('Postando volume no site (sem link do YouTube)...');
       }
 
@@ -183,6 +220,16 @@ export default function UploadModal({ video, onClose }) {
       if (youtubeUrl) {
         Alert.alert('Sucesso!', 'Coleta postada com sucesso!');
       } 
+      
+      // Chamar callback de sucesso se fornecido
+      if (onUploadSuccess) {
+        onUploadSuccess(video.id, {
+          central: selectedCentral,
+          volume: volume,
+          youtubeUrl: youtubeUrl,
+          uploadedAt: new Date().toISOString()
+        });
+      }
       
       onClose();
     } catch (error) {
@@ -203,9 +250,9 @@ export default function UploadModal({ video, onClose }) {
         name: 'video.mp4'
       });
 
-      const title = `${selectedCentral.title.rendered} - ${new Date().toLocaleDateString('pt-BR')}`;
+      const title = `${getCentralName(selectedCentral)} - ${new Date().toLocaleDateString('pt-BR')}`;
       
-      let description = `Central: ${selectedCentral.title.rendered}\n`;
+      let description = `Central: ${getCentralName(selectedCentral)}\n`;
       description += `Volume: ${volume} Kg\n`;
       description += `Data: ${new Date().toLocaleString('pt-BR')}\n`;
       
@@ -256,7 +303,7 @@ export default function UploadModal({ video, onClose }) {
       const dataFormatada = `${ano}-${mes}-${dia}`; // Formato YYYY-MM-DD
       
       const postData = {
-        title: `${selectedCentral.title.rendered} - ${new Date().toLocaleDateString('pt-BR')}`,
+        title: `${getCentralName(selectedCentral)} - ${new Date().toLocaleDateString('pt-BR')}`,
         meta: {
           central: selectedCentral.id.toString(),
           volume: volume,
@@ -333,7 +380,7 @@ export default function UploadModal({ video, onClose }) {
             onPress={() => setShowCentralModal(true)}
           >
             <Text style={styles.centralSelectorText}>
-              {selectedCentral ? selectedCentral.title.rendered : 'Selecione uma central...'}
+              {selectedCentral ? getCentralName(selectedCentral) : 'Selecione uma central...'}
             </Text>
             <Text style={styles.centralSelectorIcon}>▼</Text>
           </TouchableOpacity>
@@ -388,7 +435,11 @@ export default function UploadModal({ video, onClose }) {
             </View>
             
             <ScrollView style={styles.centralList}>
-              {centrals.map((central) => (
+              {loadingCentrals ? (
+                <View style={styles.loadingContainer}>
+                  <Text style={styles.loadingText}>Carregando centrais do usuário...</Text>
+                </View>
+              ) : Array.isArray(centrals) && centrals.length > 0 ? centrals.map((central) => (
                 <TouchableOpacity
                   key={central.id}
                   style={[
@@ -400,14 +451,32 @@ export default function UploadModal({ video, onClose }) {
                     setShowCentralModal(false);
                   }}
                 >
-                  <Text style={[
-                    styles.centralText,
-                    selectedCentral?.id === central.id && styles.centralTextSelected
-                  ]}>
-                    {central.title.rendered}
-                  </Text>
+                  <View style={styles.centralItemContent}>
+                    <Text style={[
+                      styles.centralText,
+                      selectedCentral?.id === central.id && styles.centralTextSelected
+                    ]}>
+                      {central.name}
+                    </Text>
+                  </View>
+                  {selectedCentral?.id === central.id && (
+                    <Text style={styles.selectedIcon}>✓</Text>
+                  )}
                 </TouchableOpacity>
-              ))}
+              )) : (
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.emptyText}>Nenhuma central disponível</Text>
+                  <Text style={styles.emptySubtext}>
+                    Este usuário não está associado a nenhuma central
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.retryButton}
+                    onPress={loadCentrals}
+                  >
+                    <Text style={styles.retryButtonText}>🔄 Tentar Novamente</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </ScrollView>
           </View>
         </View>
@@ -480,6 +549,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   centralItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: '#2d2d2d',
     padding: 15,
     borderRadius: 10,
@@ -498,6 +570,55 @@ const styles = StyleSheet.create({
   centralTextSelected: {
     color: '#4ecdc4',
     fontWeight: 'bold',
+  },
+  centralItemContent: {
+    flex: 1,
+  },
+  centralIdText: {
+    fontSize: 12,
+    color: '#999',
+    fontStyle: 'italic',
+    marginTop: 2,
+  },
+  selectedIcon: {
+    fontSize: 18,
+    color: '#4ecdc4',
+    fontWeight: 'bold',
+  },
+  loadingContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: '#cccccc',
+    fontSize: 14,
+  },
+  emptyContainer: {
+    padding: 30,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#cccccc',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  emptySubtext: {
+    fontSize: 12,
+    color: '#999',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  retryButton: {
+    backgroundColor: '#4ecdc4',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   input: {
     backgroundColor: '#2d2d2d',

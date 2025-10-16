@@ -15,9 +15,9 @@
     },
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "icon": "./assets/app-ico.jpg",
+    "icon": "./assets/app-icon.png",
     "splash": {
-      "image": "./assets/app-ico.jpg",
+      "image": "./assets/app-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#4CAF50"
     },
@@ -38,7 +38,7 @@
     "android": {
       "package": "com.terraorganica.app",
       "versionCode": 1,
-      "icon": "./assets/app-ico.jpg",
+      "icon": "./assets/app-icon.png",
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
@@ -48,7 +48,7 @@
         "android.permission.WRITE_EXTERNAL_STORAGE"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/app-ico.jpg",
+        "foregroundImage": "./assets/app-icon.png",
         "backgroundColor": "#FFFFFF"
       }
     },

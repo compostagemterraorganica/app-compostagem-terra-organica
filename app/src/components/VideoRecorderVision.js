@@ -72,8 +72,7 @@ export default function VideoRecorderVision({ onVideoRecorded, onCancel }) {
         address: address ? `${address.street || ''}, ${address.city || ''}, ${address.region || ''}`.trim() : null,
         formattedLocation: `${locationData.coords.latitude.toFixed(6)}, ${locationData.coords.longitude.toFixed(6)}`
       });
-    } catch (error) {
-      console.error('Erro ao obter localização:', error);
+    } catch (error) {     
       Alert.alert(
         'Erro de Localização',
         'Não foi possível obter a localização atual. O vídeo será gravado sem dados de geolocalização.'
@@ -85,8 +84,6 @@ export default function VideoRecorderVision({ onVideoRecorded, onCancel }) {
 
   const startRecording = async () => {
     if (!cameraRef.current || isRecording) return;
-
-    console.log('Iniciando gravação com Vision Camera...');
     
     try {
       setIsRecording(true);
@@ -97,7 +94,6 @@ export default function VideoRecorderVision({ onVideoRecorded, onCancel }) {
       const video = await cameraRef.current.startRecording({
         flash: 'off',
         onRecordingFinished: (video) => {
-          console.log('Gravação finalizada:', video.path);
           setIsRecording(false);
           setIsRecordingStarted(false);
           setRecordingStartTime(null);
@@ -106,7 +102,6 @@ export default function VideoRecorderVision({ onVideoRecorded, onCancel }) {
           processVideoWithWatermark(video);
         },
         onRecordingError: (error) => {
-          console.error('Erro na gravação:', error);
           Alert.alert('Erro', 'Não foi possível gravar o vídeo.');
           setIsRecording(false);
           setIsRecordingStarted(false);
@@ -115,10 +110,8 @@ export default function VideoRecorderVision({ onVideoRecorded, onCancel }) {
       });
       
       setIsRecordingStarted(true);
-      console.log('Gravação iniciada com sucesso');
       
     } catch (error) {
-      console.error('Erro ao iniciar gravação:', error);
       Alert.alert('Erro', 'Não foi possível iniciar a gravação.');
       setIsRecording(false);
       setIsRecordingStarted(false);
@@ -129,12 +122,10 @@ export default function VideoRecorderVision({ onVideoRecorded, onCancel }) {
   const stopRecording = async () => {
     if (!isRecording || !cameraRef.current) return;
 
-    console.log('Parando gravação...');
     
     try {
       await cameraRef.current.stopRecording();
     } catch (error) {
-      console.error('Erro ao parar gravação:', error);
       Alert.alert('Erro', 'Não foi possível parar a gravação.');
     }
   };
@@ -158,8 +149,6 @@ export default function VideoRecorderVision({ onVideoRecorded, onCancel }) {
         accuracy: location.accuracy
       } : null
     };
-    
-    console.log('Vídeo processado com marca d\'água:', videoData);
     
     // Chamar callback para salvar
     onVideoRecorded(videoData);

@@ -47,11 +47,14 @@
         "LOCATION_TIMEOUT": "15000",
         "LOCATION_MAX_AGE": "10000",
         "LOGO_URL": "https://compostagemterraorganica.com.br/wp-content/uploads/2020/11/cropped-LOGO_CTO_HORIZ-2.png",
-        "BACKGROUND_URL": "https://compostagemterraorganica.com.br/wp-content/uploads/2021/01/site-principal-red.jpg"
+        "BACKGROUND_URL": "https://compostagemterraorganica.com.br/wp-content/uploads/2021/01/site-principal-red.jpg",
       },
       "android": {
         "buildType": "apk",
-        "gradleCommand": ":app:assembleRelease"
+        "gradleCommand": ":app:assembleRelease",
+        "env": {
+          "EXPO_USE_COMMUNITY_AUTOLINKING": "0"
+        }
       },
       "autoIncrement": true,
       "ios": {

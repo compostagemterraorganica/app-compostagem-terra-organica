@@ -207,7 +207,7 @@ router.post('/upload', upload.single('video'), async (req, res) => {
         categoryId: '22'
       },
       status: {
-        privacyStatus: privacyStatus || 'private',
+        privacyStatus: privacyStatus || 'unlisted',
         selfDeclaredMadeForKids: false
       }
     };
