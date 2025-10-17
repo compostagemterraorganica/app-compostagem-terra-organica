@@ -31,6 +31,8 @@
         "WORDPRESS_BASE_URL": "https://compostagemterraorganica.com.br",
         "WORDPRESS_OAUTH_CLIENT_ID": "Ze32LNbEGNx13ouuoZLGupv47MBfvy7M5PsZuYgs",
         "WORDPRESS_OAUTH_REDIRECT_URI": "https://api.compostagemterraorganica.com.br/auth/callback",
+        "WORDPRESS_EMAIL": "terra_organica",
+        "WORDPRESS_PASS": "&2s81pabk5H)r)RYHzW^H%^^",
         "API_BASE_URL": "https://api.compostagemterraorganica.com.br",
         "YOUTUBE_UPLOAD_URL": "https://api.compostagemterraorganica.com.br/youtube/upload",
         "APP_NAME": "Terra Orgânica",
@@ -47,7 +49,7 @@
         "LOCATION_TIMEOUT": "15000",
         "LOCATION_MAX_AGE": "10000",
         "LOGO_URL": "https://compostagemterraorganica.com.br/wp-content/uploads/2020/11/cropped-LOGO_CTO_HORIZ-2.png",
-        "BACKGROUND_URL": "https://compostagemterraorganica.com.br/wp-content/uploads/2021/01/site-principal-red.jpg",
+        "BACKGROUND_URL": "https://compostagemterraorganica.com.br/wp-content/uploads/2021/01/site-principal-red.jpg"
       },
       "android": {
         "buildType": "apk",

@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import updateService from '../services/updateService';
 
 const UpdateStatus = ({ onCheckUpdate }) => {
-  const [isChecking, setIsChecking] = useState(false);
   const [lastCheck, setLastCheck] = useState(null);
 
   useEffect(() => {
     // Verificar última verificação de atualização
     checkLastUpdateTime();
+    
+    // Verificar atualizações automaticamente na inicialização (silenciosamente)
+    performAutomaticUpdate();
+    
+    // Configurar verificação automática a cada 30 minutos (silenciosamente)
+    const interval = setInterval(() => {
+      performAutomaticUpdate();
+    }, 30 * 60 * 1000); // 30 minutos
+
+    return () => clearInterval(interval);
   }, []);
 
   const checkLastUpdateTime = async () => {
@@ -23,11 +32,9 @@ const UpdateStatus = ({ onCheckUpdate }) => {
     }
   };
 
-  const handleCheckUpdate = async () => {
-    if (isChecking) return;
-
+  const performAutomaticUpdate = async () => {
     try {
-      setIsChecking(true);
+      // Verificar e aplicar atualizações silenciosamente
       await updateService.forceCheckForUpdates();
       
       // Atualizar timestamp da última verificação
@@ -40,8 +47,7 @@ const UpdateStatus = ({ onCheckUpdate }) => {
       }
     } catch (error) {
       console.error('Erro ao verificar atualizações:', error);
-    } finally {
-      setIsChecking(false);
+      // Falha silenciosamente - não mostra mensagem para o usuário
     }
   };
 
@@ -64,49 +70,14 @@ const UpdateStatus = ({ onCheckUpdate }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
-        style={[styles.button, isChecking && styles.buttonDisabled]} 
-        onPress={handleCheckUpdate}
-        disabled={isChecking}
-      >
-        <Text style={styles.buttonText}>
-          {isChecking ? '🔄 Verificando...' : '🔄 Verificar Atualizações'}
-        </Text>
-      </TouchableOpacity>
-      
-      {lastCheck && (
-        <Text style={styles.lastCheckText}>
-          Última verificação: {formatLastCheck()}
-        </Text>
-      )}
+      {/* Removido - não mostra mais informações sobre atualizações */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  button: {
-    backgroundColor: '#4CAF50',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginBottom: 5,
-  },
-  buttonDisabled: {
-    backgroundColor: '#cccccc',
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  lastCheckText: {
-    color: '#666666',
-    fontSize: 10,
-    fontStyle: 'italic',
+    // Container vazio - componente agora funciona apenas em background
   },
 });
 

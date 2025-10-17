@@ -1,4 +1,3 @@
-import { Alert } from 'react-native';
 import * as Updates from 'expo-updates';
 
 class UpdateService {
@@ -37,8 +36,8 @@ class UpdateService {
       const update = await Updates.checkForUpdateAsync();
       
       if (update.isAvailable) {
-        console.log('🆕 Nova atualização Expo Updates disponível');
-        await this.showUpdateNotification(update);
+        console.log('🆕 Nova atualização Expo Updates disponível - aplicando automaticamente...');
+        await this.performUpdate(update);
       } else {
         console.log('✅ App está atualizado via Expo Updates');
       }
@@ -49,36 +48,6 @@ class UpdateService {
     }
   }
 
-  /**
-   * Mostra notificação de atualização disponível
-   */
-  async showUpdateNotification(update) {
-    return new Promise((resolve) => {
-      Alert.alert(
-        '🆕 Atualização Disponível',
-        'Uma nova versão está disponível. Deseja atualizar agora?',
-        [
-          {
-            text: 'Mais tarde',
-            style: 'cancel',
-            onPress: () => {
-              console.log('⏰ Usuário escolheu atualizar mais tarde');
-              resolve(false);
-            }
-          },
-          {
-            text: 'Atualizar',
-            onPress: async () => {
-              console.log('🔄 Usuário escolheu atualizar agora');
-              await this.performUpdate(update);
-              resolve(true);
-            }
-          }
-        ],
-        { cancelable: false }
-      );
-    });
-  }
 
   /**
    * Executa a atualização via Expo Updates
@@ -93,7 +62,7 @@ class UpdateService {
       console.log('✅ Atualização Expo Updates instalada com sucesso');
     } catch (error) {
       console.error('❌ Erro durante atualização Expo Updates:', error);
-      Alert.alert('Erro', 'Não foi possível atualizar o app. Tente novamente mais tarde.');
+      // Removido o Alert - atualização falha silenciosamente
     }
   }
 
