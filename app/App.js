@@ -173,7 +173,20 @@ export default function App() {
 
   const handleLogin = async () => {
     try {
-      const authUrl = `${getConfig('WORDPRESS_BASE_URL')}/oauth/authorize?response_type=code&client_id=${getConfig('WORDPRESS_OAUTH_CLIENT_ID')}&redirect_uri=${getConfig('WORDPRESS_OAUTH_REDIRECT_URI')}&scope=basic&state=app`;
+      const baseUrl = getConfig('WORDPRESS_BASE_URL');
+      const clientId = getConfig('WORDPRESS_OAUTH_CLIENT_ID');
+      const redirectUri = getConfig('WORDPRESS_OAUTH_REDIRECT_URI');
+      
+      // Usar URLSearchParams para garantir encoding correto
+      const params = new URLSearchParams({
+        response_type: 'code',
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        scope: 'basic',
+        state: 'app'
+      });
+      
+      const authUrl = `${baseUrl}/oauth/authorize?${params.toString()}`;
       
       const supported = await Linking.canOpenURL(authUrl);
       if (supported) {
@@ -445,6 +458,7 @@ export default function App() {
     return (
       <CentralPosts
         onBack={handleBackToHome}
+        onLogin={handleLogin}
       />
     );
   }

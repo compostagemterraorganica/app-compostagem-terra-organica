@@ -13,10 +13,12 @@ app.use(express.json());
 // Importar rotas
 const wordpressRoutes = require('./routes/wordpress');
 const youtubeRoutes = require('./routes/youtube');
+const analyticsRoutes = require('./routes/analytics');
 
 // Usar rotas
 app.use('/', wordpressRoutes);
 app.use('/youtube', youtubeRoutes);
+app.use('/analytics', analyticsRoutes);
 
 // Rota de health check
 app.get('/health', (req, res) => {
@@ -45,6 +47,10 @@ app.listen(PORT, () => {
   console.log('  - GET  /youtube/setup/auth-url');
   console.log('  - POST /youtube/setup/exchange-code');
   console.log('  - POST /youtube/upload');
+  
+  logger.server.info('Analytics Routes:');
+  console.log('  - GET  /analytics/centrals-analysis');
+  console.log('  - GET  /analytics/dashboard');
   
   logger.separator('YOUTUBE STATUS');
   if (!process.env.YOUTUBE_REFRESH_TOKEN) {

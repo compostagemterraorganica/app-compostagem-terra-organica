@@ -61,7 +61,7 @@ export default function PostForm({ videoData, onSuccess, onCancel }) {
     }
 
     if (!volume || isNaN(parseFloat(volume)) || parseFloat(volume) <= 0) {
-      Alert.alert('Erro', 'Digite um volume válido em Kg');
+      Alert.alert('Erro', 'Digite um volume válido em Litros');
       return;
     }
 
@@ -215,7 +215,7 @@ export default function PostForm({ videoData, onSuccess, onCancel }) {
 
         {/* Volume */}
         <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>Volume em Kg *</Text>
+          <Text style={styles.inputLabel}>Volume em Litros *</Text>
           <TextInput
             style={styles.input}
             value={volume}

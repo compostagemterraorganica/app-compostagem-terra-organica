@@ -15,23 +15,90 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getConfig } from '../config/environment';
 import userCentralService from '../services/userCentralService';
 
-export default function CentralPosts({ onBack }) {
+export default function CentralPosts({ onBack, onLogin }) {
   const [centrals, setCentrals] = useState([]);
   const [selectedCentral, setSelectedCentral] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loadingCentrals, setLoadingCentrals] = useState(true);
   const [loadingPosts, setLoadingPosts] = useState(false);
   const [showCentralModal, setShowCentralModal] = useState(false);
+  const [userLoggedIn, setUserLoggedIn] = useState(false);
+  const [checkingLogin, setCheckingLogin] = useState(true);
 
   useEffect(() => {
-    loadCentrals();
+    checkUserLogin();
   }, []);
 
   useEffect(() => {
-    if (selectedCentral) {
+    if (userLoggedIn) {
+      loadCentrals();
+    }
+  }, [userLoggedIn]);
+
+  useEffect(() => {
+    if (selectedCentral && userLoggedIn) {
       loadPosts();
     }
-  }, [selectedCentral]);
+  }, [selectedCentral, userLoggedIn]);
+
+  const checkUserLogin = async () => {
+    setCheckingLogin(true);
+    
+    try {
+      // Verificar se há JWT token no AsyncStorage (mesma chave usada no App.js)
+      const jwtToken = await AsyncStorage.getItem('wp_session_id');
+      
+      if (jwtToken) {
+        // Verificar se o JWT ainda é válido fazendo uma requisição para /me
+        const response = await fetch(`${getConfig('API_BASE_URL')}/me`, {
+          headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          setUserLoggedIn(true);
+        } else {
+          // JWT expirado ou inválido, limpar dados
+          await AsyncStorage.removeItem('wp_session_id');
+          await AsyncStorage.removeItem('wp_user_data');
+          showLoginAlert();
+        }
+      } else {
+        showLoginAlert();
+      }
+    } catch (error) {
+      console.error('Erro ao verificar login:', error);
+      showLoginAlert();
+    } finally {
+      setCheckingLogin(false);
+    }
+  };
+
+  const showLoginAlert = () => {
+    Alert.alert(
+      'Login Necessário',
+      'É necessário fazer login para acessar os volumes postados. Deseja fazer login agora?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+          onPress: () => onBack()
+        },
+        {
+          text: 'Fazer Login',
+          onPress: () => {
+            if (onLogin) {
+              onLogin();
+            } else {
+              onBack();
+            }
+          }
+        }
+      ]
+    );
+  };
 
   const loadCentrals = async () => {
     setLoadingCentrals(true);
@@ -228,7 +295,7 @@ export default function CentralPosts({ onBack }) {
           {/* Header da tabela */}
           <View style={styles.tableHeader}>
             <Text style={[styles.tableHeaderText, styles.dateColumn]}>Data</Text>
-            <Text style={[styles.tableHeaderText, styles.volumeColumn]}>Volume (Kg)</Text>
+            <Text style={[styles.tableHeaderText, styles.volumeColumn]}>Volume (Litros)</Text>
             <Text style={[styles.tableHeaderText, styles.videoColumn]}>Vídeo</Text>
           </View>
           
@@ -313,6 +380,47 @@ export default function CentralPosts({ onBack }) {
       </View>
     </Modal>
   );
+
+  // Renderizar tela de verificação de login
+  if (checkingLogin) {
+    return (
+      <SafeAreaView style={styles.container}>
+        {renderHeader()}
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator color="#4CAF50" size="large" />
+          <Text style={styles.loadingText}>Verificando login...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Renderizar tela de não logado
+  if (!userLoggedIn) {
+    return (
+      <SafeAreaView style={styles.container}>
+        {renderHeader()}
+        <View style={styles.loginRequiredContainer}>
+          <Text style={styles.loginRequiredIcon}>🔒</Text>
+          <Text style={styles.loginRequiredTitle}>Login Necessário</Text>
+          <Text style={styles.loginRequiredText}>
+            É necessário fazer login para acessar os volumes postados.
+          </Text>
+          <TouchableOpacity 
+            style={styles.loginButton}
+            onPress={() => {
+              if (onLogin) {
+                onLogin();
+              } else {
+                onBack();
+              }
+            }}
+          >
+            <Text style={styles.loginButtonText}>Fazer Login</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -555,6 +663,48 @@ const styles = StyleSheet.create({
   selectedIcon: {
     fontSize: 18,
     color: '#ffffff',
+    fontWeight: 'bold',
+  },
+  // Estilos para tela de login necessário
+  loginRequiredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+    backgroundColor: '#1a1a1a',
+  },
+  loginRequiredIcon: {
+    fontSize: 80,
+    marginBottom: 20,
+  },
+  loginRequiredTitle: {
+    color: '#ffffff',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  loginRequiredText: {
+    color: '#cccccc',
+    fontSize: 16,
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 30,
+  },
+  loginButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    elevation: 3,
+    shadowColor: '#4CAF50',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  loginButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });

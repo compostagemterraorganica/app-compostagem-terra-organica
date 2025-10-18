@@ -253,7 +253,7 @@ export default function UploadModal({ video, onClose, onUploadSuccess }) {
       const title = `${getCentralName(selectedCentral)} - ${new Date().toLocaleDateString('pt-BR')}`;
       
       let description = `Central: ${getCentralName(selectedCentral)}\n`;
-      description += `Volume: ${volume} Kg\n`;
+      description += `Volume: ${volume} Litros\n`;
       description += `Data: ${new Date().toLocaleString('pt-BR')}\n`;
       
       if (video.location) {
@@ -386,12 +386,12 @@ export default function UploadModal({ video, onClose, onUploadSuccess }) {
           </TouchableOpacity>
         )}
         
-        <Text style={styles.sectionTitle}>Volume (Kg)</Text>
+        <Text style={styles.sectionTitle}>Volume (Litros)</Text>
         <TextInput
           style={styles.input}
           value={volume}
           onChangeText={setVolume}
-          placeholder="Digite o volume em Kg"
+          placeholder="Digite o volume em Litros"
           keyboardType="numeric"
         />
         

@@ -59,7 +59,7 @@ export const youtubeService = {
       `🌱 TERRA ORGÂNICA - REGISTRO DE COLETA`,
       '',
       `📍 Central: ${videoData.centralName}`,
-      `📦 Volume: ${videoData.volume} Kg`,
+      `📦 Volume: ${videoData.volume} Litros`,
       `📅 Data: ${new Date(videoData.date).toLocaleDateString('pt-BR')}`,
       `🕐 Horário: ${new Date(videoData.date).toLocaleTimeString('pt-BR')}`,
     ];
