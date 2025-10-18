@@ -68,22 +68,51 @@ async function getAllCentrals() {
   }
 }
 
-// Função para buscar verificações de volume por central
-async function getVolumeVerifications(centralName) {
+// Função para buscar todas as verificações de volume com paginação
+async function getAllVolumeVerifications() {
   try {
-    const encodedName = encodeURIComponent(centralName);
-    const response = await axios.get(
-      `${WORDPRESS_CONFIG.siteUrl}/wp-json/wp/v2/verificacoes-de-volu?per_page=100&search=${encodedName}`,
-      {
-        headers: {
-          'Authorization': getBasicAuthHeader(),
-          'Content-Type': 'application/json'
+    let allVerifications = [];
+    let page = 1;
+    let hasMorePages = true;
+    
+    logger.server.info('Iniciando busca paginada de todas as verificações de volume');
+    
+    while (hasMorePages) {
+      const response = await axios.get(
+        `${WORDPRESS_CONFIG.siteUrl}/wp-json/wp/v2/verificacoes-de-volu?per_page=100&page=${page}`,
+        {
+          headers: {
+            'Authorization': getBasicAuthHeader(),
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      const currentPageData = response.data;
+      
+      // Se a página atual não tem dados ou tem menos de 100 itens, é a última página
+      if (!currentPageData || currentPageData.length === 0) {
+        hasMorePages = false;
+        logger.server.info(`Página ${page} vazia - finalizando busca de verificações`);
+      } else {
+        allVerifications = allVerifications.concat(currentPageData);
+        logger.server.info(`Página ${page}: ${currentPageData.length} verificações encontradas`);
+        
+        // Se retornou menos de 100 itens, é a última página
+        if (currentPageData.length < 100) {
+          hasMorePages = false;
+          logger.server.info(`Página ${page} com ${currentPageData.length} itens (< 100) - finalizando busca de verificações`);
+        } else {
+          page++;
         }
       }
-    );
-    return response.data;
+    }
+    
+    logger.server.success(`Busca concluída: ${allVerifications.length} verificações totais`);
+    return allVerifications;
+    
   } catch (error) {
-    logger.error(`Erro ao buscar verificações para ${centralName}:`, error.message);
+    logger.error('Erro ao buscar verificações de volume:', error.message);
     throw error;
   }
 }
@@ -228,6 +257,10 @@ router.get('/centrals-analysis', async (req, res) => {
     const centrals = await getAllCentrals();
     logger.server.info(`Encontradas ${centrals.length} centrais`);
 
+    // Buscar todas as verificações de volume
+    const allVerifications = await getAllVolumeVerifications();
+    logger.server.info(`Encontradas ${allVerifications.length} verificações de volume totais`);
+
     const results = [];
 
     // Processar cada central
@@ -236,12 +269,14 @@ router.get('/centrals-analysis', async (req, res) => {
         const centralName = central.title?.rendered || central.name || central.title;
         logger.server.info(`Processando central: ${centralName}`);
 
-        // Buscar verificações de volume para esta central
-        const verifications = await getVolumeVerifications(centralName);
-        logger.server.info(`Encontradas ${verifications.length} verificações para ${centralName}`);
+        // Filtrar verificações que pertencem à central específica
+        const centralVerifications = allVerifications.filter(verification => 
+          verification.meta?.central == central.id
+        );
+        logger.server.info(`Encontradas ${centralVerifications.length} verificações para ${centralName} (ID: ${central.id})`);
 
         // Calcular métricas
-        const metrics = calculateCentralMetrics(central, verifications);
+        const metrics = calculateCentralMetrics(central, centralVerifications);
         results.push(metrics);
 
       } catch (error) {
