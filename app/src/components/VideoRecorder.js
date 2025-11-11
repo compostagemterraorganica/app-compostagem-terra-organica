@@ -23,9 +23,15 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [isRecordingStarted, setIsRecordingStarted] = useState(false);
   const [isStoppingRecording, setIsStoppingRecording] = useState(false);
+  const [orientation, setOrientation] = useState('portrait');
+  const [cameraKey, setCameraKey] = useState(0);
+  const [isCameraReady, setIsCameraReady] = useState(false);
+  const [showCamera, setShowCamera] = useState(true);
   
   const cameraRef = useRef(null);
   const recordingRef = useRef(null);
+  const isRecordingRef = useRef(false); // Ref para verificar estado de gravação no callback
+  const orientationInitializedRef = useRef(false); // Ref para garantir que orientação inicial só seja detectada uma vez
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
 
@@ -39,6 +45,74 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
     }
     getLocation();
   }, [cameraPermission, microphonePermission]);
+
+  // Detectar orientação do dispositivo (apenas quando NÃO está gravando)
+  useEffect(() => {
+    const updateOrientation = () => {
+      // Não processar mudanças de orientação durante gravação
+      if (isRecordingRef.current) {
+        console.log('⚠️ [VideoRecorder] Mudança de orientação ignorada durante gravação');
+        return;
+      }
+
+      const { width, height } = Dimensions.get('window');
+      const isLandscape = width > height;
+      const newOrientation = isLandscape ? 'landscape' : 'portrait';
+      
+      console.log('🔄 [VideoRecorder] Mudança de orientação detectada:', {
+        anterior: orientation,
+        nova: newOrientation,
+        dimensoes: `${width}x${height}`,
+        isRecording: isRecordingRef.current
+      });
+      
+      // Só remontar a câmera se não estiver gravando
+      if (newOrientation !== orientation) {
+        console.log('📹 [VideoRecorder] Orientação mudou antes da gravação, remontando câmera');
+        setIsCameraReady(false); // Marcar câmera como não pronta durante remontagem
+        setShowCamera(false); // Esconder câmera temporariamente
+        setOrientation(newOrientation);
+        
+        // Resetar ref da câmera antes de remontar
+        cameraRef.current = null;
+        
+        // Aguardar um pouco antes de remontar para garantir que a câmera anterior foi desmontada
+        setTimeout(() => {
+          setCameraKey(prev => prev + 1);
+          setShowCamera(true); // Mostrar câmera novamente
+          console.log('📹 [VideoRecorder] Câmera remontada com nova orientação');
+          
+          // Aguardar mais um pouco para garantir que a câmera foi totalmente montada antes de marcar como pronta
+          setTimeout(() => {
+            if (cameraRef.current && !isRecordingRef.current) {
+              console.log('📹 [VideoRecorder] Câmera remontada e aguardando inicialização...');
+            }
+          }, 300);
+        }, 300);
+      } else {
+        setOrientation(newOrientation);
+      }
+    };
+
+    // Detectar orientação inicial apenas na primeira montagem
+    const { width, height } = Dimensions.get('window');
+    const isLandscape = width > height;
+    const initialOrientation = isLandscape ? 'landscape' : 'portrait';
+    
+    // Só detectar orientação inicial uma vez
+    if (!orientationInitializedRef.current) {
+      console.log('🚀 [VideoRecorder] Orientação inicial:', initialOrientation, 'Dimensões:', width, 'x', height);
+      setOrientation(initialOrientation);
+      orientationInitializedRef.current = true;
+    }
+
+    // Escutar mudanças de orientação
+    const subscription = Dimensions.addEventListener('change', updateOrientation);
+
+    return () => {
+      subscription?.remove();
+    };
+  }, [orientation]); // Removido isRecording das dependências
 
   // Timer para mostrar duração da gravação
   useEffect(() => {
@@ -100,7 +174,13 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
   };
 
   const startRecording = async () => {
-    if (!cameraRef.current || isRecording) return;
+    if (!cameraRef.current || isRecording || !isCameraReady) {
+      if (!isCameraReady) {
+        console.log('⚠️ [VideoRecorder] Câmera ainda não está pronta');
+        Alert.alert('Aguarde', 'A câmera ainda está inicializando. Aguarde alguns instantes.');
+      }
+      return;
+    }
 
     // Verificar permissões antes de iniciar
     if (!cameraPermission?.granted) {
@@ -112,15 +192,31 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
       return;
     }
 
+    // Verificar orientação atual antes de iniciar gravação
+    const { width, height } = Dimensions.get('window');
+    const currentOrientation = width > height ? 'landscape' : 'portrait';
+    console.log('🎥 [VideoRecorder] Iniciando gravação com orientação:', currentOrientation, 'Dimensões:', width, 'x', height);
+
     try {
       setIsRecording(true);
+      isRecordingRef.current = true; // Atualizar ref
+      setIsCameraReady(false); // Marcar como não pronta ao iniciar gravação
       setRecordingStartTime(Date.now());
       setIsRecordingStarted(false);
+      
+      console.log('🎬 [VideoRecorder] Iniciando gravação, cameraRef existe:', !!cameraRef.current);
+      
+      // Verificar se cameraRef ainda existe antes de iniciar
+      if (!cameraRef.current) {
+        throw new Error('Câmera não está disponível');
+      }
       
       // Iniciar gravação e armazenar promise
       recordingRef.current = cameraRef.current.recordAsync({
         quality: '720p',
       });
+      
+      console.log('🎬 [VideoRecorder] Gravação iniciada, promise criada:', !!recordingRef.current);
       
       // Marcar como iniciado imediatamente
       setIsRecordingStarted(true);
@@ -139,6 +235,7 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
       }
       
       setIsRecording(false);
+      isRecordingRef.current = false; // Atualizar ref
       setIsRecordingStarted(false);
       setRecordingStartTime(null);
     }
@@ -168,11 +265,15 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
     try {
       // Parar a gravação e aguardar resultado
       if (recordingRef.current) {
+        console.log('🛑 [VideoRecorder] Parando gravação...');
         // Parar a câmera primeiro
         cameraRef.current.stopRecording();
         
+        console.log('⏳ [VideoRecorder] Aguardando promise de gravação...');
         // Aguardar a promise de gravação
         const video = await recordingRef.current;
+        
+        console.log('📹 [VideoRecorder] Vídeo recebido:', video ? 'sim' : 'não', video?.uri ? `URI: ${video.uri}` : 'sem URI');
         
         if (video && video.uri) {
           // Calcular duração real
@@ -191,6 +292,7 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
             } : null
           };
                     
+          console.log('✅ [VideoRecorder] Vídeo salvo com sucesso:', videoData.uri);
           // Chamar callback para salvar
           onVideoRecorded(videoData);
           
@@ -198,6 +300,7 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
           throw new Error('Nenhum vídeo foi produzido - URI inválida');
         }
       } else {
+        console.error('❌ [VideoRecorder] Promise de gravação não encontrada');
         throw new Error('Promise de gravação não encontrada');
       }
       
@@ -221,10 +324,15 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
     } finally {
       // Limpar estado independentemente do resultado
       setIsRecording(false);
+      isRecordingRef.current = false; // Atualizar ref
       setIsRecordingStarted(false);
       setIsStoppingRecording(false);
       setRecordingStartTime(null);
       recordingRef.current = null;
+      // Garantir que a câmera está pronta após parar a gravação
+      if (cameraRef.current) {
+        setIsCameraReady(true);
+      }
     }
   };
 
@@ -245,6 +353,7 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
       // Limpar referências
       recordingRef.current = null;
       setIsRecording(false);
+      isRecordingRef.current = false; // Atualizar ref
       setIsRecordingStarted(false);
       setIsStoppingRecording(false);
       setRecordingStartTime(null);
@@ -294,12 +403,42 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
     <SafeAreaView style={styles.recorderContainer}>
       <StatusBar hidden />
       
-      <CameraView
-        style={styles.camera}
-        facing={cameraType}
-        mode="video"
-        ref={cameraRef}
-      />
+      {showCamera ? (
+        <CameraView
+          key={`${orientation}-${cameraKey}`}
+          style={styles.camera}
+          facing={cameraType}
+          mode="video"
+          ref={cameraRef}
+          onCameraReady={() => {
+            // Ignorar se estiver gravando - usar ref para verificar estado atual
+            if (isRecordingRef.current) {
+              console.log('⚠️ [VideoRecorder] onCameraReady chamado durante gravação, ignorando');
+              return;
+            }
+            
+            console.log('✅ [VideoRecorder] Câmera pronta, aguardando inicialização completa...');
+            // Aguardar um pouco para garantir que a câmera está totalmente inicializada
+            // Especialmente importante após remontagem por mudança de orientação
+            setTimeout(() => {
+              // Verificar novamente se não está gravando antes de marcar como pronta
+              if (!isRecordingRef.current && cameraRef.current) {
+                console.log('✅ [VideoRecorder] Câmera totalmente inicializada e pronta para gravar');
+                setIsCameraReady(true);
+              } else {
+                console.log('⚠️ [VideoRecorder] Câmera não pode ser marcada como pronta:', {
+                  isRecording: isRecordingRef.current,
+                  cameraExists: !!cameraRef.current
+                });
+              }
+            }, 800);
+          }}
+        />
+      ) : (
+        <View style={styles.cameraPlaceholder}>
+          <Text style={styles.cameraPlaceholderText}>Ajustando câmera...</Text>
+        </View>
+      )}
 
       {/* Overlay de geolocalização */}
       <View style={styles.locationOverlay}>
@@ -333,9 +472,9 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
         <View style={styles.recordingControls}>
           {!isRecording ? (
             <TouchableOpacity
-              style={styles.recordButtonCamera}
+              style={[styles.recordButtonCamera, !isCameraReady && styles.recordButtonDisabled]}
               onPress={startRecording}
-              disabled={isLoading}
+              disabled={isLoading || !isCameraReady}
             >
               <View style={styles.recordButtonInner} />
             </TouchableOpacity>
@@ -388,6 +527,17 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
+  },
+  cameraPlaceholder: {
+    flex: 1,
+    backgroundColor: '#000000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cameraPlaceholderText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   locationOverlay: {
     position: 'absolute',
@@ -471,6 +621,9 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     backgroundColor: '#ff6b6b',
+  },
+  recordButtonDisabled: {
+    opacity: 0.5,
   },
   stopButton: {
     width: 80,

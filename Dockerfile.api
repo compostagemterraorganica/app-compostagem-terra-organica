@@ -1,0 +1,25 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Instalar dependências do sistema se necessário
+RUN apk add --no-cache git
+
+# Copiar arquivos de dependências
+COPY package*.json ./
+
+# Instalar dependências
+RUN npm install
+
+# Copiar código da aplicação (excluindo pasta app)
+COPY server.js ./
+COPY routes/ ./routes/
+COPY utils/ ./utils/
+COPY nodemon.json ./
+
+# Expor porta da API
+EXPOSE 3000
+
+# Comando padrão (pode ser sobrescrito)
+CMD ["node", "server.js"]
+

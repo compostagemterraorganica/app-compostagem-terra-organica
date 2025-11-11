@@ -13,7 +13,7 @@
     "updates": {
       "url": "https://u.expo.dev/4fb9c308-8299-48dd-bc99-6c37a9005c62"
     },
-    "orientation": "portrait",
+    "orientation": "default",
     "userInterfaceStyle": "light",
     "icon": "./assets/app-icon.png",
     "splash": {

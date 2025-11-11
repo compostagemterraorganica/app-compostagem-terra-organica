@@ -14,8 +14,6 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import VideoRecorder from './src/components/VideoRecorder';
-import VideoRecorderWithOverlay from './src/components/VideoRecorderWithOverlay';
-import NativeCameraRecorder from './src/components/NativeCameraRecorder';
 import VideoList from './src/components/VideoList';
 import CentralPosts from './src/components/CentralPosts';
 import UpdateStatus from './src/components/UpdateStatus';
@@ -25,7 +23,7 @@ import updateService from './src/services/updateService';
 export default function App() {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
-  const [currentScreen, setCurrentScreen] = useState('home'); // 'home', 'recorder', 'recorder-overlay', 'native-recorder', 'central-posts'
+  const [currentScreen, setCurrentScreen] = useState('home'); // 'home', 'recorder', 'central-posts'
   const [videos, setVideos] = useState([]);
   const [hasError, setHasError] = useState(false);
 
@@ -247,49 +245,71 @@ export default function App() {
     }
   };
 
-  const handleVideoRecorded = (videoData) => {
-    const newVideo = {
-      id: Date.now().toString(),
-      ...videoData,
-      createdAt: new Date().toISOString()
-    };
-    
-    // Verificar se o usuário está autenticado antes de permitir postagem
-    if (!userLoggedIn) {
-      Alert.alert(
-        'Login Necessário',
-        'É necessário fazer login para postar vídeos. Deseja fazer login agora?',
-        [
-          {
-            text: 'Cancelar',
-            style: 'cancel',
-            onPress: () => {
-              // Apenas salvar o vídeo localmente sem postar
-              const updatedVideos = [newVideo, ...videos];
-              saveVideos(updatedVideos);
-              setCurrentScreen('home');
+  const handleVideoRecorded = async (videoData) => {
+    try {
+      // Verificar se o vídeo já está na galeria (tem originalUri significa que foi salvo)
+      // Se não tiver originalUri mas a URI não for da galeria, tentar salvar
+      let finalUri = videoData.uri;
+      
+      // Se não tem originalUri e a URI parece ser temporária, tentar salvar na galeria
+      if (!videoData.originalUri && videoData.uri && !videoData.uri.includes('ph://')) {
+        try {
+          const { storageService } = await import('./src/services/storageService');
+          finalUri = await storageService.saveVideoToGallery(videoData.uri);
+          console.log('Vídeo salvo na galeria pelo App.js:', finalUri);
+        } catch (galleryError) {
+          console.warn('Erro ao salvar na galeria pelo App.js:', galleryError);
+          // Continuar com URI original
+        }
+      }
+      
+      const newVideo = {
+        id: Date.now().toString(),
+        ...videoData,
+        uri: finalUri,
+        createdAt: new Date().toISOString()
+      };
+      
+      // Verificar se o usuário está autenticado antes de permitir postagem
+      if (!userLoggedIn) {
+        Alert.alert(
+          'Login Necessário',
+          'É necessário fazer login para postar vídeos. Deseja fazer login agora?',
+          [
+            {
+              text: 'Cancelar',
+              style: 'cancel',
+              onPress: () => {
+                // Apenas salvar o vídeo localmente sem postar
+                const updatedVideos = [newVideo, ...videos];
+                saveVideos(updatedVideos);
+                setCurrentScreen('home');
+              }
+            },
+            {
+              text: 'Fazer Login',
+              onPress: () => {
+                // Salvar vídeo localmente primeiro
+                const updatedVideos = [newVideo, ...videos];
+                saveVideos(updatedVideos);
+                setCurrentScreen('home');
+                // Depois fazer login
+                handleLogin();
+              }
             }
-          },
-          {
-            text: 'Fazer Login',
-            onPress: () => {
-              // Salvar vídeo localmente primeiro
-              const updatedVideos = [newVideo, ...videos];
-              saveVideos(updatedVideos);
-              setCurrentScreen('home');
-              // Depois fazer login
-              handleLogin();
-            }
-          }
-        ]
-      );
-      return;
+          ]
+        );
+        return;
+      }
+      
+      // Usuário autenticado, proceder normalmente
+      const updatedVideos = [newVideo, ...videos];
+      saveVideos(updatedVideos);
+      setCurrentScreen('home');
+    } catch (error) {
+      console.error('Erro ao processar vídeo gravado:', error);
+      Alert.alert('Erro', 'Não foi possível processar o vídeo gravado.');
     }
-    
-    // Usuário autenticado, proceder normalmente
-    const updatedVideos = [newVideo, ...videos];
-    saveVideos(updatedVideos);
-    setCurrentScreen('home');
   };
 
   const handleCancelRecording = () => {
@@ -434,24 +454,6 @@ export default function App() {
 
   if (currentScreen === 'recorder') {
     return renderVideoRecorder();
-  }
-
-  if (currentScreen === 'recorder-overlay') {
-    return (
-      <VideoRecorderWithOverlay
-        onVideoRecorded={handleVideoRecorded}
-        onCancel={handleCancelRecording}
-      />
-    );
-  }
-
-  if (currentScreen === 'native-recorder') {
-    return (
-      <NativeCameraRecorder
-        onVideoRecorded={handleVideoRecorded}
-        onBack={handleCancelRecording}
-      />
-    );
   }
 
   if (currentScreen === 'central-posts') {

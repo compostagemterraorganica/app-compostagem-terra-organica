@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getConfig } from '../config/environment';
+import * as MediaLibrary from 'expo-media-library';
 
 const STORAGE_KEYS = {
   VIDEOS: `${getConfig('STORAGE_PREFIX')}videos`,
@@ -90,6 +91,31 @@ export const storageService = {
       return centralId ? parseInt(centralId) : null;
     } catch (error) {
       return null;
+    }
+  },
+
+  // Salvar vídeo na galeria do dispositivo
+  async saveVideoToGallery(videoUri) {
+    try {
+      // Solicitar permissão de escrita na galeria
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      
+      if (status !== 'granted') {
+        throw new Error('Permissão de acesso à galeria negada');
+      }
+
+      // Criar asset na galeria
+      const asset = await MediaLibrary.createAssetAsync(videoUri);
+      
+      if (!asset || !asset.uri) {
+        throw new Error('Falha ao criar asset na galeria');
+      }
+
+      // Retornar o URI do vídeo na galeria
+      return asset.uri;
+    } catch (error) {
+      console.error('Erro ao salvar vídeo na galeria:', error);
+      throw error;
     }
   }
 };
