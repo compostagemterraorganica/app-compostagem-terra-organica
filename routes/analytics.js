@@ -133,9 +133,14 @@ function calculateCentralMetrics(central, verifications) {
   const semesterlyVolumes = {};
 
   // Encontrar o período completo dos dados da central
+  // Usar meta.data (data da postagem) em vez de date (data de publicação do post)
   const allDates = verifications
-    .map(v => new Date(v.date))
-    .filter(date => !isNaN(date.getTime()))
+    .map(v => {
+      const metaData = v.meta?.data;
+      if (!metaData) return null;
+      return new Date(metaData);
+    })
+    .filter(date => date !== null && !isNaN(date.getTime()))
     .sort((a, b) => a - b);
 
   if (allDates.length === 0) {
@@ -173,7 +178,13 @@ function calculateCentralMetrics(central, verifications) {
   }
 
   verifications.forEach(verification => {
-    const date = new Date(verification.date);
+    // Usar meta.data (data da postagem) em vez de date (data de publicação do post)
+    const metaData = verification.meta?.data;
+    if (!metaData) return; // Pular se não houver data no meta
+    
+    const date = new Date(metaData);
+    if (isNaN(date.getTime())) return; // Pular se a data for inválida
+    
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const quarter = Math.ceil(month / 3);
@@ -788,19 +799,19 @@ router.get('/dashboard', async (req, res) => {
                     
                     <div class="metrics-grid">
                         <div class="metric">
-                            <div class="metric-label">Quantidade de Posts</div>
+                            <div class="metric-label">Quantidade de Registros</div>
                             <div class="metric-value">\${central.metrics.postCount}</div>
                         </div>
                         <div class="metric">
-                            <div class="metric-label">Volume Médio por Post</div>
+                            <div class="metric-label">Volume Médio por Registro</div>
                             <div class="metric-value">\${Math.round(central.metrics.averageVolume)}L</div>
                         </div>
                         <div class="metric">
-                            <div class="metric-label">Média Mensal Posts</div>
+                            <div class="metric-label">Média Mensal de Registros</div>
                             <div class="metric-value">\${Math.round(central.metrics.averageMonthlyPosts)}</div>
                         </div>
                         <div class="metric">
-                            <div class="metric-label">Média Mensal Volume</div>
+                            <div class="metric-label">Volume médio mensal</div>
                             <div class="metric-value">\${Math.round(central.metrics.averageMonthlyVolume)}L</div>
                         </div>
                     </div>

@@ -1,3 +1,5 @@
 node_modules
 .env
 /uploads
+!/uploads/temp/.gitkeep
+!/uploads/processed/.gitkeep
