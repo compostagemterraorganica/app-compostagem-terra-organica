@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { getConfig } from '../config/environment';
 import userCentralService from '../services/userCentralService';
+import { apiClient } from '../services/apiClient';
 const API_BASE_URL = getConfig('API_BASE_URL');
 
 export default function UploadModal({ video, onClose, onUploadSuccess }) {
@@ -68,23 +69,15 @@ export default function UploadModal({ video, onClose, onUploadSuccess }) {
     try {
       const jwtToken = await AsyncStorage.getItem('wp_session_id');
       if (jwtToken) {
-        // Verificar se o JWT ainda é válido
-        const response = await fetch(`${API_BASE_URL}/me`, {
-          headers: {
-            'Authorization': `Bearer ${jwtToken}`
-          }
+        // Verificar se o JWT ainda é válido (apiClient faz pré-checagem local + 401 auto-logout)
+        await apiClient.getJson('/me', {
+          headers: { 'Content-Type': 'application/json' }
         });
-        
-        if (response.ok) {
-          setIsLoggedIn(true);
-        } else {
-          // JWT expirado ou inválido, limpar
-          await AsyncStorage.removeItem('wp_session_id');
-          await AsyncStorage.removeItem('wp_user_data');
-        }
+        setIsLoggedIn(true);
       }
     } catch (error) {
       // Erro silencioso
+      setIsLoggedIn(false);
     }
   };
 
@@ -269,9 +262,7 @@ export default function UploadModal({ video, onClose, onUploadSuccess }) {
       const response = await fetch(`${API_BASE_URL}/youtube/upload`, {
         method: 'POST',
         body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        // NÃO setar Content-Type manualmente em React Native (evita quebrar boundary)
       });
 
       const data = await response.json();
@@ -288,12 +279,11 @@ export default function UploadModal({ video, onClose, onUploadSuccess }) {
 
   const postToWordPress = async (youtubeUrl = null) => {
     try {
-      // Obter o JWT do AsyncStorage para autenticação
-      const jwtToken = await AsyncStorage.getItem('wp_session_id');
-      
-      if (!jwtToken) {
-        throw new Error('JWT expirado. Por favor, faça login novamente.');
-      }
+      // Antes de postar, garantir que a sessão está válida
+      // (se expirou, apiClient/authService limpam e lançam erro com instrução)
+      await apiClient.getJson('/me', {
+        headers: { 'Content-Type': 'application/json' }
+      });
 
       // Formatar data no padrão YYYY-MM-DD
       const hoje = new Date();
@@ -314,23 +304,16 @@ export default function UploadModal({ video, onClose, onUploadSuccess }) {
       };
 
       // Usar a rota do backend que tem o access_token real do WordPress
-      const response = await fetch(`${API_BASE_URL}/create-post`, {
+      return await apiClient.getJson('/create-post', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${jwtToken}` // JWT do nosso backend
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(postData)
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Erro na postagem do WordPress');
-      }
-
-      const result = await response.json();
-      return result;
     } catch (error) {
+      // Se foi erro de auth, garantir que UI reflita isso
+      if (error?.code === 'AUTH_EXPIRED' || error?.code === 'AUTH_INVALID') {
+        setIsLoggedIn(false);
+      }
       throw error;
     }
   };

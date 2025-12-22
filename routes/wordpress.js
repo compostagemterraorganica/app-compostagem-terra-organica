@@ -8,7 +8,7 @@ const router = express.Router();
 
 // Chave secreta para JWT (em produção, use variável de ambiente)
 const JWT_SECRET = process.env.JWT_SECRET || 'sua-chave-secreta-super-segura-aqui';
-const JWT_EXPIRES_IN = '30d'; // 30 dias (perfeito para seu caso de uso)
+const JWT_EXPIRES_IN = '180d'; // 180 dias
 
 // Middleware para verificar JWT
 const verifyJWT = (req, res, next) => {
@@ -236,7 +236,12 @@ router.get('/me', verifyJWT, (req, res) => {
   try {
     res.json({
       success: true,
-      user: req.user.user_data
+      user: req.user.user_data,
+      // Ajuda o app a entender quando a sessão expira (sem precisar adivinhar)
+      token: {
+        iat: req.user.iat,
+        exp: req.user.exp
+      }
     });
 
   } catch (error) {

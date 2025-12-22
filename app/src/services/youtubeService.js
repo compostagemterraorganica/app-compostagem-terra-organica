@@ -25,23 +25,22 @@ export const youtubeService = {
       const response = await fetch(YOUTUBE_CONFIG.UPLOAD_URL, {
         method: 'POST',
         body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }
+        // NÃO setar Content-Type manualmente em React Native (evita boundary inválido)
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        return {
-          success: true,
-          videoId: result.videoId,
-          videoUrl: result.videoUrl,
-          thumbnail: result.thumbnail
-        };
-      } else {
-        const error = await response.json();
-        throw new Error(error.message || 'Erro no upload do vídeo');
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result?.message || result?.error || 'Erro no upload do vídeo');
       }
+
+      // Backend retorna { video: { id, url, thumbnail } }
+      const video = result?.video;
+      return {
+        success: true,
+        videoId: video?.id,
+        videoUrl: video?.url,
+        thumbnail: video?.thumbnail || ''
+      };
     } catch (error) {
       throw error;
     }

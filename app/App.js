@@ -19,6 +19,8 @@ import CentralPosts from './src/components/CentralPosts';
 import UpdateStatus from './src/components/UpdateStatus';
 import { getConfig } from './src/config/environment';
 import updateService from './src/services/updateService';
+import { authService, isJwtExpired } from './src/services/authService';
+import { apiClient } from './src/services/apiClient';
 
 export default function App() {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
@@ -51,6 +53,15 @@ export default function App() {
     };
   }, []);
 
+  // Reagir a logout automático (401/403 ou expiração local)
+  useEffect(() => {
+    const unsubscribe = authService.subscribe(() => {
+      setUserLoggedIn(false);
+      setUserData(null);
+    });
+    return unsubscribe;
+  }, []);
+
   const setupDeepLinking = () => {
     // Escutar deep links quando o app está ativo
     const subscription = Linking.addEventListener('url', (event) => {
@@ -72,31 +83,36 @@ export default function App() {
   const checkLoginStatus = async () => {
     try {
       const sessionId = await AsyncStorage.getItem('wp_session_id');
-      if (sessionId) {
-        // Verificar se a sessão ainda é válida
-        const response = await fetch(`${getConfig('API_BASE_URL')}/me`, {
-          headers: {
-            'Authorization': `Bearer ${sessionId}`
-          }
-        });
-        
-        if (response.ok) {
-          setUserLoggedIn(true);
-          // Carregar dados do usuário
-          const userDataString = await AsyncStorage.getItem('wp_user_data');
-          if (userDataString) {
-            const userData = JSON.parse(userDataString);
-            setUserData(userData);
-          }
-        } else {
-          // Sessão expirada, limpar
-          await AsyncStorage.removeItem('wp_session_id');
-          await AsyncStorage.removeItem('wp_user_data');
+      if (!sessionId) return;
+
+      // Pré-checagem local por expiração (evita request inútil)
+      if (isJwtExpired(sessionId)) {
+        await authService.forceLogout('AUTH_EXPIRED');
+        return;
+      }
+
+      // Verificar no servidor se a sessão ainda é válida
+      await apiClient.getJson('/me', {
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      setUserLoggedIn(true);
+
+      // Carregar dados do usuário
+      const userDataString = await AsyncStorage.getItem('wp_user_data');
+      if (userDataString) {
+        try {
+          const parsed = JSON.parse(userDataString);
+          setUserData(parsed);
+        } catch {
           setUserData(null);
         }
       }
     } catch (error) {
       // Silently fail
+      // Se o erro for de auth, apiClient já terá limpado a sessão
+      setUserLoggedIn(false);
+      setUserData(null);
     }
   };
 
@@ -212,29 +228,18 @@ export default function App() {
 
   const handleLogout = async () => {
     try {
-      // Obter JWT antes de remover
-      const jwtToken = await AsyncStorage.getItem('wp_session_id');
-      
-      // Fazer logout no servidor se houver sessão
-      if (jwtToken) {
-        try {
-          const response = await fetch(`${getConfig('API_BASE_URL')}/logout`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${jwtToken}`,
-              'Content-Type': 'application/json'
-            }
-          });
-          
-          await response.json();
-        } catch (serverError) {
-          // Continuar mesmo se falhar no servidor
-        }
+      // Fazer logout no servidor (best-effort)
+      try {
+        await apiClient.request('/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+      } catch {
+        // Continuar mesmo se falhar no servidor
       }
-      
+
       // Limpar dados locais
-      await AsyncStorage.removeItem('wp_session_id');
-      await AsyncStorage.removeItem('wp_user_data');
+      await authService.clearSession();
       
       // Atualizar estado
       setUserLoggedIn(false);
