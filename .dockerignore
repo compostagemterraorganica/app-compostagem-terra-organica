@@ -13,3 +13,6 @@ build
 uploads/temp/*
 !uploads/temp/.gitkeep
 
+uploads/processed/*
+!uploads/processed/.gitkeep
+
