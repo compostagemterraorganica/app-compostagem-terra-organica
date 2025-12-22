@@ -17,10 +17,10 @@ COPY routes/ ./routes/
 COPY utils/ ./utils/
 COPY nodemon.json ./
 
-# Criar diretórios de upload e copiar .gitkeep
-RUN mkdir -p uploads/temp uploads/processed
-COPY uploads/temp/.gitkeep uploads/temp/.gitkeep
-COPY uploads/processed/.gitkeep uploads/processed/.gitkeep
+# Criar diretórios de upload (não depender do build context para .gitkeep)
+RUN mkdir -p uploads/temp uploads/processed \
+  && : > uploads/temp/.gitkeep \
+  && : > uploads/processed/.gitkeep
 
 # Expor porta da API
 EXPOSE 3000
