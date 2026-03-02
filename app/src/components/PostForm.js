@@ -70,7 +70,8 @@ export default function PostForm({ videoData, onSuccess, onCancel }) {
       setUploading(true);
 
       // 1. Upload do vídeo para YouTube
-      const currentDate = new Date();
+      const dataGravacao = videoData.timestamp || videoData.createdAt;
+      const currentDate = dataGravacao ? new Date(dataGravacao) : new Date();
       const videoTitle = youtubeService.generateVideoTitle(selectedCentral.name, currentDate);
       const videoDescription = youtubeService.generateVideoDescription({
         centralName: selectedCentral.name,
@@ -97,7 +98,8 @@ export default function PostForm({ videoData, onSuccess, onCancel }) {
         title: `Verificação de Volume - ${selectedCentral.name} - ${currentDate.toLocaleDateString('pt-BR')}`,
         central: selectedCentral.id,
         volume: parseFloat(volume),
-        data: currentDate, // Objeto Date puro
+        data: currentDate,
+        dateISO: currentDate.toISOString(),
         videoLink: uploadResult.videoUrl
       };
 

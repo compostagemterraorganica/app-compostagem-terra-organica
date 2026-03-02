@@ -134,6 +134,9 @@ export const wordpressService = {
           'link-do-video': postData.videoLink
         }
       };
+      if (postData.dateISO) {
+        payload.date = postData.dateISO;
+      }
 
       const response = await fetch(`${WORDPRESS_CONFIG.BASE_URL}/wp-json/wp/v2/verificacoes-de-volu`, {
         method: 'POST',

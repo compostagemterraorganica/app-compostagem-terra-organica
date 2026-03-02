@@ -117,6 +117,13 @@ async function getAllVolumeVerifications() {
   }
 }
 
+function parseMetaDateToTime(metaData) {
+  if (!metaData) return null;
+  const dt = new Date(metaData);
+  const time = dt.getTime();
+  return Number.isFinite(time) ? time : null;
+}
+
 // Função para calcular métricas de uma central
 function calculateCentralMetrics(central, verifications) {
   const volumes = verifications
@@ -129,6 +136,7 @@ function calculateCentralMetrics(central, verifications) {
 
   // Calcular volume por mês (período completo de cada central)
   const monthlyVolumes = {};
+  const monthlyPosts = {};
   const quarterlyVolumes = {};
   const semesterlyVolumes = {};
 
@@ -175,6 +183,7 @@ function calculateCentralMetrics(central, verifications) {
     const monthKey = `${year}-${month.toString().padStart(2, '0')}`;
     allMonths.push(monthKey);
     monthlyVolumes[monthKey] = 0; // Inicializar com 0
+    monthlyPosts[monthKey] = 0; // Inicializar com 0
   }
 
   verifications.forEach(verification => {
@@ -196,6 +205,7 @@ function calculateCentralMetrics(central, verifications) {
     // Por mês - adicionar volume para o mês correspondente
     const monthKey = `${year}-${month.toString().padStart(2, '0')}`;
     monthlyVolumes[monthKey] = (monthlyVolumes[monthKey] || 0) + volume;
+    monthlyPosts[monthKey] = (monthlyPosts[monthKey] || 0) + 1;
 
     // Por trimestre
     const quarterKey = `${year}-Q${quarter}`;
@@ -237,6 +247,8 @@ function calculateCentralMetrics(central, verifications) {
       postCount,
       averageMonthlyVolume: Math.round(averageMonthlyVolume * 100) / 100,
       averageMonthlyPosts: Math.round(averageMonthlyPosts * 100) / 100,
+      monthlyPosts: allMonths
+        .map(month => ({ month, count: monthlyPosts[month] || 0 })),
       monthlyVolumes: allMonths
         .map(month => ({ month, volume: Math.round(monthlyVolumes[month] || 0) })),
       quarterlyVolumes: Object.entries(quarterlyVolumes)
@@ -281,9 +293,18 @@ router.get('/centrals-analysis', async (req, res) => {
         logger.server.info(`Processando central: ${centralName}`);
 
         // Filtrar verificações que pertencem à central específica
-        const centralVerifications = allVerifications.filter(verification => 
+        let centralVerifications = allVerifications.filter(verification => 
           verification.meta?.central == central.id
         );
+
+        // Regra específica: Laboratório Terra Orgânica (central id 4757) deve considerar apenas dados a partir de 2020-01
+        if (String(central.id) === '4757') {
+          const minTime = Date.UTC(2020, 0, 1); // 2020-01-01T00:00:00.000Z
+          centralVerifications = centralVerifications.filter(v => {
+            const t = parseMetaDateToTime(v.meta?.data);
+            return t !== null && t >= minTime;
+          });
+        }
         logger.server.info(`Encontradas ${centralVerifications.length} verificações para ${centralName} (ID: ${central.id})`);
 
         // Calcular métricas
@@ -680,11 +701,19 @@ router.get('/dashboard', async (req, res) => {
             font-style: italic;
             padding: 20px;
         }
-        
-        .refresh-btn {
+
+        .action-buttons {
             position: fixed;
             bottom: 30px;
             right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-end;
+            z-index: 1100;
+        }
+        
+        .refresh-btn {
             background: #4CAF50;
             color: white;
             border: none;
@@ -701,6 +730,25 @@ router.get('/dashboard', async (req, res) => {
             background: #45a049;
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        .export-btn {
+            background: #9d7b4e;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(157, 123, 78, 0.3);
+            transition: all 0.3s;
+        }
+
+        .export-btn:hover {
+            background: #8a6d3b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(157, 123, 78, 0.4);
         }
         
         @keyframes spin {
@@ -734,16 +782,21 @@ router.get('/dashboard', async (req, res) => {
         </div>
     </div>
     
-    <button class="refresh-btn" onclick="location.reload()">🔄 Atualizar</button>
+    <div class="action-buttons">
+        <button class="refresh-btn" onclick="location.reload()">🔄 Atualizar</button>
+        <button class="export-btn" onclick="exportData()">⬇️ Exportar Dados</button>
+    </div>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script>
         // Registrar plugin de datalabels
         Chart.register(ChartDataLabels);
         
         // Armazenar instâncias dos gráficos
         const chartInstances = {};
+        let latestDashboardData = null;
         
         async function loadDashboard() {
             try {
@@ -764,6 +817,7 @@ router.get('/dashboard', async (req, res) => {
         
         function renderDashboard(data) {
             const { centrals, summary } = data;
+            latestDashboardData = data;
             
             // Renderizar resumo
             document.getElementById('summary').innerHTML = \`
@@ -799,15 +853,15 @@ router.get('/dashboard', async (req, res) => {
                     
                     <div class="metrics-grid">
                         <div class="metric">
-                            <div class="metric-label">Quantidade de Registros</div>
+                            <div class="metric-label">Quantidade de Postagens</div>
                             <div class="metric-value">\${central.metrics.postCount}</div>
                         </div>
                         <div class="metric">
-                            <div class="metric-label">Volume Médio por Registro</div>
+                            <div class="metric-label">Volume Médio por Postagem</div>
                             <div class="metric-value">\${Math.round(central.metrics.averageVolume)}L</div>
                         </div>
                         <div class="metric">
-                            <div class="metric-label">Média Mensal de Registros</div>
+                            <div class="metric-label">Média Mensal de Postagens</div>
                             <div class="metric-value">\${Math.round(central.metrics.averageMonthlyPosts)}</div>
                         </div>
                         <div class="metric">
@@ -947,6 +1001,151 @@ router.get('/dashboard', async (req, res) => {
             if (chart) {
                 chart.config.type = chartType;
                 chart.update();
+            }
+        }
+
+        function formatNumberBR(value, decimals = 2) {
+            const num = Number(value);
+            if (!Number.isFinite(num)) return '';
+            return num.toLocaleString('pt-BR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        }
+
+        function sanitizeSheetName(name, fallback) {
+            const base = String(name || fallback || 'Central')
+                .replace(/[:\\\\/?*\\[\\]]/g, ' ')
+                .replace(/\\s+/g, ' ')
+                .trim();
+            const trimmed = base.length > 31 ? base.slice(0, 31) : base;
+            return trimmed || String(fallback || 'Central');
+        }
+
+        async function exportData() {
+            try {
+                if (!window.XLSX) {
+                    throw new Error('Biblioteca de exportação (XLSX) não carregou.');
+                }
+
+                function round2(n) {
+                    const num = Number(n);
+                    if (!Number.isFinite(num)) return 0;
+                    return Math.round(num * 100) / 100;
+                }
+
+                let data = latestDashboardData;
+                if (!data) {
+                    const resp = await fetch('/analytics/centrals-analysis?t=' + Date.now());
+                    const json = await resp.json();
+                    if (!json.success) throw new Error(json.error || 'Erro ao carregar dados');
+                    data = json.data;
+                }
+
+                const centrals = Array.isArray(data.centrals) ? data.centrals : [];
+                const wb = XLSX.utils.book_new();
+
+                // Folha 1: Resumo por central
+                const monthsUnion = new Set();
+                centrals.forEach(c => {
+                    (c?.metrics?.monthlyVolumes || []).forEach(m => monthsUnion.add(m.month));
+                });
+                const monthsUnionCount = monthsUnion.size || 1;
+
+                const totalPosts = centrals.reduce((sum, c) => sum + (Number(c?.metrics?.postCount) || 0), 0);
+                const totalVolume = centrals.reduce((sum, c) => sum + (Number(c?.metrics?.totalVolume) || 0), 0);
+                const totalAverageVolume = totalPosts > 0 ? (totalVolume / totalPosts) : 0;
+                const totalAverageMonthlyPosts = totalPosts / monthsUnionCount;
+                const totalAverageMonthlyVolume = totalVolume / monthsUnionCount;
+
+                const resumoAoA = [
+                    [
+                        'Central',
+                        'Quantidade de postagens',
+                        'Volume médio por postagem',
+                        'Média mensal (postagens)',
+                        'Volume médio mensal',
+                        'Volume total'
+                    ]
+                ];
+
+                centrals.forEach(c => {
+                    resumoAoA.push([
+                        c?.central?.name || '',
+                        Number(c?.metrics?.postCount) || 0,
+                        Number(c?.metrics?.averageVolume) || 0,
+                        Number(c?.metrics?.averageMonthlyPosts) || 0,
+                        Number(c?.metrics?.averageMonthlyVolume) || 0,
+                        Number(c?.metrics?.totalVolume) || 0
+                    ]);
+                });
+
+                resumoAoA.push([
+                    'TOTAL GERAL',
+                    totalPosts,
+                    round2(totalAverageVolume),
+                    round2(totalAverageMonthlyPosts),
+                    round2(totalAverageMonthlyVolume),
+                    round2(totalVolume)
+                ]);
+
+                const wsResumo = XLSX.utils.aoa_to_sheet(resumoAoA);
+                // Formatar linha TOTAL GERAL com 2 casas decimais nos campos decimais
+                const totalRowIdx = resumoAoA.length - 1; // 0-based
+                [2, 3, 4, 5].forEach(function(colIdx) {
+                    const addr = XLSX.utils.encode_cell({ r: totalRowIdx, c: colIdx });
+                    if (wsResumo[addr]) wsResumo[addr].z = '0.00';
+                });
+                XLSX.utils.book_append_sheet(wb, wsResumo, 'Resumo');
+
+                // Uma folha por central: registros por mês
+                centrals.forEach(c => {
+                    const name = c?.central?.name || ('Central ' + (c?.central?.id ?? ''));
+                    const sheetName = sanitizeSheetName(name, c?.central?.id);
+
+                    const monthlyPosts = Array.isArray(c?.metrics?.monthlyPosts) ? c.metrics.monthlyPosts : [];
+                    const monthlyVolumes = Array.isArray(c?.metrics?.monthlyVolumes) ? c.metrics.monthlyVolumes : [];
+
+                    const postsByMonth = {};
+                    monthlyPosts.forEach(mp => {
+                        if (mp?.month) postsByMonth[String(mp.month)] = Number(mp.count) || 0;
+                    });
+
+                    const volumeByMonth = {};
+                    monthlyVolumes.forEach(mv => {
+                        if (mv?.month) volumeByMonth[String(mv.month)] = Number(mv.volume) || 0;
+                    });
+
+                    const months = monthlyVolumes.length > 0
+                        ? monthlyVolumes.map(mv => String(mv.month))
+                        : monthlyPosts.map(mp => String(mp.month));
+
+                    const aoa = [['Mês', 'Quantidade de postagens', 'Volume total no mês (L)']];
+
+                    let totalPostsCentral = 0;
+                    let totalVolumeCentral = 0;
+                    months.forEach(month => {
+                        const count = postsByMonth[month] || 0;
+                        const vol = volumeByMonth[month] || 0;
+                        totalPostsCentral += count;
+                        totalVolumeCentral += vol;
+                        aoa.push([month, count, Math.round(vol)]);
+                    });
+
+                    aoa.push(['TOTAL', totalPostsCentral, Math.round(totalVolumeCentral)]);
+
+                    const ws = XLSX.utils.aoa_to_sheet(aoa);
+                    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+                });
+
+                const now = new Date();
+                const dd = String(now.getDate()).padStart(2, '0');
+                const mm = String(now.getMonth() + 1).padStart(2, '0');
+                const yyyy = String(now.getFullYear());
+                const dateBRDisplay = dd + '/' + mm + '/' + yyyy;
+                // Observação: Windows não permite "/" em nome de arquivo.
+                const dateBRFile = dateBRDisplay.replaceAll('/', '-');
+                XLSX.writeFile(wb, 'Relatório de centrais - ' + dateBRFile + '.xlsx');
+            } catch (error) {
+                console.error('Erro ao exportar dados:', error);
+                alert('Erro ao exportar dados: ' + (error.message || error));
             }
         }
         

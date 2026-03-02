@@ -272,7 +272,7 @@ export default function App() {
         id: Date.now().toString(),
         ...videoData,
         uri: finalUri,
-        createdAt: new Date().toISOString()
+        createdAt: videoData.timestamp || new Date().toISOString()
       };
       
       // Verificar se o usuário está autenticado antes de permitir postagem

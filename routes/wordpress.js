@@ -282,13 +282,14 @@ router.post('/create-post', verifyJWT, async (req, res) => {
   try {
 
     // Dados do post vindos do body
-    const { title, meta, status } = req.body;
+    const { title, meta, status, date } = req.body;
 
     logger.separator('CREATING WORDPRESS POST');
-    logger.wordpress.info('Request data received', { 
+    logger.wordpress.info('Request data received', {
       title,
       meta,
-      status 
+      status,
+      date: date || '(não informada, WordPress usará data atual)'
     });
 
     if (!title) {
@@ -305,6 +306,10 @@ router.post('/create-post', verifyJWT, async (req, res) => {
       meta: meta || {},
       status: status || 'publish'
     };
+    // Data da postagem = data da gravação do vídeo (se enviada). Formato ISO 8601.
+    if (date) {
+      postData.date = date;
+    }
 
     logger.wordpress.info('Sending data to WordPress API', postData);
     logger.auth.info('Using Basic Auth', { email: WORDPRESS_CONFIG.email });

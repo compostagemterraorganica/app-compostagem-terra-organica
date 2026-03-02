@@ -285,22 +285,25 @@ export default function UploadModal({ video, onClose, onUploadSuccess }) {
         headers: { 'Content-Type': 'application/json' }
       });
 
-      // Formatar data no padrão YYYY-MM-DD
-      const hoje = new Date();
-      const dia = String(hoje.getDate()).padStart(2, '0');
-      const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-      const ano = hoje.getFullYear();
-      const dataFormatada = `${ano}-${mes}-${dia}`; // Formato YYYY-MM-DD
-      
+      // Usar data da gravação do vídeo (timestamp ou createdAt), fallback para hoje
+      const dataGravacao = video?.timestamp || video?.createdAt;
+      const dataPost = dataGravacao ? new Date(dataGravacao) : new Date();
+      const dia = String(dataPost.getDate()).padStart(2, '0');
+      const mes = String(dataPost.getMonth() + 1).padStart(2, '0');
+      const ano = dataPost.getFullYear();
+      const dataFormatada = `${ano}-${mes}-${dia}`; // YYYY-MM-DD para meta
+      const dataISO = dataPost.toISOString(); // ISO 8601 para o WordPress (campo date do post)
+
       const postData = {
-        title: `${getCentralName(selectedCentral)} - ${new Date().toLocaleDateString('pt-BR')}`,
+        title: `${getCentralName(selectedCentral)} - ${dataPost.toLocaleDateString('pt-BR')}`,
         meta: {
           central: selectedCentral.id.toString(),
           volume: volume,
-          data: dataFormatada, // Formato YYYY-MM-DD
-          'link-do-video': youtubeUrl || '' // Vazio se não tiver link do YouTube
+          data: dataFormatada,
+          'link-do-video': youtubeUrl || ''
         },
-        status: 'publish' // Publicar diretamente
+        status: 'publish',
+        date: dataISO // Data da postagem = data da gravação do vídeo
       };
 
       // Usar a rota do backend que tem o access_token real do WordPress
