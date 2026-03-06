@@ -7,15 +7,18 @@ const router = express.Router();
 const WORDPRESS_CONFIG = {
   siteUrl: process.env.WORDPRESS_SITE_URL,
   email: process.env.WORDPRESS_EMAIL,
-  password: process.env.WORDPRESS_PASS
+  password: process.env.WORDPRESS_PASS,
+  appPassword: process.env.WORDPRESS_APP_PASS
 };
 
-// Função para gerar Basic Auth header
+// Função para gerar Basic Auth header (usa APP_PASS se existir, senão PASS)
 function getBasicAuthHeader() {
-  if (!WORDPRESS_CONFIG.email || !WORDPRESS_CONFIG.password) {
-    throw new Error('WORDPRESS_EMAIL e WORDPRESS_PASS devem estar configurados no .env');
+  const user = WORDPRESS_CONFIG.email;
+  const password = WORDPRESS_CONFIG.appPassword || WORDPRESS_CONFIG.password;
+  if (!user || !password) {
+    throw new Error('WORDPRESS_EMAIL e WORDPRESS_PASS (ou WORDPRESS_APP_PASS) devem estar configurados no .env');
   }
-  const credentials = Buffer.from(`${WORDPRESS_CONFIG.email}:${WORDPRESS_CONFIG.password}`).toString('base64');
+  const credentials = Buffer.from(`${user}:${password}`).toString('base64');
   return `Basic ${credentials}`;
 }
 
@@ -33,7 +36,8 @@ const verifyAuth = (req, res, next) => {
 
     // Verificar se as credenciais estão corretas
     const providedCredentials = authHeader.replace('Basic ', '');
-    const expectedCredentials = Buffer.from(`${WORDPRESS_CONFIG.email}:${WORDPRESS_CONFIG.password}`).toString('base64');
+    const password = WORDPRESS_CONFIG.appPassword || WORDPRESS_CONFIG.password;
+    const expectedCredentials = Buffer.from(`${WORDPRESS_CONFIG.email}:${password}`).toString('base64');
     
     if (providedCredentials !== expectedCredentials) {
       return res.status(401).json({
@@ -265,11 +269,11 @@ function calculateCentralMetrics(central, verifications) {
 router.get('/centrals-analysis', async (req, res) => {
   try {
     // Verificar se as configurações estão disponíveis
-    if (!WORDPRESS_CONFIG.siteUrl || !WORDPRESS_CONFIG.email || !WORDPRESS_CONFIG.password) {
+    if (!WORDPRESS_CONFIG.siteUrl || !WORDPRESS_CONFIG.email || (!WORDPRESS_CONFIG.password && !WORDPRESS_CONFIG.appPassword)) {
       return res.status(500).json({
         success: false,
         error: 'Configurações do WordPress não encontradas',
-        message: 'Verifique se WORDPRESS_SITE_URL, WORDPRESS_EMAIL e WORDPRESS_PASS estão configurados no .env'
+        message: 'Verifique se WORDPRESS_SITE_URL, WORDPRESS_EMAIL e WORDPRESS_PASS (ou WORDPRESS_APP_PASS) estão configurados no .env'
       });
     }
 
@@ -370,13 +374,13 @@ router.get('/centrals-analysis', async (req, res) => {
 router.get('/dashboard', async (req, res) => {
   try {
     // Verificar se as configurações estão disponíveis
-    if (!WORDPRESS_CONFIG.siteUrl || !WORDPRESS_CONFIG.email || !WORDPRESS_CONFIG.password) {
+    if (!WORDPRESS_CONFIG.siteUrl || !WORDPRESS_CONFIG.email || (!WORDPRESS_CONFIG.password && !WORDPRESS_CONFIG.appPassword)) {
       return res.status(500).send(`
         <html>
           <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
             <h1>❌ Configuração Necessária</h1>
             <p>As configurações do WordPress não foram encontradas.</p>
-            <p>Verifique se WORDPRESS_SITE_URL, WORDPRESS_EMAIL e WORDPRESS_PASS estão configurados no .env</p>
+            <p>Verifique se WORDPRESS_SITE_URL, WORDPRESS_EMAIL e WORDPRESS_PASS (ou WORDPRESS_APP_PASS) estão configurados no .env</p>
           </body>
         </html>
       `);

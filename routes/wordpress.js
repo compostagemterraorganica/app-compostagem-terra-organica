@@ -42,15 +42,16 @@ const WORDPRESS_CONFIG = {
   siteUrl: process.env.WORDPRESS_SITE_URL,
   oauthUrl: process.env.WORDPRESS_OAUTH_URL,
   email: process.env.WORDPRESS_EMAIL,
-  password: process.env.WORDPRESS_PASS
+  password: process.env.WORDPRESS_PASS,
+  appPassword: process.env.WORDPRESS_APP_PASS
 };
 
-// Função para gerar Basic Auth header
+// Função para gerar Basic Auth header (usa APP_PASS se existir, senão PASS)
 function getBasicAuthHeader() {
-  if (!WORDPRESS_CONFIG.email || !WORDPRESS_CONFIG.password) {
-    throw new Error('WORDPRESS_EMAIL e WORDPRESS_PASS devem estar configurados no .env');
-  }
-  const credentials = Buffer.from(`${WORDPRESS_CONFIG.email}:${WORDPRESS_CONFIG.password}`).toString('base64');
+  const user = WORDPRESS_CONFIG.email;
+  const password = WORDPRESS_CONFIG.appPassword || WORDPRESS_CONFIG.password;
+ 
+  const credentials = Buffer.from(`${user}:${password}`).toString('base64');
   return `Basic ${credentials}`;
 }
 
@@ -277,7 +278,7 @@ router.post('/logout', verifyJWT, (req, res) => {
   }
 });
 
-// Rota para criar post de verificação de volume
+// Rota para criar post de verificação de volume (usuário deve estar logado no app; o post no WP usa credenciais do servidor .env, não do usuário)
 router.post('/create-post', verifyJWT, async (req, res) => {
   try {
 
@@ -300,7 +301,7 @@ router.post('/create-post', verifyJWT, async (req, res) => {
       });
     }
 
-    // Fazer POST no WordPress usando o access_token da sessão
+    // POST no WordPress com credenciais do servidor (WORDPRESS_EMAIL + WORDPRESS_APP_PASS), não do usuário logado
     const postData = {
       title: title,
       meta: meta || {},
@@ -312,7 +313,7 @@ router.post('/create-post', verifyJWT, async (req, res) => {
     }
 
     logger.wordpress.info('Sending data to WordPress API', postData);
-    logger.auth.info('Using Basic Auth', { email: WORDPRESS_CONFIG.email });
+    logger.auth.info('Using server Basic Auth (WORDPRESS_EMAIL + WORDPRESS_APP_PASS)', { email: WORDPRESS_CONFIG.email });
 
     const response = await axios.post(
       `${WORDPRESS_CONFIG.siteUrl}/wp-json/wp/v2/verificacoes-de-volu`,
@@ -345,11 +346,18 @@ router.post('/create-post', verifyJWT, async (req, res) => {
       data: error.response?.data
     });
     logger.separator();
-    
-    res.status(error.response?.status || 500).json({
+
+    const wpStatus = error.response?.status;
+    const isWpAuthError = wpStatus === 401 || wpStatus === 403;
+    const status = isWpAuthError ? 502 : (wpStatus || 500);
+    const message = isWpAuthError
+      ? 'WordPress recusou a requisição. Verifique as credenciais (ex.: senha de aplicativo).'
+      : (error.response?.data?.message || error.message);
+
+    res.status(status).json({
       success: false,
       error: 'Failed to create WordPress post',
-      message: error.response?.data?.message || error.message,
+      message,
       details: error.response?.data
     });
   }
