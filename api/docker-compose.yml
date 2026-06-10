@@ -1,0 +1,12 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5700:5700"
+    env_file:
+      - .env
+    environment:
+      PORT: 5700
+    restart: unless-stopped

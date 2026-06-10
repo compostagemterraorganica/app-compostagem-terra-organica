@@ -16,7 +16,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getConfig } from '../config/environment';
 import userCentralService from '../services/userCentralService';
 import { apiClient } from '../services/apiClient';
-const API_BASE_URL = getConfig('API_BASE_URL');
+import authService from '../services/authService';
+import volumeVerificationService from '../services/volumeVerificationService';
+import LoginScreen from './LoginScreen';
 
 export default function UploadModal({ video, onClose, onUploadSuccess }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -49,34 +51,20 @@ export default function UploadModal({ video, onClose, onUploadSuccess }) {
 
   useEffect(() => {
     checkLoginStatus();
-    loadCentrals();
-    loadSavedCentral();
   }, []);
 
-  // Escutar mudanças no estado de login global
   useEffect(() => {
-    const checkLoginPeriodically = setInterval(async () => {
-      const jwtToken = await AsyncStorage.getItem('wp_session_id');
-      if (jwtToken && !isLoggedIn) {
-        setIsLoggedIn(true);
-      }
-    }, 1000);
-
-    return () => clearInterval(checkLoginPeriodically);
+    if (isLoggedIn) {
+      loadCentrals();
+      loadSavedCentral();
+    }
   }, [isLoggedIn]);
 
   const checkLoginStatus = async () => {
     try {
-      const jwtToken = await AsyncStorage.getItem('wp_session_id');
-      if (jwtToken) {
-        // Verificar se o JWT ainda é válido (apiClient faz pré-checagem local + 401 auto-logout)
-        await apiClient.getJson('/me', {
-          headers: { 'Content-Type': 'application/json' }
-        });
-        setIsLoggedIn(true);
-      }
-    } catch (error) {
-      // Erro silencioso
+      const user = await authService.me();
+      setIsLoggedIn(Boolean(user));
+    } catch {
       setIsLoggedIn(false);
     }
   };
@@ -86,10 +74,6 @@ export default function UploadModal({ video, onClose, onUploadSuccess }) {
     setLoadingCentrals(true);
     
     try {
-      // Primeiro, vamos testar todas as relações para debug
-      const allRelations = await userCentralService.getAllRelations();
-      
-      // Agora buscar centrais específicas do usuário logado
       const userCentrals = await userCentralService.getCurrentUserCentrals();
       
       setCentrals(userCentrals);
@@ -127,22 +111,9 @@ export default function UploadModal({ video, onClose, onUploadSuccess }) {
     }
   };
 
-  const handleLogin = async () => {
-    try {
-      const authUrl = `${getConfig('WORDPRESS_BASE_URL')}/oauth/authorize?response_type=code&client_id=${getConfig('WORDPRESS_OAUTH_CLIENT_ID')}&redirect_uri=${getConfig('WORDPRESS_OAUTH_REDIRECT_URI')}&scope=basic&state=app`;
-      
-      // Abrir no navegador padrão - a API vai redirecionar via deep link
-      const supported = await Linking.canOpenURL(authUrl);
-      if (supported) {
-        await Linking.openURL(authUrl);
-      } else {
-        Alert.alert('Erro', 'Não é possível abrir o navegador para login.');
-      }
-    } catch (error) {
-      Alert.alert('Erro', 'Não foi possível abrir a página de login.');
-    }
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
   };
-
 
   const handleCentralSelect = (central) => {
     setSelectedCentral(central);
@@ -207,7 +178,7 @@ export default function UploadModal({ video, onClose, onUploadSuccess }) {
       }
 
       // 3. Postar no WordPress (com ou sem link do YouTube)
-      await postToWordPress(youtubeUrl);
+      await createVolumeVerification(youtubeUrl);
 
       setUploadProgress('');
       if (youtubeUrl) {
@@ -259,16 +230,16 @@ export default function UploadModal({ video, onClose, onUploadSuccess }) {
       formData.append('title', title);
       formData.append('description', description);
 
-      const response = await fetch(`${API_BASE_URL}/youtube/upload`, {
+      const response = await apiClient.request('/youtube/upload', {
         method: 'POST',
-        body: formData,
-        // NÃO setar Content-Type manualmente em React Native (evita quebrar boundary)
+        body: formData
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : null;
       
       if (!response.ok) {
-        throw new Error(data.message || 'Erro no upload do YouTube');
+        throw new Error(data?.message || data?.error || 'Erro no upload do YouTube');
       }
 
       return data;
@@ -277,44 +248,27 @@ export default function UploadModal({ video, onClose, onUploadSuccess }) {
     }
   };
 
-  const postToWordPress = async (youtubeUrl = null) => {
+  const createVolumeVerification = async (youtubeUrl = null) => {
     try {
-      // Antes de postar, garantir que a sessão está válida
-      // (se expirou, apiClient/authService limpam e lançam erro com instrução)
-      await apiClient.getJson('/me', {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      await authService.me();
 
-      // Usar data da gravação do vídeo (timestamp ou createdAt), fallback para hoje
       const dataGravacao = video?.timestamp || video?.createdAt;
       const dataPost = dataGravacao ? new Date(dataGravacao) : new Date();
       const dia = String(dataPost.getDate()).padStart(2, '0');
       const mes = String(dataPost.getMonth() + 1).padStart(2, '0');
       const ano = dataPost.getFullYear();
-      const dataFormatada = `${ano}-${mes}-${dia}`; // YYYY-MM-DD para meta
-      const dataISO = dataPost.toISOString(); // ISO 8601 para o WordPress (campo date do post)
+      const dataFormatada = `${ano}-${mes}-${dia}`;
 
-      const postData = {
+      return await volumeVerificationService.create({
         title: `${getCentralName(selectedCentral)} - ${dataPost.toLocaleDateString('pt-BR')}`,
-        meta: {
-          central: selectedCentral.id.toString(),
-          volume: volume,
-          data: dataFormatada,
-          'link-do-video': youtubeUrl || ''
-        },
-        status: 'publish',
-        date: dataISO // Data da postagem = data da gravação do vídeo
-      };
-
-      // Usar a rota do backend que tem o access_token real do WordPress
-      return await apiClient.getJson('/create-post', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(postData)
+        central_id: Number(selectedCentral.id),
+        volume_liters: Number(volume),
+        measurement_date: dataFormatada,
+        video_link: youtubeUrl || '',
+        status: 'publish'
       });
     } catch (error) {
-      // Se foi erro de auth, garantir que UI reflita isso
-      if (error?.code === 'AUTH_EXPIRED' || error?.code === 'AUTH_INVALID') {
+      if (error?.code === 'AUTH_INVALID') {
         setIsLoggedIn(false);
       }
       throw error;
@@ -331,15 +285,12 @@ export default function UploadModal({ video, onClose, onUploadSuccess }) {
           <Text style={styles.title}>Upload de Vídeo</Text>
         </View>
         
-        <View style={styles.content}>
-          <Text style={styles.message}>
-            Para fazer upload do vídeo, você precisa estar logado no WordPress.
-          </Text>
-          
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-            <Text style={styles.loginButtonText}>🔐 Fazer Login no WordPress</Text>
-          </TouchableOpacity>
-        </View>
+        <LoginScreen
+          compact
+          title="Login necessário"
+          onSuccess={handleLoginSuccess}
+          onCancel={onClose}
+        />
       </View>
     );
   }

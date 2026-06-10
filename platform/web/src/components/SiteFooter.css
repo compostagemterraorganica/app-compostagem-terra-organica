@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&family=Roboto:wght@400&display=swap');
+
+.site-footer {
+  width: 100%;
+  margin-top: auto;
+}
+
+.site-footer-contact {
+  background-color: #503c24;
+  padding: 30px 20px;
+}
+
+.site-footer-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 32px 48px;
+}
+
+.site-footer-brand {
+  flex: 1 1 280px;
+  max-width: 420px;
+}
+
+.site-footer-brand img {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+}
+
+.site-footer-info {
+  flex: 1 1 280px;
+  max-width: 53%;
+}
+
+.site-footer-heading {
+  margin: 0 0 20px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04px;
+  color: #fff;
+}
+
+.site-footer-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.site-footer-item {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.site-footer-item-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: #fff;
+}
+
+.site-footer-item-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.site-footer-item-label {
+  font-family: 'Raleway', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.04px;
+  color: #fff;
+  line-height: 1.4;
+}
+
+a.site-footer-item-label:hover {
+  text-decoration: underline;
+}
+
+.site-footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 5px;
+  margin-top: 24px;
+}
+
+.site-footer-social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0.2em;
+  background-color: #503c24;
+  color: #fff;
+  transition: opacity 0.2s ease;
+}
+
+.site-footer-social-link svg {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+}
+
+.site-footer-social-link:hover {
+  opacity: 0.85;
+}
+
+.site-footer-copy {
+  background-color: #9d7b4e;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.site-footer-copy p {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #fff;
+}
+
+@media (max-width: 767px) {
+  .site-footer-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .site-footer-brand {
+    max-width: 100%;
+  }
+
+  .site-footer-brand img {
+    max-width: 260px;
+    margin: 0 auto;
+  }
+
+  .site-footer-info {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .site-footer-item {
+    justify-content: center;
+  }
+
+  .site-footer-social {
+    justify-content: center;
+  }
+}

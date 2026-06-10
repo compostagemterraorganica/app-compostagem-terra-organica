@@ -11,9 +11,9 @@ app.use(cors());
 app.use(express.json());
 
 // Importar rotas
-const wordpressRoutes = require('./routes/wordpress');
-const youtubeRoutes = require('./routes/youtube');
-const analyticsRoutes = require('./routes/analytics');
+const wordpressRoutes = require('./api/routes/wordpress');
+const youtubeRoutes = require('./api/routes/youtube');
+const analyticsRoutes = require('./api/routes/analytics');
 
 // Usar rotas
 app.use('/', wordpressRoutes);

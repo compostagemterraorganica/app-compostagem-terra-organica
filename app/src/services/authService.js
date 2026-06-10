@@ -1,60 +1,56 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { cookieFetch, clearAllCookies, setCsrfCookie } from './cookieClient';
 
-const JWT_STORAGE_KEY = 'wp_session_id';
-const USER_STORAGE_KEY = 'wp_user_data';
+const USER_STORAGE_KEY = 'terra_user_data';
 
-function safeJsonParse(str) {
+async function parseJsonResponse(response) {
+  const text = await response.text();
+  if (!text) return null;
   try {
-    return JSON.parse(str);
+    return JSON.parse(text);
   } catch {
-    return null;
+    return text;
   }
 }
 
-function base64UrlDecodeToString(input) {
-  // Base64url -> base64
-  const normalized = input.replace(/-/g, '+').replace(/_/g, '/');
-  // Pad
-  const pad = normalized.length % 4;
-  const padded = pad ? normalized + '='.repeat(4 - pad) : normalized;
-  // React Native geralmente tem atob; se não tiver, falha de forma segura
-  if (typeof atob !== 'function') return null;
-  return atob(padded);
+function buildError(response, data) {
+  const message =
+    (data && typeof data === 'object' && (data.message || data.error)) ||
+    `Erro HTTP ${response.status}`;
+  const err = new Error(message);
+  err.status = response.status;
+  err.data = data;
+  return err;
 }
 
-export function decodeJwtPayload(token) {
-  if (!token || typeof token !== 'string') return null;
-  const parts = token.split('.');
-  if (parts.length < 2) return null;
+async function request(path, options = {}) {
+  const response = await cookieFetch(path, options);
+  const data = await parseJsonResponse(response);
 
-  const payloadStr = base64UrlDecodeToString(parts[1]);
-  if (!payloadStr) return null;
-  return safeJsonParse(payloadStr);
+  if (!response.ok) {
+    throw buildError(response, data);
+  }
+
+  return data;
 }
 
-export function isJwtExpired(token, { skewSeconds = 60 } = {}) {
-  const payload = decodeJwtPayload(token);
-  const exp = payload?.exp;
-  if (!exp || typeof exp !== 'number') return false; // se não tiver exp, tratamos como "não expirado"
-  const now = Math.floor(Date.now() / 1000);
-  return now >= (exp - skewSeconds);
+async function cacheUser(user) {
+  if (user) {
+    await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+  }
 }
 
 const listeners = new Set();
 
 export const authService = {
-  async getToken() {
-    return await AsyncStorage.getItem(JWT_STORAGE_KEY);
-  },
-
   async getUserData() {
     const raw = await AsyncStorage.getItem(USER_STORAGE_KEY);
-    return raw ? safeJsonParse(raw) : null;
-  },
-
-  async clearSession() {
-    await AsyncStorage.removeItem(JWT_STORAGE_KEY);
-    await AsyncStorage.removeItem(USER_STORAGE_KEY);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
   },
 
   subscribe(listener) {
@@ -63,7 +59,8 @@ export const authService = {
   },
 
   async forceLogout(reason = 'AUTH_EXPIRED') {
-    await this.clearSession();
+    await AsyncStorage.removeItem(USER_STORAGE_KEY);
+    await clearAllCookies();
     for (const listener of listeners) {
       try {
         listener({ reason });
@@ -71,8 +68,69 @@ export const authService = {
         // ignore
       }
     }
+  },
+
+  async checkEmail(email) {
+    return request('/auth/check-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.trim() })
+    });
+  },
+
+  async sendCode(email, purpose) {
+    return request('/auth/send-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.trim(), purpose })
+    });
+  },
+
+  async confirmPassword({ email, code, password, passwordConfirm, purpose }) {
+    return request('/auth/confirm-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email.trim(),
+        code: code.trim(),
+        password,
+        passwordConfirm,
+        purpose
+      })
+    });
+  },
+
+  async login(email, password) {
+    const data = await request('/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.trim(), password })
+    });
+    if (data?.csrfToken) {
+      await setCsrfCookie(data.csrfToken);
+    }
+    if (data?.user) await cacheUser(data.user);
+    return data;
+  },
+
+  async me() {
+    const data = await request('/auth/me');
+    if (data?.user) await cacheUser(data.user);
+    return data?.user || null;
+  },
+
+  async logout() {
+    try {
+      await request('/auth/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+    } catch {
+      // ignore server errors on logout
+    }
+    await this.forceLogout('LOGOUT');
   }
 };
 
-
-
+export default authService;

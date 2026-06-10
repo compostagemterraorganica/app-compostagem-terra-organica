@@ -33,10 +33,6 @@ export default function UserCentralSelector({
     setDebugInfo('Carregando centrais...');
     
     try {
-      // Primeiro, vamos ver todas as relações disponíveis para debug
-      const allRelations = await userCentralService.getAllRelations();
-      
-      // Agora buscar centrais do usuário atual
       const userCentrals = await userCentralService.getCurrentUserCentrals();
       
       setCentrals(userCentrals);

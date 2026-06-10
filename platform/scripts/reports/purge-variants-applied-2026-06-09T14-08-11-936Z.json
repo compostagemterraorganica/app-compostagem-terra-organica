@@ -1,0 +1,133 @@
+{
+  "generatedAt": "2026-06-09T14:08:11.935Z",
+  "mode": "apply",
+  "uploadsDir": "/home/felipe/Projects/appterraorganica/api/uploads",
+  "summary": {
+    "variantFiles": 1742,
+    "bytesFreed": 463649178,
+    "nonImagesArchived": 9,
+    "canonicalKept": 406
+  },
+  "sample": [
+    {
+      "relativePath": "2020/05/20200510_181329-red-150x150.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/05/20200510_181329-red-150x150.jpg",
+      "sizeBytes": 8174,
+      "groupKey": "2020/05/20200510_181329-red.jpg"
+    },
+    {
+      "relativePath": "2020/05/20200510_181329-red-300x169.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/05/20200510_181329-red-300x169.jpg",
+      "sizeBytes": 14874,
+      "groupKey": "2020/05/20200510_181329-red.jpg"
+    },
+    {
+      "relativePath": "2020/05/20200510_181357-red-150x150.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/05/20200510_181357-red-150x150.jpg",
+      "sizeBytes": 7514,
+      "groupKey": "2020/05/20200510_181357-red.jpg"
+    },
+    {
+      "relativePath": "2020/05/20200510_181357-red-300x169.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/05/20200510_181357-red-300x169.jpg",
+      "sizeBytes": 14281,
+      "groupKey": "2020/05/20200510_181357-red.jpg"
+    },
+    {
+      "relativePath": "2020/05/20200510_181434-red-150x150.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/05/20200510_181434-red-150x150.jpg",
+      "sizeBytes": 6702,
+      "groupKey": "2020/05/20200510_181434-red.jpg"
+    },
+    {
+      "relativePath": "2020/05/20200510_181434-red-300x169.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/05/20200510_181434-red-300x169.jpg",
+      "sizeBytes": 13329,
+      "groupKey": "2020/05/20200510_181434-red.jpg"
+    },
+    {
+      "relativePath": "2020/05/20200510_181506-red-150x150.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/05/20200510_181506-red-150x150.jpg",
+      "sizeBytes": 5058,
+      "groupKey": "2020/05/20200510_181506-red.jpg"
+    },
+    {
+      "relativePath": "2020/05/20200510_181506-red-300x169.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/05/20200510_181506-red-300x169.jpg",
+      "sizeBytes": 9189,
+      "groupKey": "2020/05/20200510_181506-red.jpg"
+    },
+    {
+      "relativePath": "2020/05/20200717_145039-capa-1024x512.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/05/20200717_145039-capa-1024x512.jpg",
+      "sizeBytes": 163553,
+      "groupKey": "2020/05/20200717_145039-capa.jpg"
+    },
+    {
+      "relativePath": "2020/05/20200717_145039-capa-150x150.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/05/20200717_145039-capa-150x150.jpg",
+      "sizeBytes": 7471,
+      "groupKey": "2020/05/20200717_145039-capa.jpg"
+    },
+    {
+      "relativePath": "2020/05/20200717_145039-capa-300x150.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/05/20200717_145039-capa-300x150.jpg",
+      "sizeBytes": 14081,
+      "groupKey": "2020/05/20200717_145039-capa.jpg"
+    },
+    {
+      "relativePath": "2020/05/20200717_145039-capa-768x384.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/05/20200717_145039-capa-768x384.jpg",
+      "sizeBytes": 92722,
+      "groupKey": "2020/05/20200717_145039-capa.jpg"
+    },
+    {
+      "relativePath": "2020/10/aterro-red-150x150.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/10/aterro-red-150x150.jpg",
+      "sizeBytes": 8178,
+      "groupKey": "2020/10/aterro-red.jpg"
+    },
+    {
+      "relativePath": "2020/10/aterro-red-300x150.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/10/aterro-red-300x150.jpg",
+      "sizeBytes": 15925,
+      "groupKey": "2020/10/aterro-red.jpg"
+    },
+    {
+      "relativePath": "2020/10/desenv-sust-red-1024x512.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/10/desenv-sust-red-1024x512.jpg",
+      "sizeBytes": 103524,
+      "groupKey": "2020/10/desenv-sust-red.jpg"
+    },
+    {
+      "relativePath": "2020/10/desenv-sust-red-150x150.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/10/desenv-sust-red-150x150.jpg",
+      "sizeBytes": 7874,
+      "groupKey": "2020/10/desenv-sust-red.jpg"
+    },
+    {
+      "relativePath": "2020/10/desenv-sust-red-300x150.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/10/desenv-sust-red-300x150.jpg",
+      "sizeBytes": 15233,
+      "groupKey": "2020/10/desenv-sust-red.jpg"
+    },
+    {
+      "relativePath": "2020/10/desenv-sust-red-768x384.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/10/desenv-sust-red-768x384.jpg",
+      "sizeBytes": 66416,
+      "groupKey": "2020/10/desenv-sust-red.jpg"
+    },
+    {
+      "relativePath": "2020/11/20200722_171929-red-1-150x150.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/11/20200722_171929-red-1-150x150.jpg",
+      "sizeBytes": 10195,
+      "groupKey": "2020/11/20200722_171929-red-1.jpg"
+    },
+    {
+      "relativePath": "2020/11/20200722_171929-red-1-300x169.jpg",
+      "absolutePath": "/home/felipe/Projects/appterraorganica/api/uploads/2020/11/20200722_171929-red-1-300x169.jpg",
+      "sizeBytes": 21511,
+      "groupKey": "2020/11/20200722_171929-red-1.jpg"
+    }
+  ]
+}

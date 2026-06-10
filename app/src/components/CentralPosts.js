@@ -11,9 +11,10 @@ import {
   Image
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getConfig } from '../config/environment';
 import userCentralService from '../services/userCentralService';
+import authService from '../services/authService';
+import volumeVerificationService from '../services/volumeVerificationService';
 
 export default function CentralPosts({ onBack, onLogin }) {
   const [centrals, setCentrals] = useState([]);
@@ -43,33 +44,15 @@ export default function CentralPosts({ onBack, onLogin }) {
 
   const checkUserLogin = async () => {
     setCheckingLogin(true);
-    
+
     try {
-      // Verificar se há JWT token no AsyncStorage (mesma chave usada no App.js)
-      const jwtToken = await AsyncStorage.getItem('wp_session_id');
-      
-      if (jwtToken) {
-        // Verificar se o JWT ainda é válido fazendo uma requisição para /me
-        const response = await fetch(`${getConfig('API_BASE_URL')}/me`, {
-          headers: {
-            'Authorization': `Bearer ${jwtToken}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (response.ok) {
-          setUserLoggedIn(true);
-        } else {
-          // JWT expirado ou inválido, limpar dados
-          await AsyncStorage.removeItem('wp_session_id');
-          await AsyncStorage.removeItem('wp_user_data');
-          showLoginAlert();
-        }
+      const user = await authService.me();
+      if (user) {
+        setUserLoggedIn(true);
       } else {
         showLoginAlert();
       }
-    } catch (error) {
-      console.error('Erro ao verificar login:', error);
+    } catch {
       showLoginAlert();
     } finally {
       setCheckingLogin(false);
@@ -89,11 +72,8 @@ export default function CentralPosts({ onBack, onLogin }) {
         {
           text: 'Fazer Login',
           onPress: () => {
-            if (onLogin) {
-              onLogin();
-            } else {
-              onBack();
-            }
+            if (onLogin) onLogin();
+            else onBack();
           }
         }
       ]
@@ -102,22 +82,16 @@ export default function CentralPosts({ onBack, onLogin }) {
 
   const loadCentrals = async () => {
     setLoadingCentrals(true);
-    
+
     try {
       const userCentrals = await userCentralService.getCurrentUserCentrals();
-      
       setCentrals(userCentrals);
-      
+
       if (userCentrals.length === 0) {
-        Alert.alert(
-          'Aviso', 
-          'Nenhuma central foi encontrada para este usuário.'
-        );
+        Alert.alert('Aviso', 'Nenhuma central foi encontrada para este usuário.');
       } else if (userCentrals.length === 1) {
-        // Selecionar automaticamente se tiver apenas uma central
         setSelectedCentral(userCentrals[0]);
       }
-      
     } catch (error) {
       Alert.alert('Erro', `Não foi possível carregar as centrais: ${error.message}`);
       setCentrals([]);
@@ -126,59 +100,23 @@ export default function CentralPosts({ onBack, onLogin }) {
     }
   };
 
-  const getBasicAuthHeader = () => {
-    const email = getConfig('WORDPRESS_EMAIL');
-    const password = getConfig('WORDPRESS_PASS');
-    
-    if (!email || !password) {
-      console.warn('⚠️ [CentralPosts] WORDPRESS_EMAIL ou WORDPRESS_PASS não configurados');
-      return null;
-    }
-    
-    const credentials = `${email}:${password}`;
-    const base64Credentials = btoa(credentials);
-    return `Basic ${base64Credentials}`;
-  };
-
   const loadPosts = async () => {
     if (!selectedCentral) return;
-    
+
     setLoadingPosts(true);
-    
+
     try {
-      const centralName = getCentralName(selectedCentral);
-      const apiUrl = `https://compostagemterraorganica.com.br/wp-json/wp/v2/verificacoes-de-volu?per_page=100&search=${encodeURIComponent(centralName)}`;
-      
-      const authHeader = getBasicAuthHeader();
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (authHeader) {
-        headers['Authorization'] = authHeader;
-      }
-      
-      const response = await fetch(apiUrl, { headers });
-      
-      if (!response.ok) {
-        throw new Error(`Erro na API: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      // Processar os dados para extrair as informações necessárias
-      const processedPosts = data.map(post => ({
-        id: post.id,
-        central: post.meta?.central || '',
-        volume: post.meta?.volume || '',
-        data: post.meta?.data || '',
-        videoLink: post.meta?.['link-do-video'] || '',
-        title: post.title?.rendered || post.title || '',
-        rawData: post
+      const data = await volumeVerificationService.listByCentral(selectedCentral.id);
+
+      const processedPosts = data.map((row) => ({
+        id: row.id,
+        volume: row.volume_liters != null ? String(row.volume_liters) : '',
+        data: row.measurement_date || '',
+        videoLink: row.video_link || '',
+        title: row.title || ''
       }));
-      
+
       setPosts(processedPosts);
-      
     } catch (error) {
       Alert.alert('Erro', `Não foi possível carregar as postagens: ${error.message}`);
       setPosts([]);
@@ -189,15 +127,7 @@ export default function CentralPosts({ onBack, onLogin }) {
 
   const getCentralName = (central) => {
     if (!central) return 'Central não selecionada';
-    
-    if (central.title && central.title.rendered) {
-      return central.title.rendered;
-    }
-    
-    if (central.name) {
-      return central.name;
-    }
-    
+    if (central.name) return central.name;
     return `Central ${central.id}`;
   };
 
@@ -208,7 +138,7 @@ export default function CentralPosts({ onBack, onLogin }) {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    
+
     try {
       const date = new Date(dateString);
       return date.toLocaleDateString('pt-BR', {
@@ -216,7 +146,7 @@ export default function CentralPosts({ onBack, onLogin }) {
         month: '2-digit',
         year: 'numeric'
       });
-    } catch (error) {
+    } catch {
       return dateString;
     }
   };
@@ -235,15 +165,15 @@ export default function CentralPosts({ onBack, onLogin }) {
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
-        
+
         <View style={styles.logoContainer}>
-          <Image 
+          <Image
             source={{ uri: getConfig('LOGO_URL') }}
             style={styles.logo}
             resizeMode="contain"
           />
         </View>
-        
+
         <View style={styles.headerSpacer} />
       </View>
     </View>
@@ -252,14 +182,14 @@ export default function CentralPosts({ onBack, onLogin }) {
   const renderCentralSelector = () => (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Central Selecionada</Text>
-      
+
       {loadingCentrals ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator color="#4CAF50" size="small" />
           <Text style={styles.loadingText}>Carregando centrais...</Text>
         </View>
       ) : (
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.centralSelector}
           onPress={() => setShowCentralModal(true)}
         >
@@ -274,10 +204,8 @@ export default function CentralPosts({ onBack, onLogin }) {
 
   const renderPostsTable = () => (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>
-        Postagens ({posts.length})
-      </Text>
-      
+      <Text style={styles.sectionTitle}>Postagens ({posts.length})</Text>
+
       {loadingPosts ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator color="#4CAF50" size="small" />
@@ -292,18 +220,16 @@ export default function CentralPosts({ onBack, onLogin }) {
         </View>
       ) : (
         <View style={styles.tableContainer}>
-          {/* Header da tabela */}
           <View style={styles.tableHeader}>
             <Text style={[styles.tableHeaderText, styles.dateColumn]}>Data</Text>
             <Text style={[styles.tableHeaderText, styles.volumeColumn]}>Volume (Litros)</Text>
             <Text style={[styles.tableHeaderText, styles.videoColumn]}>Vídeo</Text>
           </View>
-          
-          {/* Linhas da tabela */}
+
           <ScrollView style={styles.tableBody} showsVerticalScrollIndicator={false}>
             {posts.map((post, index) => (
-              <View 
-                key={post.id || index} 
+              <View
+                key={post.id || index}
                 style={[
                   styles.tableRow,
                   index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd
@@ -346,14 +272,14 @@ export default function CentralPosts({ onBack, onLogin }) {
         <View style={styles.modalContent}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Selecione uma Central</Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.modalCloseButton}
               onPress={() => setShowCentralModal(false)}
             >
               <Text style={styles.modalCloseText}>✕</Text>
             </TouchableOpacity>
           </View>
-          
+
           <ScrollView style={styles.centralList}>
             {centrals.map((central) => (
               <TouchableOpacity
@@ -364,10 +290,12 @@ export default function CentralPosts({ onBack, onLogin }) {
                 ]}
                 onPress={() => handleCentralSelect(central)}
               >
-                <Text style={[
-                  styles.centralText,
-                  selectedCentral?.id === central.id && styles.centralTextSelected
-                ]}>
+                <Text
+                  style={[
+                    styles.centralText,
+                    selectedCentral?.id === central.id && styles.centralTextSelected
+                  ]}
+                >
                   {getCentralName(central)}
                 </Text>
                 {selectedCentral?.id === central.id && (
@@ -381,7 +309,6 @@ export default function CentralPosts({ onBack, onLogin }) {
     </Modal>
   );
 
-  // Renderizar tela de verificação de login
   if (checkingLogin) {
     return (
       <SafeAreaView style={styles.container}>
@@ -394,7 +321,6 @@ export default function CentralPosts({ onBack, onLogin }) {
     );
   }
 
-  // Renderizar tela de não logado
   if (!userLoggedIn) {
     return (
       <SafeAreaView style={styles.container}>
@@ -405,14 +331,11 @@ export default function CentralPosts({ onBack, onLogin }) {
           <Text style={styles.loginRequiredText}>
             É necessário fazer login para acessar os volumes postados.
           </Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.loginButton}
             onPress={() => {
-              if (onLogin) {
-                onLogin();
-              } else {
-                onBack();
-              }
+              if (onLogin) onLogin();
+              else onBack();
             }}
           >
             <Text style={styles.loginButtonText}>Fazer Login</Text>
@@ -425,7 +348,7 @@ export default function CentralPosts({ onBack, onLogin }) {
   return (
     <SafeAreaView style={styles.container}>
       {renderHeader()}
-      
+
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {renderCentralSelector()}
         {selectedCentral && renderPostsTable()}
@@ -665,7 +588,6 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontWeight: 'bold',
   },
-  // Estilos para tela de login necessário
   loginRequiredContainer: {
     flex: 1,
     justifyContent: 'center',

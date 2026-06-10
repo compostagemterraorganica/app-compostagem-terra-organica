@@ -1,0 +1,337 @@
+{
+  "generatedAt": "2026-06-09T20:28:15.495Z",
+  "mode": "analyze",
+  "totals": {
+    "affectedRows": 1198,
+    "entities": {
+      "&nbsp;": 44,
+      "&amp;": 12,
+      "&#8211;": 1147,
+      "&#8220;": 1,
+      "&#8221;": 1,
+      "&#8212;": 1,
+      "&#038;": 36
+    },
+    "uniqueEntities": [
+      {
+        "entity": "&#8211;",
+        "count": 1147
+      },
+      {
+        "entity": "&nbsp;",
+        "count": 44
+      },
+      {
+        "entity": "&#038;",
+        "count": 36
+      },
+      {
+        "entity": "&amp;",
+        "count": 12
+      },
+      {
+        "entity": "&#8220;",
+        "count": 1
+      },
+      {
+        "entity": "&#8221;",
+        "count": 1
+      },
+      {
+        "entity": "&#8212;",
+        "count": 1
+      }
+    ]
+  },
+  "byTarget": {
+    "posts.content_html": {
+      "table": "posts",
+      "column": "content_html",
+      "kind": "text",
+      "affectedRows": 23,
+      "entities": {
+        "&nbsp;": 22,
+        "&amp;": 4
+      },
+      "samples": [
+        {
+          "id": "642",
+          "before": "<div class=\"to-post-body\">\n<p>No Brasil, os aterros sanitários vêm sendo considerados como uma ótima alternativa para a&nbsp; destinação final dos resíduos sóli…",
+          "after": "<div class=\"to-post-body\">\n<p>No Brasil, os aterros sanitários vêm sendo considerados como uma ótima alternativa para a  destinação final dos resíduos sólidos u…"
+        },
+        {
+          "id": "644",
+          "before": "<div class=\"to-post-body\">\n<p>A Organização das Nações Unidas (ONU) definiu no ano de 2015 que fomentaria ações que estivessem de acordo com medidas necessárias…",
+          "after": "<div class=\"to-post-body\">\n<p>A Organização das Nações Unidas (ONU) definiu no ano de 2015 que fomentaria ações que estivessem de acordo com medidas necessárias…"
+        },
+        {
+          "id": "646",
+          "before": "<div class=\"to-post-body\">\n<p>Quando a gente pensa em ‘’mudar o mundo’’, essa ideia parece muito distante, concorda?&nbsp;</p>\n<p>Aqui nesse texto vamos te most…",
+          "after": "<div class=\"to-post-body\">\n<p>Quando a gente pensa em ‘’mudar o mundo’’, essa ideia parece muito distante, concorda? </p>\n<p>Aqui nesse texto vamos te mostrar, …"
+        },
+        {
+          "id": "1525",
+          "before": "<div class=\"to-post-body\">\n<p>Nesse dia demos uma atenção especial a outra das frentes da iniciativa, a produção de alimentos. Após a adição de mais 140L de res…",
+          "after": "<div class=\"to-post-body\">\n<p>Nesse dia demos uma atenção especial a outra das frentes da iniciativa, a produção de alimentos. Após a adição de mais 140L de res…"
+        },
+        {
+          "id": "1562",
+          "before": "<div class=\"to-post-body\">\n<p>Olá, turma do Norbecker!</p>\n<p>Se você mora ou já morou nesse residencial, saiba que faz parte de um projeto que promete um grand…",
+          "after": "<div class=\"to-post-body\">\n<p>Olá, turma do Norbecker!</p>\n<p>Se você mora ou já morou nesse residencial, saiba que faz parte de um projeto que promete um grand…"
+        }
+      ]
+    },
+    "volume_verifications.title": {
+      "table": "volume_verifications",
+      "column": "title",
+      "kind": "text",
+      "affectedRows": 573,
+      "entities": {
+        "&#8211;": 573
+      },
+      "samples": [
+        {
+          "id": "5166",
+          "before": "Coleta 001 &#8211; 23/03/2020",
+          "after": "Coleta 001 – 23/03/2020"
+        },
+        {
+          "id": "5167",
+          "before": "Coleta 002 &#8211; 04/03/2020",
+          "after": "Coleta 002 – 04/03/2020"
+        },
+        {
+          "id": "5169",
+          "before": "Coleta 006 &#8211; 17/04/2020",
+          "after": "Coleta 006 – 17/04/2020"
+        },
+        {
+          "id": "5170",
+          "before": "Coleta 007 &#8211; 24/04/2020",
+          "after": "Coleta 007 – 24/04/2020"
+        },
+        {
+          "id": "5171",
+          "before": "coleta 008 &#8211; 01/05/2020",
+          "after": "coleta 008 – 01/05/2020"
+        }
+      ]
+    },
+    "volume_verifications.video_link": {
+      "table": "volume_verifications",
+      "column": "video_link",
+      "kind": "text",
+      "affectedRows": 1,
+      "entities": {
+        "&amp;": 1
+      },
+      "samples": [
+        {
+          "id": "5966",
+          "before": "https://youtube.com/watch?v=ubbchPViQg4&amp;feature=shared",
+          "after": "https://youtube.com/watch?v=ubbchPViQg4&feature=shared"
+        }
+      ]
+    },
+    "page_versions.html_snapshot": {
+      "table": "page_versions",
+      "column": "html_snapshot",
+      "kind": "text",
+      "affectedRows": 2,
+      "entities": {
+        "&amp;": 2
+      },
+      "samples": [
+        {
+          "id": "36",
+          "before": "<section class=\"to-page to-pontos-de-entrega\">\n  <header class=\"to-page-hero\">\n    <div class=\"to-page-hero-inner\">\n      <h1 class=\"to-page-hero-heading\"><stro…",
+          "after": "<section class=\"to-page to-pontos-de-entrega\">\n  <header class=\"to-page-hero\">\n    <div class=\"to-page-hero-inner\">\n      <h1 class=\"to-page-hero-heading\"><stro…"
+        },
+        {
+          "id": "41",
+          "before": "<section class=\"to-page to-pontos-de-entrega\">\n  <header class=\"to-page-hero to-page-hero--brand\">\n    <div class=\"to-page-hero-inner\">\n      <h1 class=\"to-page…",
+          "after": "<section class=\"to-page to-pontos-de-entrega\">\n  <header class=\"to-page-hero to-page-hero--brand\">\n    <div class=\"to-page-hero-inner\">\n      <h1 class=\"to-page…"
+        }
+      ]
+    },
+    "posts.raw_json": {
+      "table": "posts",
+      "column": "raw_json",
+      "kind": "jsonb",
+      "affectedRows": 23,
+      "entities": {
+        "&#8220;": 1,
+        "&#8221;": 1,
+        "&#8212;": 1,
+        "&#8211;": 1,
+        "&nbsp;": 22,
+        "&amp;": 4
+      },
+      "samples": [
+        {
+          "id": "642",
+          "before": "ip: rect(1px, 1px, 1px, 1px);\\\" title=\\\"&#8220;Roteiro para Encerramento de Lixões&#8221; &#8212; Abrelpe\\\" src=\\\"https://abrelpe.org.br/roteiro-para-encerramen…",
+          "note": "Trecho do JSON serializado com entidade HTML"
+        },
+        {
+          "id": "644",
+          "before": "os de Desenvolvimento Sustentável (ODS).&nbsp;</p>\\n<!-- /wp:paragraph -->\\n\\n<!-- wp:image -->\\n<figure class=\\\"wp-block-image\\\"><img src=\\\"https://lh3.googleu…",
+          "note": "Trecho do JSON serializado com entidade HTML"
+        },
+        {
+          "id": "646",
+          "before": "a ideia parece muito distante, concorda?&nbsp;</p>\\n<!-- /wp:paragraph -->\\n\\n<!-- wp:paragraph -->\\n<p>Aqui nesse texto vamos te mostrar, em algumas dicas, que…",
+          "note": "Trecho do JSON serializado com entidade HTML"
+        },
+        {
+          "id": "1525",
+          "before": " estavam enraizando em um balde de água.&nbsp;</p>\\n<!-- /wp:paragraph -->\\n\\n<!-- wp:paragraph -->\\n<p>Preparação para uma grande produção desta planta rica em…",
+          "note": "Trecho do JSON serializado com entidade HTML"
+        },
+        {
+          "id": "1562",
+          "before": " projeto, dando mais força para a idéia.&nbsp;</p>\\n<!-- /wp:paragraph -->\\n\\n<!-- wp:paragraph -->\\n<p>Após algumas semanas de trabalho, toda sexta-feira à tar…",
+          "note": "Trecho do JSON serializado com entidade HTML"
+        }
+      ]
+    },
+    "volume_verifications.raw_json": {
+      "table": "volume_verifications",
+      "column": "raw_json",
+      "kind": "jsonb",
+      "affectedRows": 576,
+      "entities": {
+        "&#8211;": 573,
+        "&#038;": 36,
+        "&amp;": 1
+      },
+      "samples": [
+        {
+          "id": "5166",
+          "before": "e-volu\",\"title\":{\"rendered\":\"Coleta 001 &#8211; 23/03/2020\"},\"_links\":{\"self\":[{\"href\":\"https://compostagemterraorganica.com.br/wp-json/wp/v2/verificacoes-de-vo…",
+          "note": "Trecho do JSON serializado com entidade HTML"
+        },
+        {
+          "id": "5167",
+          "before": "e-volu\",\"title\":{\"rendered\":\"Coleta 002 &#8211; 04/03/2020\"},\"_links\":{\"self\":[{\"href\":\"https://compostagemterraorganica.com.br/wp-json/wp/v2/verificacoes-de-vo…",
+          "note": "Trecho do JSON serializado com entidade HTML"
+        },
+        {
+          "id": "5169",
+          "before": "e-volu\",\"title\":{\"rendered\":\"Coleta 006 &#8211; 17/04/2020\"},\"_links\":{\"self\":[{\"href\":\"https://compostagemterraorganica.com.br/wp-json/wp/v2/verificacoes-de-vo…",
+          "note": "Trecho do JSON serializado com entidade HTML"
+        },
+        {
+          "id": "5170",
+          "before": "e-volu\",\"title\":{\"rendered\":\"Coleta 007 &#8211; 24/04/2020\"},\"_links\":{\"self\":[{\"href\":\"https://compostagemterraorganica.com.br/wp-json/wp/v2/verificacoes-de-vo…",
+          "note": "Trecho do JSON serializado com entidade HTML"
+        },
+        {
+          "id": "5171",
+          "before": "e-volu\",\"title\":{\"rendered\":\"coleta 008 &#8211; 01/05/2020\"},\"_links\":{\"self\":[{\"href\":\"https://compostagemterraorganica.com.br/wp-json/wp/v2/verificacoes-de-vo…",
+          "note": "Trecho do JSON serializado com entidade HTML"
+        }
+      ]
+    }
+  },
+  "summary": [
+    {
+      "target": "volume_verifications.raw_json",
+      "kind": "jsonb",
+      "affectedRows": 576,
+      "topEntities": [
+        {
+          "entity": "&#8211;",
+          "count": 573
+        },
+        {
+          "entity": "&#038;",
+          "count": 36
+        },
+        {
+          "entity": "&amp;",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "target": "volume_verifications.title",
+      "kind": "text",
+      "affectedRows": 573,
+      "topEntities": [
+        {
+          "entity": "&#8211;",
+          "count": 573
+        }
+      ]
+    },
+    {
+      "target": "posts.content_html",
+      "kind": "text",
+      "affectedRows": 23,
+      "topEntities": [
+        {
+          "entity": "&nbsp;",
+          "count": 22
+        },
+        {
+          "entity": "&amp;",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "target": "posts.raw_json",
+      "kind": "jsonb",
+      "affectedRows": 23,
+      "topEntities": [
+        {
+          "entity": "&nbsp;",
+          "count": 22
+        },
+        {
+          "entity": "&amp;",
+          "count": 4
+        },
+        {
+          "entity": "&#8220;",
+          "count": 1
+        },
+        {
+          "entity": "&#8221;",
+          "count": 1
+        },
+        {
+          "entity": "&#8212;",
+          "count": 1
+        },
+        {
+          "entity": "&#8211;",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "target": "page_versions.html_snapshot",
+      "kind": "text",
+      "affectedRows": 2,
+      "topEntities": [
+        {
+          "entity": "&amp;",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "target": "volume_verifications.video_link",
+      "kind": "text",
+      "affectedRows": 1,
+      "topEntities": [
+        {
+          "entity": "&amp;",
+          "count": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,529 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-05-07T14:44:00.000Z",
+  "__export_source": "cursor.codex",
+  "resources": [
+    {
+      "_id": "wrk_terra_api",
+      "_type": "workspace",
+      "name": "Terra Organica API",
+      "description": "Colecao de rotas da API Postgres"
+    },
+    {
+      "_id": "env_terra_api_base",
+      "_type": "environment",
+      "parentId": "wrk_terra_api",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:5700",
+        "csrf_token": "",
+        "session_cookie": "",
+        "youtube_auth_code": "",
+        "youtube_video_path": ""
+      }
+    },
+    {
+      "_id": "fld_health",
+      "_type": "request_group",
+      "parentId": "wrk_terra_api",
+      "name": "Health"
+    },
+    {
+      "_id": "req_health",
+      "_type": "request",
+      "parentId": "fld_health",
+      "name": "GET /health",
+      "method": "GET",
+      "url": "{{ _.base_url }}/health"
+    },
+    {
+      "_id": "fld_auth",
+      "_type": "request_group",
+      "parentId": "wrk_terra_api",
+      "name": "Auth"
+    },
+    {
+      "_id": "req_auth_login",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "name": "POST /auth/login",
+      "method": "POST",
+      "url": "{{ _.base_url }}/auth/login",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"admin@terraorganica.com\",\n  \"password\": \"123456\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    },
+    {
+      "_id": "req_auth_password",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "name": "POST /auth/password (publica)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/auth/password",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"admin@terraorganica.com\",\n  \"password\": \"novaSenha123\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    },
+    {
+      "_id": "req_auth_me",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "name": "GET /auth/me",
+      "method": "GET",
+      "url": "{{ _.base_url }}/auth/me"
+    },
+    {
+      "_id": "req_auth_refresh",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "name": "POST /auth/refresh",
+      "method": "POST",
+      "url": "{{ _.base_url }}/auth/refresh",
+      "headers": [
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        },
+        {
+          "name": "Cookie",
+          "value": "terra_session={{ _.session_cookie }}; terra_csrf={{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_auth_logout",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "name": "POST /auth/logout",
+      "method": "POST",
+      "url": "{{ _.base_url }}/auth/logout",
+      "headers": [
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        },
+        {
+          "name": "Cookie",
+          "value": "terra_session={{ _.session_cookie }}; terra_csrf={{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "fld_users",
+      "_type": "request_group",
+      "parentId": "wrk_terra_api",
+      "name": "Users"
+    },
+    {
+      "_id": "req_users_list",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "GET /users",
+      "method": "GET",
+      "url": "{{ _.base_url }}/users",
+      "headers": [
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_users_get",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "GET /users/:id",
+      "method": "GET",
+      "url": "{{ _.base_url }}/users/1",
+      "headers": [
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_users_create",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "POST /users",
+      "method": "POST",
+      "url": "{{ _.base_url }}/users",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Novo Usuario\",\n  \"email\": \"novo@terraorganica.com\",\n  \"password\": \"123456\",\n  \"role\": \"admin\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_users_update",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "PUT /users/:id",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/users/1",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Usuario Atualizado\",\n  \"email\": \"usuario@terraorganica.com\",\n  \"role\": \"manager\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_users_password",
+      "_type": "request",
+      "parentId": "fld_users",
+      "name": "PATCH /users/:id/password",
+      "method": "PATCH",
+      "url": "{{ _.base_url }}/users/1/password",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"password\": \"novaSenha123\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "fld_centrals",
+      "_type": "request_group",
+      "parentId": "wrk_terra_api",
+      "name": "Centrals"
+    },
+    {
+      "_id": "req_centrals_list",
+      "_type": "request",
+      "parentId": "fld_centrals",
+      "name": "GET /centrals",
+      "method": "GET",
+      "url": "{{ _.base_url }}/centrals",
+      "headers": [
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_centrals_get",
+      "_type": "request",
+      "parentId": "fld_centrals",
+      "name": "GET /centrals/:id",
+      "method": "GET",
+      "url": "{{ _.base_url }}/centrals/1",
+      "headers": [
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_centrals_create",
+      "_type": "request",
+      "parentId": "fld_centrals",
+      "name": "POST /centrals",
+      "method": "POST",
+      "url": "{{ _.base_url }}/centrals",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Central A\",\n  \"active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_centrals_update",
+      "_type": "request",
+      "parentId": "fld_centrals",
+      "name": "PUT /centrals/:id",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/centrals/1",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Central B\",\n  \"active\": true\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_centrals_users_list",
+      "_type": "request",
+      "parentId": "fld_centrals",
+      "name": "GET /centrals/:id/users",
+      "method": "GET",
+      "url": "{{ _.base_url }}/centrals/1/users",
+      "headers": [
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_centrals_users_replace",
+      "_type": "request",
+      "parentId": "fld_centrals",
+      "name": "PUT /centrals/:id/users",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/centrals/1/users",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"userIds\": [1, 2]\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "fld_volume",
+      "_type": "request_group",
+      "parentId": "wrk_terra_api",
+      "name": "Volume Verifications"
+    },
+    {
+      "_id": "req_volume_list",
+      "_type": "request",
+      "parentId": "fld_volume",
+      "name": "GET /volume-verifications",
+      "method": "GET",
+      "url": "{{ _.base_url }}/volume-verifications",
+      "headers": [
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_volume_get",
+      "_type": "request",
+      "parentId": "fld_volume",
+      "name": "GET /volume-verifications/:id",
+      "method": "GET",
+      "url": "{{ _.base_url }}/volume-verifications/1",
+      "headers": [
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_volume_create",
+      "_type": "request",
+      "parentId": "fld_volume",
+      "name": "POST /volume-verifications",
+      "method": "POST",
+      "url": "{{ _.base_url }}/volume-verifications",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"centralId\": 1,\n  \"observations\": \"Conferencia inicial\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_volume_update",
+      "_type": "request",
+      "parentId": "fld_volume",
+      "name": "PUT /volume-verifications/:id",
+      "method": "PUT",
+      "url": "{{ _.base_url }}/volume-verifications/1",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"observations\": \"Conferencia atualizada\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_volume_delete",
+      "_type": "request",
+      "parentId": "fld_volume",
+      "name": "DELETE /volume-verifications/:id",
+      "method": "DELETE",
+      "url": "{{ _.base_url }}/volume-verifications/1",
+      "headers": [
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "fld_youtube",
+      "_type": "request_group",
+      "parentId": "wrk_terra_api",
+      "name": "YouTube"
+    },
+    {
+      "_id": "req_youtube_auth_url",
+      "_type": "request",
+      "parentId": "fld_youtube",
+      "name": "GET /youtube/setup/auth-url",
+      "method": "GET",
+      "url": "{{ _.base_url }}/youtube/setup/auth-url",
+      "headers": [
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_youtube_callback",
+      "_type": "request",
+      "parentId": "fld_youtube",
+      "name": "GET /youtube/oauth/callback",
+      "method": "GET",
+      "url": "{{ _.base_url }}/youtube/oauth/callback?code={{ _.youtube_auth_code }}",
+      "headers": [
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_youtube_exchange",
+      "_type": "request",
+      "parentId": "fld_youtube",
+      "name": "POST /youtube/setup/exchange-code",
+      "method": "POST",
+      "url": "{{ _.base_url }}/youtube/setup/exchange-code",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"code\": \"{{ _.youtube_auth_code }}\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    },
+    {
+      "_id": "req_youtube_upload",
+      "_type": "request",
+      "parentId": "fld_youtube",
+      "name": "POST /youtube/upload",
+      "method": "POST",
+      "url": "{{ _.base_url }}/youtube/upload",
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "video",
+            "type": "file",
+            "fileName": "{{ _.youtube_video_path }}"
+          },
+          {
+            "name": "title",
+            "value": "Video teste"
+          },
+          {
+            "name": "description",
+            "value": "Upload via Insomnia"
+          },
+          {
+            "name": "tags",
+            "value": "terra,organica"
+          },
+          {
+            "name": "privacyStatus",
+            "value": "unlisted"
+          }
+        ]
+      },
+      "headers": [
+        {
+          "name": "x-csrf-token",
+          "value": "{{ _.csrf_token }}"
+        }
+      ]
+    }
+  ]
+}

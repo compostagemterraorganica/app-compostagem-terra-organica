@@ -1,0 +1,53 @@
+{
+  "generatedAt": "2026-06-09T20:28:29.321Z",
+  "mode": "dry-run",
+  "totals": {
+    "rowsUpdated": 1197
+  },
+  "byTable": {
+    "posts": {
+      "rowsUpdated": 46,
+      "columns": {
+        "content_html": 23,
+        "raw_json": 23
+      }
+    },
+    "volume_verifications": {
+      "rowsUpdated": 1149,
+      "columns": {
+        "title": 573,
+        "video_link": 1,
+        "raw_json": 576
+      }
+    },
+    "page_versions": {
+      "rowsUpdated": 2,
+      "columns": {
+        "html_snapshot": 2
+      }
+    }
+  },
+  "samples": [
+    {
+      "table": "posts",
+      "id": "642",
+      "column": "content_html",
+      "before": "<div class=\"to-post-body\">\n<p>No Brasil, os aterros sanitários vêm sendo considerados como uma ótima alternativa para a&nbsp; destinação final dos resíduos sóli…",
+      "after": "<div class=\"to-post-body\">\n<p>No Brasil, os aterros sanitários vêm sendo considerados como uma ótima alternativa para a  destinação final dos resíduos sólidos u…"
+    },
+    {
+      "table": "posts",
+      "id": "644",
+      "column": "content_html",
+      "before": "<div class=\"to-post-body\">\n<p>A Organização das Nações Unidas (ONU) definiu no ano de 2015 que fomentaria ações que estivessem de acordo com medidas necessárias…",
+      "after": "<div class=\"to-post-body\">\n<p>A Organização das Nações Unidas (ONU) definiu no ano de 2015 que fomentaria ações que estivessem de acordo com medidas necessárias…"
+    },
+    {
+      "table": "posts",
+      "id": "646",
+      "column": "content_html",
+      "before": "<div class=\"to-post-body\">\n<p>Quando a gente pensa em ‘’mudar o mundo’’, essa ideia parece muito distante, concorda?&nbsp;</p>\n<p>Aqui nesse texto vamos te most…",
+      "after": "<div class=\"to-post-body\">\n<p>Quando a gente pensa em ‘’mudar o mundo’’, essa ideia parece muito distante, concorda? </p>\n<p>Aqui nesse texto vamos te mostrar, …"
+    }
+  ]
+}

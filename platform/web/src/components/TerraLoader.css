@@ -1,0 +1,119 @@
+.terra-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.terra-loader--inline {
+  display: inline-flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.terra-loader--centered {
+  padding: 48px 20px;
+  width: 100%;
+}
+
+.terra-loader--fullscreen {
+  min-height: 50vh;
+  width: 100%;
+  padding: 48px 20px;
+}
+
+.terra-loader--overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(2px);
+}
+
+.terra-loader__spinner {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.terra-loader__spinner--sm {
+  width: 20px;
+  height: 20px;
+}
+
+.terra-loader__spinner--md {
+  width: 40px;
+  height: 40px;
+}
+
+.terra-loader__spinner--lg {
+  width: 56px;
+  height: 56px;
+}
+
+.terra-loader__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+
+.terra-loader__spinner--sm .terra-loader__ring {
+  border-width: 2px;
+}
+
+.terra-loader__ring--outer {
+  border-top-color: #0274be;
+  border-right-color: #0274be;
+  animation: terra-loader-spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.terra-loader__ring--inner {
+  inset: 15%;
+  border-bottom-color: #3caa59;
+  border-left-color: #3caa59;
+  animation: terra-loader-spin-reverse 0.85s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.terra-loader__label {
+  margin: 0;
+  font-family: "Raleway", "Open Sans", Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  text-align: center;
+}
+
+.terra-loader--inline .terra-loader__label {
+  font-size: inherit;
+}
+
+@keyframes terra-loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes terra-loader-spin-reverse {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .terra-loader__ring--outer,
+  .terra-loader__ring--inner {
+    animation: terra-loader-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes terra-loader-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
+}

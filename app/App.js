@@ -6,9 +6,9 @@ import {
   TouchableOpacity, 
   Alert, 
   FlatList,
-  Linking,
   ImageBackground,
-  Image
+  Image,
+  Modal
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -17,10 +17,10 @@ import VideoRecorder from './src/components/VideoRecorder';
 import VideoList from './src/components/VideoList';
 import CentralPosts from './src/components/CentralPosts';
 import UpdateStatus from './src/components/UpdateStatus';
+import LoginScreen from './src/components/LoginScreen';
 import { getConfig } from './src/config/environment';
 import updateService from './src/services/updateService';
-import { authService, isJwtExpired } from './src/services/authService';
-import { apiClient } from './src/services/apiClient';
+import authService from './src/services/authService';
 
 export default function App() {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
@@ -28,6 +28,7 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState('home'); // 'home', 'recorder', 'central-posts'
   const [videos, setVideos] = useState([]);
   const [hasError, setHasError] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -35,7 +36,6 @@ export default function App() {
         // Logar variáveis de ambiente na inicialização
         await loadVideos();
         await checkLoginStatus();
-        setupDeepLinking();
         
         // Inicializar serviço de atualizações
         await updateService.initialize();
@@ -62,107 +62,27 @@ export default function App() {
     return unsubscribe;
   }, []);
 
-  const setupDeepLinking = () => {
-    // Escutar deep links quando o app está ativo
-    const subscription = Linking.addEventListener('url', (event) => {
-      handleDeepLink(event);
-    });
-    
-    // Verificar se o app foi aberto via deep link
-    Linking.getInitialURL().then((url) => {
-      if (url && url.includes('auth/callback')) {
-        handleDeepLink({ url });
-      }
-    }).catch(() => {});
-
-    return () => {
-      subscription?.remove();
-    };
-  };
-
   const checkLoginStatus = async () => {
     try {
-      const sessionId = await AsyncStorage.getItem('wp_session_id');
-      if (!sessionId) return;
-
-      // Pré-checagem local por expiração (evita request inútil)
-      if (isJwtExpired(sessionId)) {
-        await authService.forceLogout('AUTH_EXPIRED');
-        return;
+      const user = await authService.me();
+      if (user) {
+        setUserLoggedIn(true);
+        setUserData(user);
       }
-
-      // Verificar no servidor se a sessão ainda é válida
-      await apiClient.getJson('/me', {
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      setUserLoggedIn(true);
-
-      // Carregar dados do usuário
-      const userDataString = await AsyncStorage.getItem('wp_user_data');
-      if (userDataString) {
-        try {
-          const parsed = JSON.parse(userDataString);
-          setUserData(parsed);
-        } catch {
-          setUserData(null);
-        }
-      }
-    } catch (error) {
-      // Silently fail
-      // Se o erro for de auth, apiClient já terá limpado a sessão
+    } catch {
       setUserLoggedIn(false);
       setUserData(null);
     }
   };
 
-  const handleDeepLink = async (event) => {
-    try {
-      const { url } = event;
-      
-      // Ignorar URLs do Expo (exp://) que não são de autenticação
-      if (url && url.startsWith('exp://') && !url.includes('auth/callback')) {
-        return;
-      }
-      
-      if (url && url.includes('auth/callback')) {
-        // Extrair parâmetros da URL de forma segura
-        let jwtToken = null;
-        let userData = null;
-        
-        try {
-          const queryString = url.split('?')[1];
-          if (queryString) {
-            const params = new URLSearchParams(queryString);
-            jwtToken = params.get('jwt_token');
-            userData = params.get('user_data');
-          }
-        } catch (parseError) {
-          Alert.alert('Erro', 'URL de autenticação inválida.');
-          return;
-        }
-        
-        if (jwtToken) {
-          await AsyncStorage.setItem('wp_session_id', jwtToken);
-          
-          if (userData) {
-            try {
-              const user = JSON.parse(decodeURIComponent(userData));
-              await AsyncStorage.setItem('wp_user_data', JSON.stringify(user));
-              setUserData(user);
-            } catch (userDataError) {
-              // Continuar mesmo se falhar ao salvar user data
-            }
-          }
-          
-          setUserLoggedIn(true);
-        } else {
-          Alert.alert('Erro', 'Não foi possível obter os dados de autenticação.');
-        }
-      }
-    } catch (error) {
-      Alert.alert('Erro', `Falha no processamento do login: ${error.message}`);
-    }
+  const handleLoginSuccess = (user) => {
+    setUserLoggedIn(true);
+    setUserData(user);
+    setShowLoginModal(false);
+  };
+
+  const handleLogin = () => {
+    setShowLoginModal(true);
   };
 
   const loadVideos = async () => {
@@ -185,34 +105,6 @@ export default function App() {
     }
   };
 
-  const handleLogin = async () => {
-    try {
-      const baseUrl = getConfig('WORDPRESS_BASE_URL');
-      const clientId = getConfig('WORDPRESS_OAUTH_CLIENT_ID');
-      const redirectUri = getConfig('WORDPRESS_OAUTH_REDIRECT_URI');
-      
-      // Usar URLSearchParams para garantir encoding correto
-      const params = new URLSearchParams({
-        response_type: 'code',
-        client_id: clientId,
-        redirect_uri: redirectUri,
-        scope: 'basic',
-        state: 'app'
-      });
-      
-      const authUrl = `${baseUrl}/oauth/authorize?${params.toString()}`;
-      
-      const supported = await Linking.canOpenURL(authUrl);
-      if (supported) {
-        await Linking.openURL(authUrl);
-      } else {
-        Alert.alert('Erro', 'Não é possível abrir o navegador para login.');
-      }
-    } catch (error) {
-      Alert.alert('Erro', 'Não foi possível abrir a página de login.');
-    }
-  };
-
   const handleRecordVideo = () => {
     // Iniciar automaticamente a gravação padrão
     setCurrentScreen('recorder');
@@ -228,23 +120,9 @@ export default function App() {
 
   const handleLogout = async () => {
     try {
-      // Fazer logout no servidor (best-effort)
-      try {
-        await apiClient.request('/logout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-      } catch {
-        // Continuar mesmo se falhar no servidor
-      }
-
-      // Limpar dados locais
-      await authService.clearSession();
-      
-      // Atualizar estado
+      await authService.logout();
       setUserLoggedIn(false);
       setUserData(null);
-      
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível fazer logout. Tente novamente.');
     }
@@ -372,7 +250,7 @@ export default function App() {
             </View>
           ) : (
             <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-              <Text style={styles.loginButtonText}>🔐 Fazer Login</Text>
+              <Text style={styles.loginButtonText}>Entrar</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -457,20 +335,24 @@ export default function App() {
     return renderErrorScreen();
   }
 
-  if (currentScreen === 'recorder') {
-    return renderVideoRecorder();
-  }
+  return (
+    <>
+      {currentScreen === 'recorder' ? renderVideoRecorder() : null}
+      {currentScreen === 'central-posts' ? (
+        <CentralPosts onBack={handleBackToHome} onLogin={handleLogin} />
+      ) : null}
+      {currentScreen === 'home' ? renderHomeScreen() : null}
 
-  if (currentScreen === 'central-posts') {
-    return (
-      <CentralPosts
-        onBack={handleBackToHome}
-        onLogin={handleLogin}
-      />
-    );
-  }
-
-  return renderHomeScreen();
+      <Modal visible={showLoginModal} animationType="slide" onRequestClose={() => setShowLoginModal(false)}>
+        <SafeAreaView style={styles.loginModalContainer}>
+          <LoginScreen
+            onSuccess={handleLoginSuccess}
+            onCancel={() => setShowLoginModal(false)}
+          />
+        </SafeAreaView>
+      </Modal>
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -649,5 +531,9 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  loginModalContainer: {
+    flex: 1,
+    backgroundColor: '#1a1a1a',
   },
 });

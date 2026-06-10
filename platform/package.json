@@ -1,0 +1,33 @@
+{
+  "name": "platform-migration-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Scripts para migracao de dados legados para Postgres",
+  "main": "scripts/migrate-wordpress-to-postgres.js",
+  "scripts": {
+    "migrate:legacy-to-postgres": "node scripts/migrate-wordpress-to-postgres.js",
+    "migrate:media-and-links": "node scripts/migrate-wordpress-media-and-links.js",
+    "seed:home-page": "node scripts/seed-home-page-grapesjs.js",
+    "seed:cms-pages": "node scripts/seed-cms-pages.js",
+    "backfill:central-images": "node scripts/backfill-central-images.js",
+    "media:migrate-central-images-gcs": "node scripts/migrate-central-images-to-gcs.js",
+    "normalize:post-content": "node scripts/normalize-post-content.js",
+    "normalize:post-status": "node scripts/normalize-post-status.js",
+    "backfill:post-images": "node scripts/backfill-post-featured-images.js",
+    "media:scan-local": "node scripts/scan-local-uploads.js",
+    "media:scan-urls": "node scripts/scan-content-media-urls.js",
+    "media:inventory": "node scripts/media-inventory.js",
+    "media:migrate-gcs": "node scripts/migrate-local-media-to-gcs.js",
+    "media:rewrite-urls": "node scripts/rewrite-media-urls.js",
+    "media:purge-variants": "node scripts/purge-wp-media-variants.js",
+    "analyze:html-entities": "node scripts/analyze-html-entities.js",
+    "sanitize:html-entities": "node scripts/sanitize-html-entities.js",
+    "sanitize:html-entities:apply": "node scripts/sanitize-html-entities.js --apply"
+  },
+  "dependencies": {
+    "axios": "^1.13.1",
+    "dotenv": "^17.2.3",
+    "fast-xml-parser": "^5.7.3",
+    "pg": "^8.16.3"
+  }
+}

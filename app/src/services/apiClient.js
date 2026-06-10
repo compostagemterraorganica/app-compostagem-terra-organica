@@ -1,5 +1,6 @@
 import { getConfig } from '../config/environment';
-import { authService, isJwtExpired } from './authService';
+import { cookieFetch } from './cookieClient';
+import authService from './authService';
 
 function isAbsoluteUrl(url) {
   return /^https?:\/\//i.test(url);
@@ -7,7 +8,7 @@ function isAbsoluteUrl(url) {
 
 async function withTimeout(promiseFactory, timeoutMs) {
   if (!timeoutMs || timeoutMs <= 0 || typeof AbortController !== 'function') {
-    return await promiseFactory(undefined);
+    return promiseFactory(undefined);
   }
 
   const controller = new AbortController();
@@ -20,29 +21,20 @@ async function withTimeout(promiseFactory, timeoutMs) {
   }
 }
 
+async function parseJsonResponse(response) {
+  const text = await response.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+}
+
 export const apiClient = {
   async request(pathOrUrl, options = {}) {
     const baseUrl = getConfig('API_BASE_URL');
     const url = isAbsoluteUrl(pathOrUrl) ? pathOrUrl : `${baseUrl}${pathOrUrl}`;
-
-    const token = await authService.getToken();
-
-    // Pré-validação local para evitar tentar requests com token claramente expirado
-    if (token && isJwtExpired(token)) {
-      await authService.forceLogout('AUTH_EXPIRED');
-      const err = new Error('Sessão expirada. Faça login novamente.');
-      err.code = 'AUTH_EXPIRED';
-      throw err;
-    }
-
-    const headers = {
-      ...(options.headers || {})
-    };
-
-    // Injeta Authorization se não foi fornecido e se temos token
-    if (token && !headers.Authorization && !headers.authorization) {
-      headers.Authorization = `Bearer ${token}`;
-    }
 
     const timeoutMs =
       options.timeoutMs ??
@@ -50,16 +42,14 @@ export const apiClient = {
 
     const response = await withTimeout(
       (signal) =>
-        fetch(url, {
+        cookieFetch(url, {
           ...options,
-          headers,
           signal: signal ?? options.signal
         }),
       timeoutMs
     );
 
-    // Auto-logout se backend indicar que token é inválido/expirou
-    if (response.status === 401 || response.status === 403) {
+    if (response.status === 401) {
       await authService.forceLogout('AUTH_INVALID');
       const err = new Error('Sessão inválida. Faça login novamente.');
       err.code = 'AUTH_INVALID';
@@ -72,12 +62,13 @@ export const apiClient = {
 
   async getJson(pathOrUrl, options = {}) {
     const response = await this.request(pathOrUrl, options);
-    const text = await response.text();
-    const data = text ? (() => { try { return JSON.parse(text); } catch { return text; } })() : null;
+    const data = await parseJsonResponse(response);
 
     if (!response.ok) {
       const err = new Error(
-        (data && typeof data === 'object' && (data.message || data.error)) ? (data.message || data.error) : `Erro HTTP ${response.status}`
+        (data && typeof data === 'object' && (data.message || data.error))
+          ? data.message || data.error
+          : `Erro HTTP ${response.status}`
       );
       err.status = response.status;
       err.data = data;
@@ -85,8 +76,19 @@ export const apiClient = {
     }
 
     return data;
+  },
+
+  async postJson(pathOrUrl, body, options = {}) {
+    return this.getJson(pathOrUrl, {
+      ...options,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers || {})
+      },
+      body: JSON.stringify(body)
+    });
   }
 };
 
-
-
+export default apiClient;

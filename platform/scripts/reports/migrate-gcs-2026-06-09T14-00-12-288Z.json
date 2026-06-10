@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-06-09T13:41:00.098Z",
+  "uploadsDir": "/home/felipe/Projects/appterraorganica/api/uploads",
+  "uploaded": 366,
+  "skippedExistingSha": 40,
+  "mappingsCreated": 4296,
+  "failed": 0,
+  "errors": [],
+  "summary": {
+    "generatedAt": "2026-06-09T13:41:00.098Z",
+    "uploadsDir": "/home/felipe/Projects/appterraorganica/api/uploads",
+    "uploaded": 366,
+    "skippedExistingSha": 40,
+    "mappingsCreated": 4296,
+    "failed": 0,
+    "errors": [],
+    "dbAssetsLocalMigration": 366,
+    "dbMappingsTotal": 4296
+  }
+}

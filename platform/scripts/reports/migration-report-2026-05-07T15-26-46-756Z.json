@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-05-07T15:26:46.756Z",
+  "sourceCounts": {
+    "centrals": 18,
+    "users": 146,
+    "volume_verifications": 581,
+    "user_central_relations": 24
+  },
+  "dbCounts": {
+    "users": 146,
+    "centrals": 20,
+    "volume_verifications": 581,
+    "user_central_relations": 24
+  },
+  "integrity": {
+    "missing_verification_centrals": 0,
+    "duplicate_relations": 0
+  }
+}

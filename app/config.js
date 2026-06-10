@@ -1,24 +1,20 @@
-// Configuração da API Backend
-export const API_CONFIG = {
-  // Para testar no emulador Android use: http://10.0.2.2:3000
-  // Para testar no dispositivo físico, substitua pelo IP da sua máquina
-  // Exemplo: http://192.168.1.100:3000
-  baseURL: 'http://localhost:3000',
-  
+import { getConfig } from './src/config/environment';
+
+export default {
+  API_BASE_URL: getConfig('API_BASE_URL'),
   endpoints: {
-    health: '/health',
-    wordpress: {
-      callback: '/auth/callback',
-      me: '/me',
-      logout: '/logout',
+    auth: {
+      checkEmail: '/auth/check-email',
+      sendCode: '/auth/send-code',
+      confirmPassword: '/auth/confirm-password',
+      login: '/auth/login',
+      logout: '/auth/logout',
+      me: '/auth/me',
+      meCentrals: '/auth/me/centrals'
     },
+    volumeVerifications: '/volume-verifications',
     youtube: {
-      authUrl: '/youtube/setup/auth-url',
-      exchangeCode: '/youtube/setup/exchange-code',
-      upload: '/youtube/upload',
-    },
-  },
+      upload: '/youtube/upload'
+    }
+  }
 };
-
-export default API_CONFIG;
-

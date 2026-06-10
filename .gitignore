@@ -1,5 +1,10 @@
 node_modules
 .env
+*-gcs-sa.json
+*-service-account*.json
+api/credentials/
+api/secrets/
+api/uploads/
 /uploads
 !/uploads/temp/.gitkeep
 !/uploads/processed/.gitkeep

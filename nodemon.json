@@ -6,7 +6,7 @@
   ],
   "watch": [
     "server.js",
-    "routes/**/*.js"
+    "api/routes/**/*.js"
   ]
 }
 

@@ -6,6 +6,9 @@
     "start": "expo start",
     "start:dev": "start-dev.bat",
     "reverse": "adb reverse tcp:8081 tcp:8081",
+    "build:apk:dev": "sh -c 'SDK=\"${ANDROID_HOME:-$HOME/Android/Sdk}\"; [ -d \"$SDK\" ] || { echo \"Android SDK nao encontrado. Instale o SDK ou defina ANDROID_HOME.\"; exit 1; }; printf \"sdk.dir=%s\\n\" \"$SDK\" > android/local.properties; cd android && bash ./gradlew :app:assembleDebug'",
+    "build:apk:dev:install": "npm run build:apk:dev && npm run adb:install-dev-apk",
+    "adb:install-dev-apk": "sh -c 'APK=\"${APK_PATH:-android/app/build/outputs/apk/debug/app-debug.apk}\"; adb get-state >/dev/null 2>&1 || { echo \"Nenhum dispositivo ADB conectado.\"; exit 1; }; [ -f \"$APK\" ] || { echo \"APK nao encontrado em: $APK\"; exit 1; }; adb install -r \"$APK\"'",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
@@ -15,6 +18,7 @@
   "dependencies": {
     "@expo/config-plugins": "^54.0.2",
     "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-cookies/cookies": "^6.2.1",
     "@react-native-picker/picker": "^2.11.2",
     "@react-navigation/bottom-tabs": "^7.4.7",
     "@react-navigation/native": "^7.1.17",

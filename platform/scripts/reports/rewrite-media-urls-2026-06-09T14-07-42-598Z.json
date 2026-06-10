@@ -1,0 +1,33 @@
+{
+  "generatedAt": "2026-06-09T14:07:28.793Z",
+  "posts": {
+    "rowsUpdated": 34,
+    "contentUpdated": 34,
+    "featuredUpdated": 34
+  },
+  "pages": {
+    "updated": 1
+  },
+  "files": [
+    {
+      "file": "/home/felipe/Projects/appterraorganica/platform/scripts/lib/home-page-content.js",
+      "replacements": 17
+    },
+    {
+      "file": "/home/felipe/Projects/appterraorganica/platform/web/src/components/SiteFooter.jsx",
+      "replacements": 1
+    }
+  ],
+  "totals": {
+    "replacements": 250
+  },
+  "unresolved": [
+    "https://compostagemterraorganica.com.br/wp-content/uploads/2022/07/20211106_120358-1-1024x576.jpg",
+    "/uploads/2022/07/20211106_120358-1-1024x576.jpg",
+    "/uploads/2024/12/NOTATECNICA_lei11645.pdf"
+  ],
+  "remainingWpRefs": {
+    "posts": 3,
+    "pageVersions": 29
+  }
+}

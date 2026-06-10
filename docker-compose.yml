@@ -1,0 +1,40 @@
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: terraorganica-api
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --legacy-watch"
+    env_file:
+      - ./api/.env
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - "5700:3000"
+    volumes:
+      - ./api:/app
+      - /app/node_modules
+
+  app:
+    image: node:18-alpine
+    container_name: terraorganica-app
+    working_dir: /usr/src/app
+    command: sh -c "npm install && npm start -- --host lan"
+    depends_on:
+      - api
+    environment:
+      - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    ports:
+      - "8081:8081"
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
+      - "19006:19006"
+    volumes:
+      - ./app:/usr/src/app
+      - /usr/src/app/node_modules
+    stdin_open: true
+    tty: true

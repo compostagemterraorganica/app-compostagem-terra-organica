@@ -1,7 +1,4 @@
 declare module '@env' {
-  export const WORDPRESS_BASE_URL: string;
-  export const WORDPRESS_OAUTH_CLIENT_ID: string;
-  export const WORDPRESS_OAUTH_REDIRECT_URI: string;
   export const API_BASE_URL: string;
   export const YOUTUBE_UPLOAD_URL: string;
   export const APP_NAME: string;

@@ -1,0 +1,40 @@
+.admin-drawer-nav {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(70, 201, 105, 0.65) rgba(255, 255, 255, 0.08);
+}
+
+.admin-drawer-nav::-webkit-scrollbar {
+  width: 7px;
+}
+
+.admin-drawer-nav::-webkit-scrollbar-track {
+  margin: 14px 0;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+}
+
+.admin-drawer-nav::-webkit-scrollbar-thumb {
+  min-height: 48px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #46c969 0%, #3caa59 50%, rgba(2, 116, 190, 0.85) 100%);
+  background-clip: padding-box;
+  box-shadow: 0 0 8px rgba(70, 201, 105, 0.2);
+}
+
+.admin-drawer-nav::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #5ed67a 0%, #46c969 55%, #3a9ad9 100%);
+  background-clip: padding-box;
+  box-shadow: 0 0 12px rgba(70, 201, 105, 0.35);
+}
+
+.admin-drawer-nav::-webkit-scrollbar-thumb:active {
+  background: #3caa59;
+  background-clip: padding-box;
+}
+
+.admin-drawer-nav::-webkit-scrollbar-corner {
+  background: transparent;
+}

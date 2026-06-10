@@ -1,0 +1,83 @@
+.post-editor {
+  border: 1px solid #9ca3af;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.post-editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px;
+  border-bottom: 1px solid #d1d5db;
+  background: #f3f4f6;
+}
+
+.post-editor-toolbar__btn {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 6px 10px;
+  background: #fff;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.post-editor-toolbar__btn:hover {
+  border-color: #9d7b4e;
+  color: #9d7b4e;
+}
+
+.post-editor-toolbar__btn--active {
+  background: #9d7b4e;
+  border-color: #9d7b4e;
+  color: #fff;
+}
+
+.post-editor-toolbar__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.post-editor-toolbar__sep {
+  width: 1px;
+  align-self: stretch;
+  background: #d1d5db;
+  margin: 0 4px;
+}
+
+.post-editor-toolbar__underline {
+  text-decoration: underline;
+}
+
+.post-editor-surface {
+  min-height: 280px;
+}
+
+.post-editor-content {
+  min-height: 280px;
+  padding: 16px 18px;
+  outline: none;
+}
+
+.post-editor-content p.is-editor-empty:first-child::before {
+  color: #9ca3af;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.post-editor-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  display: block;
+  margin: 1em auto;
+}
+
+.post-editor-content a {
+  color: #0274be;
+  text-decoration: underline;
+}

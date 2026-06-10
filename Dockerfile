@@ -13,7 +13,8 @@ RUN npm install
 
 # Copiar código da aplicação (excluindo pasta app)
 COPY server.js ./
-COPY routes/ ./routes/
+COPY api/routes/ ./api/routes/
+COPY api/utils/ ./api/utils/
 COPY utils/ ./utils/
 COPY nodemon.json ./
 

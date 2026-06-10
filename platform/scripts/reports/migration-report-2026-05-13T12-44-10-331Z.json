@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-05-13T12:44:10.191Z",
+  "sourceCounts": {
+    "centrals": 18,
+    "users": 146,
+    "volume_verifications": 584,
+    "user_central_relations": 24,
+    "posts": 45
+  },
+  "dbCounts": {
+    "users": 146,
+    "centrals": 20,
+    "volume_verifications": 584,
+    "user_central_relations": 24,
+    "posts": 45
+  },
+  "integrity": {
+    "missing_verification_centrals": 0,
+    "duplicate_relations": 0
+  },
+  "postsByStatus": [
+    {
+      "status": "private",
+      "count": 1
+    },
+    {
+      "status": "publish",
+      "count": 44
+    }
+  ]
+}
