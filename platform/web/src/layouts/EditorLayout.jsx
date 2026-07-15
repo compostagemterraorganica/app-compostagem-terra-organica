@@ -3,10 +3,12 @@ import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined'
 import ExitToAppIcon from '@mui/icons-material/ExitToApp'
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
 import LocationCityOutlinedIcon from '@mui/icons-material/LocationCityOutlined'
+import MailOutlinedIcon from '@mui/icons-material/MailOutlined'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined'
 import WaterDropOutlinedIcon from '@mui/icons-material/WaterDropOutlined'
 import {
+  Badge,
   Box,
   CssBaseline,
   Divider,
@@ -24,8 +26,11 @@ import {
   useTheme
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { formsService } from '../services/formsService'
+import { ADMIN_ROUTES } from '../lib/adminRoutes'
 import { Link, Navigate, Outlet, useLocation, useMatch } from 'react-router-dom'
+import TerraImage from '../components/TerraImage'
 import TerraLoader from '../components/TerraLoader'
 import { useAuth } from '../contexts/AuthContext'
 import { adminTheme } from '../theme/adminTheme'
@@ -38,25 +43,26 @@ const NAV_SECTIONS = [
   {
     title: 'Conteúdo',
     items: [
-      { to: '/admin/editor/pages', label: 'Páginas', icon: ArticleOutlinedIcon },
-      { to: '/admin/editor/posts', label: 'Posts', icon: PostAddOutlinedIcon }
+      { to: ADMIN_ROUTES.pages, label: 'Páginas', icon: ArticleOutlinedIcon },
+      { to: ADMIN_ROUTES.posts, label: 'Posts', icon: PostAddOutlinedIcon }
     ]
   },
   {
     title: 'Gerenciamento',
     items: [
-      { to: '/admin/editor/users', label: 'Usuários', icon: GroupOutlinedIcon },
-      { to: '/admin/editor/centrals', label: 'Centrais', icon: LocationCityOutlinedIcon },
-      { to: '/admin/editor/volume-verifications', label: 'Verificações', icon: WaterDropOutlinedIcon }
+      { to: ADMIN_ROUTES.messages, label: 'Mensagens', icon: MailOutlinedIcon, badgeKey: 'contactMessages' },
+      { to: ADMIN_ROUTES.users, label: 'Usuários', icon: GroupOutlinedIcon },
+      { to: ADMIN_ROUTES.centrals, label: 'Centrais', icon: LocationCityOutlinedIcon },
+      { to: ADMIN_ROUTES.verifications, label: 'Verificações', icon: WaterDropOutlinedIcon }
     ]
   },
   {
     title: 'Análises',
-    items: [{ to: '/admin/dash/dashboard', label: 'Dashboard', icon: DashboardOutlinedIcon }]
+    items: [{ to: ADMIN_ROUTES.dashboard, label: 'Dashboard', icon: DashboardOutlinedIcon }]
   }
 ]
 
-function NavItem({ to, label, icon: Icon, onNavigate }) {
+function NavItem({ to, label, icon: Icon, onNavigate, badgeCount = 0 }) {
   const location = useLocation()
   const active = location.pathname === to || location.pathname.startsWith(`${to}/`)
 
@@ -80,14 +86,29 @@ function NavItem({ to, label, icon: Icon, onNavigate }) {
       }}
     >
       <ListItemIcon sx={{ minWidth: 36, color: 'inherit' }}>
-        <Icon fontSize="small" />
+        <Badge
+          badgeContent={badgeCount}
+          color="error"
+          overlap="circular"
+          invisible={!badgeCount}
+          sx={{
+            '& .MuiBadge-badge': {
+              fontSize: 10,
+              minWidth: 16,
+              height: 16,
+              fontWeight: 700
+            }
+          }}
+        >
+          <Icon fontSize="small" />
+        </Badge>
       </ListItemIcon>
       <ListItemText primary={label} primaryTypographyProps={{ fontSize: 13, fontWeight: active ? 600 : 500 }} />
     </ListItemButton>
   )
 }
 
-function AdminDrawer({ onNavigate }) {
+function AdminDrawer({ onNavigate, unreadContactCount }) {
   const { user, logout } = useAuth()
 
   const handleLogout = async () => {
@@ -99,11 +120,14 @@ function AdminDrawer({ onNavigate }) {
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Toolbar sx={{ px: 1.5, py: 1.5, minHeight: 'auto !important' }}>
         <Stack spacing={0.75} alignItems="center" width="100%">
-          <Box
-            component="img"
+          <TerraImage
             src={LOGO_URL}
             alt="Terra Orgânica"
-            sx={{ width: '100%', maxWidth: 150, height: 'auto', filter: 'brightness(0) invert(1)' }}
+            priority
+            inline
+            showSkeleton={false}
+            style={{ maxWidth: 150, filter: 'brightness(0) invert(1)' }}
+            objectFit="contain"
           />
           <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)', letterSpacing: 1, textTransform: 'uppercase' }}>
             Painel Administrativo
@@ -124,7 +148,12 @@ function AdminDrawer({ onNavigate }) {
             </Typography>
             <List disablePadding>
               {section.items.map((item) => (
-                <NavItem key={item.to} {...item} onNavigate={onNavigate} />
+                <NavItem
+                  key={item.to}
+                  {...item}
+                  onNavigate={onNavigate}
+                  badgeCount={item.badgeKey === 'contactMessages' ? unreadContactCount : 0}
+                />
               ))}
             </List>
           </Box>
@@ -171,9 +200,25 @@ function AdminShell() {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [unreadContactCount, setUnreadContactCount] = useState(0)
   const location = useLocation()
-  const isCanvas = useMatch('/admin/editor/pages/:id/edit')
-  const isLogin = location.pathname === '/admin/editor/login'
+  const isCanvas = useMatch('/admin/paginas/:id/editar')
+  const isLogin = location.pathname === ADMIN_ROUTES.login
+
+  const refreshUnreadCount = useCallback(async () => {
+    try {
+      const count = await formsService.getUnreadCount()
+      setUnreadContactCount(count)
+    } catch {
+      // ignore polling errors
+    }
+  }, [])
+
+  useEffect(() => {
+    refreshUnreadCount()
+    const interval = setInterval(refreshUnreadCount, 60000)
+    return () => clearInterval(interval)
+  }, [refreshUnreadCount])
 
   const closeMobile = () => setMobileOpen(false)
 
@@ -215,11 +260,11 @@ function AdminShell() {
           ModalProps={{ keepMounted: true }}
           sx={drawerSx}
         >
-          <AdminDrawer onNavigate={closeMobile} />
+          <AdminDrawer onNavigate={closeMobile} unreadContactCount={unreadContactCount} />
         </Drawer>
       ) : (
         <Drawer variant="permanent" sx={drawerSx}>
-          <AdminDrawer />
+          <AdminDrawer unreadContactCount={unreadContactCount} />
         </Drawer>
       )}
 
@@ -246,7 +291,7 @@ function AdminShell() {
           </Box>
         ) : null}
         <Box sx={{ flex: 1, p: { xs: 2, md: 3 }, overflow: 'auto' }}>
-          <Outlet />
+          <Outlet context={{ setUnreadContactCount, refreshUnreadContactCount: refreshUnreadCount }} />
         </Box>
       </Box>
     </Box>
@@ -256,7 +301,7 @@ function AdminShell() {
 export default function EditorLayout() {
   const { user, loading } = useAuth()
   const location = useLocation()
-  const isLogin = location.pathname === '/admin/editor/login'
+  const isLogin = location.pathname === ADMIN_ROUTES.login
 
   if (loading) {
     return (
@@ -278,11 +323,11 @@ export default function EditorLayout() {
   }
 
   if (!user && !isLogin) {
-    return <Navigate to="/admin/editor/login" replace state={{ from: location }} />
+    return <Navigate to={ADMIN_ROUTES.login} replace state={{ from: location }} />
   }
 
   if (user && !user.isAdministrator && !isLogin) {
-    return <Navigate to="/admin/editor/login" replace state={{ from: location, reason: 'not-admin' }} />
+    return <Navigate to={ADMIN_ROUTES.login} replace state={{ from: location, reason: 'not-admin' }} />
   }
 
   return (

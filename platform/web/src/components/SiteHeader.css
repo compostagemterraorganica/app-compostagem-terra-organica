@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
-
 .site-header {
   width: 100%;
   position: relative;
@@ -32,7 +30,14 @@
   line-height: 0;
 }
 
-.site-header-logo-link img {
+.site-header-logo-link .terra-image {
+  display: inline-block;
+  background: transparent;
+  overflow: visible;
+}
+
+.site-header-logo-link .terra-image__img,
+.site-header-logo-img {
   display: block;
   width: 100%;
   max-width: 236px;
@@ -68,7 +73,7 @@
 .site-header-menu-link {
   display: inline-block;
   padding: 10px 12px;
-  font-family: 'Raleway', sans-serif;
+  font-family: var(--font-family);
   font-size: 16px;
   font-weight: 400;
   text-transform: uppercase;
@@ -115,18 +120,29 @@
 
 @media (max-width: 921px) {
   .site-header-inner {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    align-items: center;
   }
 
   .site-header-brand {
-    flex: 1 1 80%;
+    flex: 1 1 auto;
+    min-width: 0;
     order: 1;
   }
 
+  .site-header-logo-link .terra-image__img,
+  .site-header-logo-img {
+    width: auto;
+    max-width: 160px;
+    max-height: 44px;
+    object-fit: contain;
+  }
+
   .site-header-nav {
-    flex: 0 0 20%;
+    flex: 0 0 auto;
     order: 2;
     justify-content: flex-end;
+    margin-left: auto;
   }
 
   .site-header-nav-main {
@@ -206,7 +222,9 @@
     padding: 10px 15px;
   }
 
-  .site-header-logo-link img {
-    max-width: 100%;
+  .site-header-logo-link .terra-image__img,
+  .site-header-logo-img {
+    max-width: 140px;
+    max-height: 40px;
   }
 }

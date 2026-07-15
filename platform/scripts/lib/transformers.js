@@ -45,6 +45,46 @@ function mapCentral(raw) {
   };
 }
 
+const LITERS_PER_KG = 0.55;
+
+function litersToKg(liters) {
+  return Math.round(Number(liters) * LITERS_PER_KG * 100) / 100;
+}
+
+function normalizeWasteType(value) {
+  const normalized = String(value || '')
+    .trim()
+    .toLowerCase();
+  if (normalized === 'verdes' || normalized === 'verde') return 'verdes';
+  return 'alimentares';
+}
+
+function extractTagNames(raw) {
+  const candidates = [
+    raw.meta?.tags,
+    raw.meta?.tag,
+    raw.meta?.['tags-da-central'],
+    raw.meta?.etiquetas
+  ];
+
+  const names = [];
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    const list = Array.isArray(candidate)
+      ? candidate
+      : String(candidate)
+          .split(/[,;|]/)
+          .map((part) => part.trim())
+          .filter(Boolean);
+    for (const item of list) {
+      const name = String(item?.name || item?.label || item).trim();
+      if (name) names.push(name);
+    }
+  }
+
+  return [...new Set(names)];
+}
+
 function mapVolumeVerification(raw) {
   const id = toIntOrNull(raw.id ?? raw.ID);
   const centralId = toIntOrNull(raw.meta?.central);
@@ -52,6 +92,9 @@ function mapVolumeVerification(raw) {
 
   const parsedVolume = Number(raw.meta?.volume);
   const volume = Number.isFinite(parsedVolume) && parsedVolume >= 0 ? parsedVolume : 0;
+  const volumeKgRaw = Number(raw.meta?.volume_kg ?? raw.meta?.['volume-kg']);
+  const volume_kg =
+    Number.isFinite(volumeKgRaw) && volumeKgRaw >= 0 ? Math.round(volumeKgRaw * 100) / 100 : litersToKg(volume);
 
   return {
     id,
@@ -60,6 +103,9 @@ function mapVolumeVerification(raw) {
     measurement_date: toDateOnlyOrNull(raw.meta?.data),
     central_id: centralId,
     volume_liters: volume,
+    volume_kg,
+    waste_type: normalizeWasteType(raw.meta?.waste_type ?? raw.meta?.['tipo-de-residuo'] ?? raw.meta?.tipo),
+    tag_names: extractTagNames(raw),
     video_link: raw.meta?.['link-do-video'] || null,
     post_link: raw.link || null,
     status: raw.status || null,
@@ -99,5 +145,9 @@ module.exports = {
   mapUser,
   mapCentral,
   mapVolumeVerification,
-  mapRelationsFromJetRelMap
+  mapRelationsFromJetRelMap,
+  litersToKg,
+  normalizeWasteType,
+  extractTagNames,
+  LITERS_PER_KG
 };

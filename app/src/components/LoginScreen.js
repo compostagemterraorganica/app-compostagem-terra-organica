@@ -7,8 +7,10 @@ import {
   StyleSheet,
   ActivityIndicator,
   ScrollView,
-  Alert
+  Alert,
+  ImageBackground
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import authService from '../services/authService';
 import PasswordInput from './PasswordInput';
 import {
@@ -31,7 +33,8 @@ export default function LoginScreen({
   onSuccess,
   onCancel,
   compact = false,
-  title = 'Entrar na Terra Orgânica'
+  withBackground = !compact,
+  title = 'Faça o login'
 }) {
   const [step, setStep] = useState(STEPS.EMAIL);
   const [email, setEmail] = useState('');
@@ -64,7 +67,8 @@ export default function LoginScreen({
     setInfoMessage('');
     try {
       const result = await authService.checkEmail(trimmed);
-      if (!result.exists) {
+
+      if (result.exists === false) {
         Alert.alert('Email não encontrado', 'Este email não está cadastrado.');
         return;
       }
@@ -303,7 +307,7 @@ export default function LoginScreen({
       content = renderEmailStep();
   }
 
-  return (
+  const form = (
     <ScrollView contentContainerStyle={[styles.container, compact && styles.compactContainer]}>
       <Text style={styles.title}>{title}</Text>
       {content}
@@ -314,9 +318,32 @@ export default function LoginScreen({
       ) : null}
     </ScrollView>
   );
+
+  if (!withBackground) {
+    return form;
+  }
+
+  return (
+    <ImageBackground source={require('../../assets/background.jpg')} style={styles.background} resizeMode="cover">
+      <View style={styles.overlay} />
+      <SafeAreaView style={styles.safeArea}>{form}</SafeAreaView>
+    </ImageBackground>
+  );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%'
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)'
+  },
+  safeArea: {
+    flex: 1
+  },
   container: {
     padding: 20,
     flexGrow: 1,

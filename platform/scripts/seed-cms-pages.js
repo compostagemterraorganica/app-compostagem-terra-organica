@@ -7,7 +7,8 @@ const pages = [
   require('./lib/quem-somos-content'),
   require('./lib/financiadores-content'),
   require('./lib/contato-content'),
-  require('./lib/pontos-de-entrega-content')
+  require('./lib/pontos-de-entrega-content'),
+  require('./lib/politica-de-privacidade-content')
 ]
 
 function loadEnv() {

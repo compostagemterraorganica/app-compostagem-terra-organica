@@ -1,0 +1,33 @@
+{
+  "name": "terraorganica-postgres-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nova API da Terra Organica baseada em Postgres",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test:s3": "node scripts/test-s3-connection.js",
+    "test:ses": "node scripts/test-ses-connection.js",
+    "db:backup-restore": "node scripts/backup-restore-postgres.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.840.0",
+    "@aws-sdk/client-sesv2": "^3.840.0",
+    "axios": "^1.6.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.1",
+    "googleapis": "^144.0.0",
+    "helmet": "^8.1.0",
+    "multer": "^1.4.5-lts.2",
+    "pg": "^8.16.3",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

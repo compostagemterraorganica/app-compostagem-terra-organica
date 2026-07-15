@@ -1,10 +1,12 @@
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import VpnKeyIcon from '@mui/icons-material/VpnKey'
 import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined'
 import TerraLoader from '../../components/TerraLoader'
 import {
   Alert,
   Autocomplete,
+  Box,
   Button,
   Card,
   Chip,
@@ -150,6 +152,7 @@ export default function EditorUsers() {
           name: form.name,
           email: form.email,
           description: form.description || undefined,
+          isAdministrator,
           centralIds: selectedCentrals.map((central) => Number(central.id))
         })
       }
@@ -276,34 +279,58 @@ export default function EditorUsers() {
             <Stack spacing={2} sx={{ mt: 1 }}>
               {!editingId ? (
                 <Alert severity="info">
-                  O usuário receberá um email de convite com as centrais selecionadas e instruções para baixar o app,
-                  informar o email cadastrado e definir a senha no primeiro acesso.
+                  {isAdministrator
+                    ? 'O usuário receberá um email de convite para acessar o painel administrativo, com instruções para definir a senha no primeiro acesso.'
+                    : 'O usuário receberá um email de convite com as centrais selecionadas e instruções para baixar o app, informar o email cadastrado e definir a senha no primeiro acesso.'}
                 </Alert>
               ) : null}
-              <Stack direction="row" spacing={1} alignItems="flex-start">
+              <Stack direction="row" spacing={2} alignItems="flex-end">
                 <TextField
                   label="Nome"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   required
                   fullWidth
+                  sx={{ flex: 1, minWidth: 0 }}
                 />
-                {editingId ? (
-                  <IconButton
-                    type="button"
-                    onClick={() => setIsAdministrator((current) => !current)}
-                    aria-label={isAdministrator ? 'Remover permissão de administrador' : 'Conceder permissão de administrador'}
-                    title={isAdministrator ? 'Administrador' : 'Usuário comum'}
-                    sx={{ mt: 0.5 }}
+                <Box
+                  component="button"
+                  type="button"
+                  onClick={() => setIsAdministrator((current) => !current)}
+                  aria-label={isAdministrator ? 'Remover permissão de administrador' : 'Conceder permissão de administrador'}
+                  aria-pressed={isAdministrator}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    flexShrink: 0,
+                    mb: '2px',
+                    p: 0,
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                    color: isAdministrator ? '#D4AF37' : 'text.secondary',
+                    '&:hover': {
+                      color: isAdministrator ? '#c9a030' : 'text.primary'
+                    }
+                  }}
+                >
+                  {isAdministrator ? (
+                    <VpnKeyIcon sx={{ fontSize: 28 }} />
+                  ) : (
+                    <VpnKeyOutlinedIcon sx={{ fontSize: 28 }} />
+                  )}
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: isAdministrator ? 600 : 400,
+                      whiteSpace: 'nowrap',
+                      textAlign: 'left'
+                    }}
                   >
-                    <VpnKeyOutlinedIcon
-                      sx={{
-                        color: isAdministrator ? '#D4AF37' : 'grey.500',
-                        fontSize: 28
-                      }}
-                    />
-                  </IconButton>
-                ) : null}
+                    {isAdministrator ? 'Excluir acesso de admin' : 'Permitir acesso de admin'}
+                  </Typography>
+                </Box>
               </Stack>
               <TextField
                 label="Email"

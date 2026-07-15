@@ -5,25 +5,10 @@ class UpdateService {
     this.isCheckingForUpdates = false;
   }
 
-  /**
-   * Inicializa o serviço de atualizações Expo Updates
-   */
   async initialize() {
-    try {
-      console.log('🔄 Inicializando Expo Updates...');
-      
-      // Verificar atualizações na inicialização
-      await this.checkForUpdates();
-      
-      console.log('✅ Expo Updates inicializado');
-    } catch (error) {
-      console.error('❌ Erro ao inicializar Expo Updates:', error);
-    }
+    console.log('✅ App inicializado');
   }
 
-  /**
-   * Verifica se há atualizações disponíveis via Expo Updates
-   */
   async checkForUpdates() {
     if (this.isCheckingForUpdates) {
       return;
@@ -31,15 +16,10 @@ class UpdateService {
 
     try {
       this.isCheckingForUpdates = true;
-      console.log('🔍 Verificando atualizações Expo Updates...');
-
       const update = await Updates.checkForUpdateAsync();
-      
+
       if (update.isAvailable) {
-        console.log('🆕 Nova atualização Expo Updates disponível - aplicando automaticamente...');
-        await this.performUpdate(update);
-      } else {
-        console.log('✅ App está atualizado via Expo Updates');
+        await Updates.fetchUpdateAsync();
       }
     } catch (error) {
       console.error('❌ Erro ao verificar atualizações Expo Updates:', error);
@@ -48,54 +28,31 @@ class UpdateService {
     }
   }
 
-
-  /**
-   * Executa a atualização via Expo Updates
-   */
-  async performUpdate(update) {
+  async performUpdate() {
     try {
-      console.log('🔄 Iniciando atualização Expo Updates...');
-      
       await Updates.fetchUpdateAsync();
       await Updates.reloadAsync();
-      
-      console.log('✅ Atualização Expo Updates instalada com sucesso');
     } catch (error) {
       console.error('❌ Erro durante atualização Expo Updates:', error);
-      // Removido o Alert - atualização falha silenciosamente
     }
   }
 
-  /**
-   * Força verificação de atualizações
-   */
   async forceCheckForUpdates() {
-    console.log('🔄 Verificação forçada de atualizações Expo Updates...');
     await this.checkForUpdates();
   }
 
-  /**
-   * Obtém informações da atualização atual
-   */
   async getCurrentUpdateInfo() {
     try {
-      const update = await Updates.getUpdateMetadataAsync();
-      return update;
+      return await Updates.getUpdateMetadataAsync();
     } catch (error) {
       console.error('❌ Erro ao obter informações da atualização:', error);
       return null;
     }
   }
 
-  /**
-   * Destrói o serviço
-   */
-  destroy() {
-    console.log('🗑️ Serviço Expo Updates destruído');
-  }
+  destroy() {}
 }
 
-// Instância singleton
 const updateService = new UpdateService();
 
 export default updateService;

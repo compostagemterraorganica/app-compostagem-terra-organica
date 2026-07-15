@@ -1,4 +1,4 @@
-import { cookieFetch } from './cookieClient';
+import { apiFetch } from './apiFetch';
 
 async function parseJsonResponse(response) {
   const text = await response.text();
@@ -20,7 +20,7 @@ function normalizeCentral(central) {
 
 export const userCentralService = {
   async getCurrentUserCentrals() {
-    const response = await cookieFetch('/auth/me/centrals');
+    const response = await apiFetch('/auth/me/centrals');
     const data = await parseJsonResponse(response);
 
     if (!response.ok) {

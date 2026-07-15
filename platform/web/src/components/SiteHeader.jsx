@@ -1,13 +1,16 @@
 import { useEffect, useId, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import TerraImage from './TerraImage'
 import './SiteHeader.css'
 
 const LOGO_URL = '/images/cropped-cropped-LOGO_CTO_HORIZ.png'
 
 const NAV_LINKS = [
+  { to: '/', label: 'Home', end: true },
   { to: '/quem-somos', label: 'Quem Somos' },
   { to: '/pontos-de-entrega', label: 'Pontos de entrega' },
   { to: '/financiadores', label: 'Financiadores' },
+  { to: '/dados-de-coletas', label: 'Dados de Coletas' },
   { to: '/contato', label: 'Contato' },
   { to: '/blog', label: 'Blog' }
 ]
@@ -58,11 +61,14 @@ export default function SiteHeader() {
         <div className="site-header-inner">
           <div className="site-header-brand">
             <Link to="/" className="site-header-logo-link" onClick={closeMenu}>
-              <img
+              <TerraImage
                 src={LOGO_URL}
                 alt="Compostagem Terra Orgânica"
-                width={1209}
-                height={403}
+                priority
+                inline
+                showSkeleton={false}
+                imgClassName="site-header-logo-img"
+                objectFit="contain"
               />
             </Link>
           </div>
@@ -74,6 +80,7 @@ export default function SiteHeader() {
                   <li key={item.to} className="site-header-menu-item">
                     <NavLink
                       to={item.to}
+                      end={item.end}
                       className={({ isActive }) =>
                         `site-header-menu-link${isActive ? ' is-active' : ''}`
                       }
@@ -110,6 +117,7 @@ export default function SiteHeader() {
               <li key={`mobile-${item.to}`} className="site-header-menu-item">
                 <NavLink
                   to={item.to}
+                  end={item.end}
                   className={({ isActive }) =>
                     `site-header-menu-link${isActive ? ' is-active' : ''}`
                   }

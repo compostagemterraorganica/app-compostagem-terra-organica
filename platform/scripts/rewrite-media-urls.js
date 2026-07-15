@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Fase 3 — Reescreve URLs legadas WP/uploads para public_url do GCS.
+ * Fase 3 — Reescreve URLs legadas WP/uploads para public_url do storage.
  */
 const fs = require('fs')
 const path = require('path')

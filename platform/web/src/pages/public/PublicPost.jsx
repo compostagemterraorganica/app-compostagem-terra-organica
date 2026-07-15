@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import HtmlContent from '../../components/HtmlContent'
+import TerraImage, { TERRA_IMAGE_PLACEHOLDER } from '../../components/TerraImage'
 import TerraLoader from '../../components/TerraLoader'
 import { cmsService } from '../../services/cmsService'
 
@@ -90,6 +92,16 @@ export default function PublicPost() {
     <section className="to-blog-single">
       <div className="to-blog-single-wrap">
         <main className="to-blog-single-main">
+          <div className="to-blog-single-featured">
+            <TerraImage
+              src={post.featuredImageUrl || TERRA_IMAGE_PLACEHOLDER}
+              alt={post.title}
+              priority
+              aspectRatio="16 / 9"
+              objectFit="cover"
+            />
+          </div>
+
           <h1 className="to-blog-single-title">{post.title}</h1>
 
           <div className="to-blog-single-meta">
@@ -97,7 +109,7 @@ export default function PublicPost() {
             {post.publishedAt && <span>{formatDate(post.publishedAt)}</span>}
           </div>
 
-          <div dangerouslySetInnerHTML={{ __html: post.contentHtml || '' }} />
+          <HtmlContent html={post.contentHtml || ''} />
 
           <div className="to-blog-share">
             <h3>Compartilhe</h3>

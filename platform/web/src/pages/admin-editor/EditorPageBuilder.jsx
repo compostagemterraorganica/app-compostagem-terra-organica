@@ -23,12 +23,19 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import TerraLoader from '../../components/TerraLoader'
+import { ADMIN_ROUTES } from '../../lib/adminRoutes'
+import { GOOGLE_FONTS_URL } from '../../theme/fonts'
 import { cmsService } from '../../services/cmsService'
 import grapesjsLayoutBlocks from './grapesjs-layout-blocks'
 import {
   grapesAssetManagerConfig,
   loadGrapesMediaAssets
 } from './grapesjs-media-upload'
+import {
+  exportPageCss,
+  exportPageSnapshots,
+  GRAPES_DEVICE_MANAGER
+} from './grapesjs-page-export'
 
 function getActionErrorMessage(err, fallback) {
   const msg = err.response?.data?.error
@@ -81,7 +88,9 @@ export default function EditorPageBuilder() {
       fromElement: false,
       height: '100%',
       width: 'auto',
+      avoidInlineStyle: true,
       storageManager: false,
+      deviceManager: GRAPES_DEVICE_MANAGER,
       assetManager: grapesAssetManagerConfig(),
       plugins: [
         gjsBlocksBasic,
@@ -137,15 +146,13 @@ export default function EditorPageBuilder() {
           modalImportTitle: 'Importar template',
           modalImportButton: 'Importar',
           modalImportLabel: 'Cole aqui o HTML/CSS e clique em Importar',
-          modalImportContent: (ed) => `${ed.getHtml()}<style>${ed.getCss()}</style>`,
+          modalImportContent: (ed) => `${ed.getHtml()}<style>${exportPageCss(ed)}</style>`,
           textCleanCanvas: 'Tem certeza que deseja limpar o canvas?',
           block: (blockId) => ({ category: 'Basic' })
         }
       },
       canvas: {
-        styles: [
-          'https://fonts.googleapis.com/css2?family=Raleway:wght@200;400;600;700&display=swap'
-        ]
+        styles: [GOOGLE_FONTS_URL]
       }
     })
     editorRef.current = editor
@@ -183,11 +190,7 @@ export default function EditorPageBuilder() {
 
     setSaving(true)
     try {
-      const payload = {
-        grapesProjectJson: editor.getProjectData(),
-        htmlSnapshot: editor.getHtml(),
-        cssSnapshot: editor.getCss()
-      }
+      const payload = exportPageSnapshots(editor)
       await cmsService.createPageVersion(id, payload)
       await cmsService.updatePage(id, { status: 'draft' })
       if (!silent) toast.success('Rascunho salvo com sucesso!')
@@ -219,7 +222,7 @@ export default function EditorPageBuilder() {
         <Toolbar sx={{ gap: 2, flexWrap: 'wrap' }}>
           <Button
             component={Link}
-            to="/admin/editor/pages"
+            to={ADMIN_ROUTES.pages}
             startIcon={<ArrowBackIcon />}
             color="primary"
             size="small"

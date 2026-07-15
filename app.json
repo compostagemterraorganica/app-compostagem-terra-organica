@@ -6,7 +6,7 @@
       }
     },
     "ios": {
-      "bundleIdentifier": "com.compostagemterraorganica.wordpressoauthapi",
+      "bundleIdentifier": "com.terraorganica.app",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }

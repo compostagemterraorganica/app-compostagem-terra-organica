@@ -1,0 +1,226 @@
+{
+  "generated_at": "2026-06-19T14:28:00.330Z",
+  "input": "/home/felipe/Projects/appterraorganica/platform/scripts/reports/centrals-from-wordpress.json",
+  "dry_run": true,
+  "updated": [],
+  "not_found_in_db": [
+    {
+      "id": 4757,
+      "slug": "laboratorio-terra-organica",
+      "name": "Laboratório Terra Orgânica"
+    },
+    {
+      "id": 5732,
+      "slug": "comunidade-de-aprendizagem-colo-da-montanha",
+      "name": "Comunidade de Aprendizagem Colo da Montanha"
+    },
+    {
+      "id": 5757,
+      "slug": "revolucao-dos-baixinhos",
+      "name": "Revolução dos baixinhos"
+    },
+    {
+      "id": 5759,
+      "slug": null,
+      "name": "Compostagem Campeche"
+    },
+    {
+      "id": 5766,
+      "slug": "ile-axe-egi-omin",
+      "name": "Ile Axé Egi Omin"
+    },
+    {
+      "id": 5770,
+      "slug": "iniciativa-social-rural-jardim-do-beija-flor",
+      "name": "Iniciativa Social Rural Jardim do Beija flor"
+    },
+    {
+      "id": 5780,
+      "slug": null,
+      "name": "Jardim do Beija flor"
+    },
+    {
+      "id": 5783,
+      "slug": null,
+      "name": "Grupo de Condôminios \"Recanto Democrático\""
+    },
+    {
+      "id": 5819,
+      "slug": null,
+      "name": "Guaráipu Comunitária"
+    },
+    {
+      "id": 5877,
+      "slug": "goj-ty-sa",
+      "name": "Goj Ta Sà"
+    },
+    {
+      "id": 5937,
+      "slug": null,
+      "name": "PROJETO LIXO ZERO &amp; AGROFLORESTAS URBANAS"
+    },
+    {
+      "id": 5939,
+      "slug": null,
+      "name": "PROJETO LIXO ZERO &amp; AGROFLORESTAS URBANAS"
+    },
+    {
+      "id": 6004,
+      "slug": null,
+      "name": "Central de compostagem comunitaria do centro de educação ambiental mirante de santa tereza"
+    },
+    {
+      "id": 6052,
+      "slug": "cem-centro-de-integracao-na-serra-da-misericordia",
+      "name": "CEM Centro de Integração na Serra da Misericórdia"
+    },
+    {
+      "id": 6054,
+      "slug": "compostagem-comunitaria-parque-do-itajai",
+      "name": "Compostagem Comunitária Parque do Itajaí"
+    },
+    {
+      "id": 6061,
+      "slug": "instituto-arandu",
+      "name": "Instituto Arandu"
+    },
+    {
+      "id": 6135,
+      "slug": "compostagem-comunitaria-maloka",
+      "name": "Compostagem Comunitária Maloka"
+    },
+    {
+      "id": 6143,
+      "slug": "escola-comunitaria-da-lagoa-do-peri-asmope",
+      "name": "Escola Comunitária da Lagoa do Peri - ASMOPE"
+    },
+    {
+      "id": 6159,
+      "slug": "quintal-magico",
+      "name": "Quintal Mágico"
+    },
+    {
+      "id": 6183,
+      "slug": "compostagem-santa-margarida",
+      "name": "Compostagem Santa Margarida"
+    },
+    {
+      "id": 6420,
+      "slug": null,
+      "name": "Território Guarakã"
+    },
+    {
+      "id": 6586,
+      "slug": null,
+      "name": "Compostagem Escola Waldorf Anabá"
+    },
+    {
+      "id": 6796,
+      "slug": "instituto-cresce",
+      "name": "Instituto CRESCE"
+    },
+    {
+      "id": 6798,
+      "slug": "instituto-ouro-verde",
+      "name": "INSTITUTO OURO VERDE"
+    },
+    {
+      "id": 6800,
+      "slug": "agroescola",
+      "name": "Agroescola"
+    },
+    {
+      "id": 6814,
+      "slug": "csaa-confraria-da-horta",
+      "name": "CSAA Confraria da Horta"
+    },
+    {
+      "id": 6824,
+      "slug": "compostagem-solidaria-alegrias",
+      "name": "Compostagem Solidária Alegrias"
+    },
+    {
+      "id": 6832,
+      "slug": null,
+      "name": "Fundição Progresso"
+    },
+    {
+      "id": 6855,
+      "slug": null,
+      "name": "🏦 Get 36,824.39 US Dollars. Next 🟢➤ graph.org/BALANCE-3682444-USD-04-21-5?hs=d1017c39f15e713f2e58b06d4e07c78e&amp;  🏦"
+    },
+    {
+      "id": 6857,
+      "slug": null,
+      "name": "💰 Top Up 36,824.09 USDC 🔥&gt;&gt; graph.org/BALANCE-3682444-USD-04-21-3?hs=d1017c39f15e713f2e58b06d4e07c78e&amp; 💰"
+    },
+    {
+      "id": 6860,
+      "slug": null,
+      "name": "📁 Transfer to you. GO &gt;&gt;&gt; graph.org/BALANCE-36824-US-DOLLARS-04-24?hs=d1017c39f15e713f2e58b06d4e07c78e&amp; &lt;&lt;&lt; 📁"
+    }
+  ],
+  "skipped_empty": [],
+  "db_without_export": [
+    {
+      "id": "4757"
+    },
+    {
+      "id": "5732"
+    },
+    {
+      "id": "5757"
+    },
+    {
+      "id": "5766"
+    },
+    {
+      "id": "5770"
+    },
+    {
+      "id": "5778"
+    },
+    {
+      "id": "5815"
+    },
+    {
+      "id": "5877"
+    },
+    {
+      "id": "6052"
+    },
+    {
+      "id": "6054"
+    },
+    {
+      "id": "6061"
+    },
+    {
+      "id": "6135"
+    },
+    {
+      "id": "6143"
+    },
+    {
+      "id": "6159"
+    },
+    {
+      "id": "6183"
+    },
+    {
+      "id": "6796"
+    },
+    {
+      "id": "6798"
+    },
+    {
+      "id": "6800"
+    },
+    {
+      "id": "6814"
+    },
+    {
+      "id": "6824"
+    }
+  ]
+}

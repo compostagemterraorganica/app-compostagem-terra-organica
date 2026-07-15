@@ -4,7 +4,13 @@ node_modules
 *-service-account*.json
 api/credentials/
 api/secrets/
+platform/api/secrets/
+**/secrets/*.json
 api/uploads/
 /uploads
 !/uploads/temp/.gitkeep
 !/uploads/processed/.gitkeep
+/wordpress/
+/.cursor/
+/backup/
+/scripts/

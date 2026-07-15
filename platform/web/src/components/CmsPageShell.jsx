@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import TerraLoader from './TerraLoader'
+import { enhanceLazyImages } from '../lib/enhanceLazyImages'
 import api from '../lib/api'
 
 export default function CmsPageShell({ slug, children, portalId }) {
@@ -20,9 +21,11 @@ export default function CmsPageShell({ slug, children, portalId }) {
   useEffect(() => {
     if (!page || !bodyRef.current) return
     bodyRef.current.innerHTML = page.html_snapshot || '<p>Sem conteudo publicado.</p>'
+    const cleanupImages = enhanceLazyImages(bodyRef.current)
     if (portalId) {
       setPortalTarget(document.getElementById(portalId))
     }
+    return cleanupImages
   }, [page, portalId])
 
   if (error) return <p>{error}</p>

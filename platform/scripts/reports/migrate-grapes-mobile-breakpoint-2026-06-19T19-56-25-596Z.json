@@ -1,0 +1,17 @@
+{
+  "mode": "dry-run",
+  "scanned": 14,
+  "updated": 1,
+  "cssReplacements": 1,
+  "jsonReplacements": 2,
+  "rows": [
+    {
+      "versionId": "85",
+      "pageId": "1",
+      "slug": "home",
+      "versionNumber": 45,
+      "cssReplacements": 1,
+      "jsonReplacements": 2
+    }
+  ]
+}

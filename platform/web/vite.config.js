@@ -7,7 +7,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        // API local do monorepo (docker-compose root: 5700→3000)
+        target: process.env.VITE_PROXY_TARGET || 'http://localhost:5700',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       }

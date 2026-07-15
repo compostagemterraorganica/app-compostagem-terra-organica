@@ -33,5 +33,34 @@ export const cmsService = {
   },
   analyticsKpis: async (params) => (await api.get('/analytics/kpis', { params })).data.data,
   analyticsByCentral: async (params) => (await api.get('/analytics/volume-by-central', { params })).data.data,
-  analyticsTimeSeries: async (params) => (await api.get('/analytics/volume-timeseries', { params })).data.data
+  analyticsTimeSeries: async (params) => (await api.get('/analytics/volume-timeseries', { params })).data.data,
+  analyticsCentralsAnalysis: async () => (await api.get('/analytics/centrals-analysis')).data.data,
+  exportVolumeReportCsv: async (params = {}) => {
+    const res = await api.get('/analytics/export-volume-report', {
+      params,
+      responseType: 'blob'
+    })
+    const contentType = String(res.headers['content-type'] || res.data?.type || '')
+    const peek = await res.data.slice(0, 64).text()
+    const looksLikeHtml = /^\s*</.test(peek) || /<!doctype html/i.test(peek)
+    if (looksLikeHtml || contentType.includes('text/html') || contentType.includes('application/json')) {
+      let message = 'Resposta invalida da API de exportacao (recebeu HTML/JSON em vez de CSV)'
+      try {
+        const fullText = await res.data.text()
+        message = JSON.parse(fullText)?.message || message
+      } catch {
+        // ignore parse errors
+      }
+      throw new Error(message)
+    }
+    const disposition = String(res.headers['content-disposition'] || '')
+    const match = disposition.match(/filename="?([^"]+)"?/i)
+    const filename =
+      match?.[1] || `relatorio-volume-${new Date().toISOString().slice(0, 10)}.csv`
+    const blobType = String(res.data?.type || '')
+    const blob = blobType.includes('csv')
+      ? res.data
+      : new Blob([res.data], { type: 'text/csv;charset=utf-8' })
+    return { blob, filename }
+  }
 }

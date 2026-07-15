@@ -1,6 +1,6 @@
 const baseCss = `
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@200;300;400;600;700&display=swap');
-.to-page { font-family: "Raleway", sans-serif; color: #3a3a3a; width: 100%; max-width: none; margin: 0; padding: 0; }
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+.to-page { font-family: "DM Sans", sans-serif; color: #3a3a3a; width: 100%; max-width: none; margin: 0; padding: 0; }
 .to-section { max-width: 1140px; margin: 0 auto; padding: 48px 20px; box-sizing: border-box; }
 .to-section-title { color: #0274be; font-size: 2rem; margin: 0 0 16px; text-align: center; }
 .to-section-lead { text-align: center; margin: 0 0 32px; max-width: 720px; margin-left: auto; margin-right: auto; font-size: 18px; line-height: 1.6; }
@@ -8,9 +8,9 @@ const baseCss = `
 .to-page-hero--brand { background-color: #9D7B4E; }
 .to-page-hero--brand .to-page-hero-heading,
 .to-page-hero--brand .to-page-hero-heading strong,
-.to-page-hero--brand .to-page-hero-lead { color: #000; }
+.to-page-hero--brand .to-page-hero-lead { color: #fff; }
 .to-page-hero-inner { max-width: 1140px; margin: 0 auto; }
-.to-page-hero-heading { font-family: "Raleway", sans-serif; color: #fff; margin: 0; line-height: 1.2; font-size: 48px; font-weight: 300; }
+.to-page-hero-heading { font-family: "DM Sans", sans-serif; color: #fff; margin: 0; line-height: 1.2; font-size: 48px; font-weight: 300; }
 .to-page-hero-heading strong { font-weight: 700; display: block; font-size: 52px; }
 .to-page-hero-lead { margin: 24px auto 0; max-width: 640px; font-size: 18px; line-height: 1.6; color: #fff; }
 .to-prose { max-width: 900px; margin: 0 auto; font-size: 17px; line-height: 1.7; color: #54595f; }
@@ -19,7 +19,7 @@ const baseCss = `
 .to-prose h3 { color: #404040; font-size: 1.35rem; margin: 32px 0 12px; font-weight: 600; }
 .to-prose ul { margin: 0 0 20px; padding-left: 24px; }
 .to-prose li { margin-bottom: 8px; }
-.to-btn { display: inline-block; background: #0274be; color: #fff; padding: 12px 32px; border-radius: 4px; text-decoration: none; font-weight: 600; border: none; cursor: pointer; font-family: "Raleway", sans-serif; font-size: 15px; transition: background 0.2s; }
+.to-btn { display: inline-block; background: #0274be; color: #fff; padding: 12px 32px; border-radius: 4px; text-decoration: none; font-weight: 600; border: none; cursor: pointer; font-family: "DM Sans", sans-serif; font-size: 15px; transition: background 0.2s; }
 .to-btn:hover { background: #3a3a3a; color: #fff; }
 .to-btn--green { background: #3CAA59; border-radius: 50px; text-transform: uppercase; }
 .to-btn--green:hover { background: #2d8a45; }
@@ -37,7 +37,7 @@ const baseCss = `
 .to-form-section h3 { text-align: center; color: #404040; font-size: 1.5rem; margin: 0 0 32px; }
 .to-form { display: flex; flex-direction: column; gap: 16px; }
 .to-form label { font-size: 14px; color: #54595f; font-weight: 600; }
-.to-form input, .to-form textarea { width: 100%; padding: 12px 16px; border: 1px solid #ccc; border-radius: 4px; font-family: "Open Sans", sans-serif; font-size: 16px; box-sizing: border-box; }
+.to-form input, .to-form textarea { width: 100%; padding: 12px 16px; border: 1px solid #ccc; border-radius: 4px; font-family: "DM Sans", sans-serif; font-size: 16px; box-sizing: border-box; }
 .to-form textarea { min-height: 140px; resize: vertical; }
 .to-form button { align-self: flex-start; }
 .to-form-status { margin-top: 12px; color: #3CAA59; font-weight: 600; }

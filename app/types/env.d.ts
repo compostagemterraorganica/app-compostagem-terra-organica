@@ -15,8 +15,6 @@ declare module '@env' {
   export const LOCATION_ACCURACY: string;
   export const LOCATION_TIMEOUT: string;
   export const LOCATION_MAX_AGE: string;
-  export const LOGO_URL: string;
-  export const BACKGROUND_URL: string;
   export const DEBUG_MODE: string;
   export const LOG_LEVEL: string;
   export const ENABLE_CONSOLE_LOGS: string;

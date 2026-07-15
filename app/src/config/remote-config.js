@@ -6,11 +6,6 @@ const REMOTE_CONFIG = {
   API_BASE_URL: null, // null = usa o valor padrão do environment.js
   YOUTUBE_UPLOAD_URL: null,
   
-  // WordPress Configuration
-  WORDPRESS_BASE_URL: null,
-  WORDPRESS_OAUTH_CLIENT_ID: null,
-  WORDPRESS_OAUTH_REDIRECT_URI: null,
-  
   // Features toggles - pode ser alterado via OTA update
   ENABLE_DEBUG: null,
   ENABLE_ANALYTICS: null,

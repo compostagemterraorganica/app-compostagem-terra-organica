@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import api from '../lib/api'
 
-export default function FinanciadorForm() {
+export default function FinanciadorForm({ pageSlug = 'financiadores' }) {
   const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [status, setStatus] = useState('')
   const [error, setError] = useState('')
@@ -11,7 +11,7 @@ export default function FinanciadorForm() {
     setStatus('')
     setError('')
     try {
-      await api.post('/forms/financiador', form)
+      await api.post('/forms/financiador', { ...form, pageSlug })
       setStatus('Cadastro enviado com sucesso.')
       setForm({ name: '', email: '', message: '' })
     } catch {
@@ -20,8 +20,8 @@ export default function FinanciadorForm() {
   }
 
   return (
-    <div className="to-form-section">
-      <h3>Preencha o formulário abaixo</h3>
+    <div className="to-fin-form-fields">
+      <h3 className="to-fin-form-subtitle">Preencha o formulário abaixo</h3>
       <form onSubmit={submit} className="to-form">
         <label>
           Digite o nome da sua empresa

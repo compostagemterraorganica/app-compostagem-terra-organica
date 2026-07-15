@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom'
 import AdminItemImage from '../../components/AdminItemImage'
 import TerraLoader from '../../components/TerraLoader'
 import { cmsService } from '../../services/cmsService'
+import { ADMIN_ROUTES } from '../../lib/adminRoutes'
 
 export default function EditorPagesList() {
   const [pages, setPages] = useState([])
@@ -114,7 +115,7 @@ export default function EditorPagesList() {
               <CardActions sx={{ px: 2, pb: 2 }}>
                 <Button
                   component={Link}
-                  to={`/admin/editor/pages/${page.id}/edit`}
+                  to={ADMIN_ROUTES.pageEdit(page.id)}
                   size="small"
                   variant="contained"
                   color="primary"

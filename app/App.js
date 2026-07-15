@@ -18,7 +18,6 @@ import VideoList from './src/components/VideoList';
 import CentralPosts from './src/components/CentralPosts';
 import UpdateStatus from './src/components/UpdateStatus';
 import LoginScreen from './src/components/LoginScreen';
-import { getConfig } from './src/config/environment';
 import updateService from './src/services/updateService';
 import authService from './src/services/authService';
 
@@ -29,19 +28,16 @@ export default function App() {
   const [videos, setVideos] = useState([]);
   const [hasError, setHasError] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginSession, setLoginSession] = useState(0);
 
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        // Logar variáveis de ambiente na inicialização
         await loadVideos();
         await checkLoginStatus();
-        
-        // Inicializar serviço de atualizações
         await updateService.initialize();
       } catch (error) {
         console.error('❌ Erro na inicialização do app:', error);
-        setHasError(true);
       }
     };
 
@@ -82,6 +78,7 @@ export default function App() {
   };
 
   const handleLogin = () => {
+    setLoginSession((value) => value + 1);
     setShowLoginModal(true);
   };
 
@@ -233,7 +230,7 @@ export default function App() {
         <View style={styles.headerTop}>
           <View style={styles.logoContainer}>
             <Image 
-              source={{ uri: getConfig('LOGO_URL') }}
+              source={require('./assets/logo.png')}
               style={styles.logo}
               resizeMode="contain"
             />
@@ -250,7 +247,7 @@ export default function App() {
             </View>
           ) : (
             <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-              <Text style={styles.loginButtonText}>Entrar</Text>
+              <Text style={styles.loginButtonText}>Fazer login</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -280,7 +277,7 @@ export default function App() {
 
   const renderHomeScreen = () => (
     <ImageBackground
-      source={{ uri: getConfig('BACKGROUND_URL') }}
+      source={require('./assets/background.jpg')}
       style={styles.backgroundImage}
       resizeMode="cover"
     >
@@ -344,12 +341,11 @@ export default function App() {
       {currentScreen === 'home' ? renderHomeScreen() : null}
 
       <Modal visible={showLoginModal} animationType="slide" onRequestClose={() => setShowLoginModal(false)}>
-        <SafeAreaView style={styles.loginModalContainer}>
-          <LoginScreen
-            onSuccess={handleLoginSuccess}
-            onCancel={() => setShowLoginModal(false)}
-          />
-        </SafeAreaView>
+        <LoginScreen
+          key={loginSession}
+          onSuccess={handleLoginSuccess}
+          onCancel={() => setShowLoginModal(false)}
+        />
       </Modal>
     </>
   );
@@ -480,19 +476,21 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   loginButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    flex: 1,
-    alignItems: 'center',
+    marginLeft: 'auto',
+    elevation: 2,
+    shadowColor: '#4CAF50',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
   },
   loginButtonText: {
-    color: '#503c24',
-    fontSize: 14,
-    fontWeight: '600',
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: 'bold',
   },
   footerContainer: {
     paddingBottom: 20,
@@ -531,9 +529,5 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  loginModalContainer: {
-    flex: 1,
-    backgroundColor: '#1a1a1a',
   },
 });

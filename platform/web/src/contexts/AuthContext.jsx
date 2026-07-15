@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { registerAuthFailureHandler } from '../lib/api'
 import { authService } from '../services/authService'
 
 const AuthContext = createContext(null)
@@ -21,6 +22,13 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     refreshUser().finally(() => setLoading(false))
   }, [refreshUser])
+
+  useEffect(() => {
+    registerAuthFailureHandler(() => {
+      setUser(null)
+    })
+    return () => registerAuthFailureHandler(null)
+  }, [])
 
   const login = useCallback(async (email, password) => {
     const loggedIn = await authService.login(email, password)

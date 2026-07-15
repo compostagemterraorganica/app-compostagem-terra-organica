@@ -1,0 +1,138 @@
+{
+  "generated_at": "2026-06-19T14:52:37.252Z",
+  "dry_run": false,
+  "updated": [
+    {
+      "id": 5757,
+      "slug": "revolucao-dos-baixinhos",
+      "city_name": "Serra Azul",
+      "previous_city_slug": "serra-azul-3",
+      "city_slug": "serra-azul"
+    },
+    {
+      "id": 5766,
+      "slug": "ile-axe-egi-omin",
+      "city_name": "Rio de Janeiro",
+      "previous_city_slug": "rio-de-janeiro-2",
+      "city_slug": "rio-de-janeiro"
+    },
+    {
+      "id": 5770,
+      "slug": "iniciativa-social-rural-jardim-do-beija-flor",
+      "city_name": "Paraty",
+      "previous_city_slug": "paraty-2",
+      "city_slug": "paraty"
+    },
+    {
+      "id": 6052,
+      "slug": "cem-centro-de-integracao-na-serra-da-misericordia",
+      "city_name": "Rio de Janeiro",
+      "previous_city_slug": null,
+      "city_slug": "rio-de-janeiro"
+    },
+    {
+      "id": 6054,
+      "slug": "compostagem-comunitaria-parque-do-itajai",
+      "city_name": "Campinas",
+      "previous_city_slug": null,
+      "city_slug": "campinas"
+    },
+    {
+      "id": 6061,
+      "slug": "instituto-arandu",
+      "city_name": "Anápolis",
+      "previous_city_slug": null,
+      "city_slug": "anapolis"
+    },
+    {
+      "id": 6796,
+      "slug": "instituto-cresce",
+      "city_name": "Nova lima",
+      "previous_city_slug": null,
+      "city_slug": "nova-lima"
+    },
+    {
+      "id": 6798,
+      "slug": "instituto-ouro-verde",
+      "city_name": "Nova lima",
+      "previous_city_slug": null,
+      "city_slug": "nova-lima"
+    },
+    {
+      "id": 6800,
+      "slug": "agroescola",
+      "city_name": "Florianópolis",
+      "previous_city_slug": null,
+      "city_slug": "florianopolis"
+    },
+    {
+      "id": 6814,
+      "slug": "csaa-confraria-da-horta",
+      "city_name": "FLORESTAL",
+      "previous_city_slug": null,
+      "city_slug": "florestal"
+    },
+    {
+      "id": 6824,
+      "slug": "compostagem-solidaria-alegrias",
+      "city_name": "Paraty",
+      "previous_city_slug": null,
+      "city_slug": "paraty"
+    }
+  ],
+  "skipped_no_city": [
+    {
+      "id": 5778,
+      "slug": "legacy-central-5778",
+      "name": "Legacy Central 5778"
+    },
+    {
+      "id": 5815,
+      "slug": "legacy-central-5815",
+      "name": "Legacy Central 5815"
+    },
+    {
+      "id": 6159,
+      "slug": "quintal-magico",
+      "name": "Quintal Mágico"
+    }
+  ],
+  "already_ok": [
+    {
+      "id": 4757,
+      "slug": "laboratorio-terra-organica",
+      "city_name": "Florianópolis",
+      "city_slug": "florianopolis"
+    },
+    {
+      "id": 5732,
+      "slug": "comunidade-de-aprendizagem-colo-da-montanha",
+      "city_name": "Teresópolis",
+      "city_slug": "teresopolis"
+    },
+    {
+      "id": 5877,
+      "slug": "goj-ty-sa",
+      "city_name": "Florianópolis",
+      "city_slug": "florianopolis"
+    },
+    {
+      "id": 6135,
+      "slug": "compostagem-comunitaria-maloka",
+      "city_name": "Florianópolis",
+      "city_slug": "florianopolis"
+    },
+    {
+      "id": 6143,
+      "slug": "escola-comunitaria-da-lagoa-do-peri-asmope",
+      "city_name": "Florianópolis",
+      "city_slug": "florianopolis"
+    },
+    {
+      "id": 6183,
+      "slug": "compostagem-santa-margarida",
+      "city_name": "Campinas",
+      "city_slug": "campinas"
+    }
+  ]
+}

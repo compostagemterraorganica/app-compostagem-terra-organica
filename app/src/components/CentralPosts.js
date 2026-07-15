@@ -11,10 +11,15 @@ import {
   Image
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getConfig } from '../config/environment';
 import userCentralService from '../services/userCentralService';
 import authService from '../services/authService';
 import volumeVerificationService from '../services/volumeVerificationService';
+
+function litersToKg(liters) {
+  const n = Number(liters);
+  if (!Number.isFinite(n) || n <= 0) return '';
+  return String(Math.round(n * 0.55 * 100) / 100);
+}
 
 export default function CentralPosts({ onBack, onLogin }) {
   const [centrals, setCentrals] = useState([]);
@@ -111,6 +116,10 @@ export default function CentralPosts({ onBack, onLogin }) {
       const processedPosts = data.map((row) => ({
         id: row.id,
         volume: row.volume_liters != null ? String(row.volume_liters) : '',
+        volumeKg: row.volume_kg != null && Number(row.volume_kg) > 0
+          ? String(row.volume_kg)
+          : litersToKg(row.volume_liters),
+        tags: Array.isArray(row.tags) ? row.tags : [],
         data: row.measurement_date || '',
         videoLink: row.video_link || '',
         title: row.title || ''
@@ -168,7 +177,7 @@ export default function CentralPosts({ onBack, onLogin }) {
 
         <View style={styles.logoContainer}>
           <Image
-            source={{ uri: getConfig('LOGO_URL') }}
+            source={require('../../assets/logo.png')}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -222,7 +231,9 @@ export default function CentralPosts({ onBack, onLogin }) {
         <View style={styles.tableContainer}>
           <View style={styles.tableHeader}>
             <Text style={[styles.tableHeaderText, styles.dateColumn]}>Data</Text>
-            <Text style={[styles.tableHeaderText, styles.volumeColumn]}>Volume (Litros)</Text>
+            <Text style={[styles.tableHeaderText, styles.volumeColumn]}>Volume</Text>
+            <Text style={[styles.tableHeaderText, styles.kgColumn]}>Peso</Text>
+            <Text style={[styles.tableHeaderText, styles.tagsColumn]}>Tags</Text>
             <Text style={[styles.tableHeaderText, styles.videoColumn]}>Vídeo</Text>
           </View>
 
@@ -241,6 +252,18 @@ export default function CentralPosts({ onBack, onLogin }) {
                 <Text style={[styles.tableCellText, styles.volumeColumn]}>
                   {post.volume || 'N/A'}
                 </Text>
+                <Text style={[styles.tableCellText, styles.kgColumn]}>
+                  {post.volumeKg || 'N/A'}
+                </Text>
+                <View style={styles.tagsColumn}>
+                  {post.tags.length > 0 ? (
+                    <Text style={styles.tagsText} numberOfLines={2}>
+                      {post.tags.map((tag) => tag.name).join(', ')}
+                    </Text>
+                  ) : (
+                    <Text style={styles.noVideoText}>-</Text>
+                  )}
+                </View>
                 <View style={styles.videoColumn}>
                   {post.videoLink ? (
                     <TouchableOpacity
@@ -481,14 +504,26 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   dateColumn: {
-    flex: 1.2,
+    flex: 1,
   },
   volumeColumn: {
-    flex: 1,
+    flex: 0.8,
     textAlign: 'center',
   },
+  kgColumn: {
+    flex: 0.7,
+    textAlign: 'center',
+  },
+  tagsColumn: {
+    flex: 1.2,
+    justifyContent: 'center',
+  },
+  tagsText: {
+    color: '#cccccc',
+    fontSize: 12,
+  },
   videoColumn: {
-    flex: 0.8,
+    flex: 0.6,
     alignItems: 'center',
   },
   tableBody: {

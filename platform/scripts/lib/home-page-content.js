@@ -71,7 +71,7 @@ const htmlSnapshot = `
       <div class="to-card-grid">
       <article class="to-card">
         <a href="/blog/qualificacao-da-central-de-referencia-lto-fortalecimento-de-um-modelo-replicavel-voltado-a-construcao-coletiva/">
-          <img src="https://storage.googleapis.com/terraorganica-media/media/873bbdf4-3d28-4c8e-9fc2-62261b39f999.jpg" alt="Qualificação da Central de Referência LTO"/>
+          <img src="https://terraorganica.s3.sa-east-1.amazonaws.com/media/873bbdf4-3d28-4c8e-9fc2-62261b39f999.jpg" alt="Qualificação da Central de Referência LTO"/>
           <h3>Qualificação da Central de Referência LTO: fortalecimento de um modelo replicável voltado à construção coletiva</h3>
           <p>O projeto contempla a instalação de leiras impermeabilizadas e com drenagem, a instalação do sistema ecológico de tratamento de água</p>
           <span class="to-card-more">Continue Lendo</span>
@@ -79,7 +79,7 @@ const htmlSnapshot = `
       </article>
       <article class="to-card">
         <a href="/blog/compostagem-comunitaria-e-a-onu/">
-          <img src="https://storage.googleapis.com/terraorganica-media/media/bd12b832-0253-428c-bf80-57ed5fe2d35f.jpg" alt="Compostagem e ODS da ONU"/>
+          <img src="https://terraorganica.s3.sa-east-1.amazonaws.com/media/bd12b832-0253-428c-bf80-57ed5fe2d35f.jpg" alt="Compostagem e ODS da ONU"/>
           <h3>Compostagem Comunitária e os Objetivos de Desenvolvimento Sustentável da ONU</h3>
           <p>A Organização das Nações Unidas (ONU) definiu no ano de 2015 que fomentaria ações que estivessem de acordo com medidas</p>
           <span class="to-card-more">Continue Lendo</span>
@@ -87,7 +87,7 @@ const htmlSnapshot = `
       </article>
       <article class="to-card">
         <a href="/blog/aterros-sanitarios-lixoes-e-o-papel-da-compostagem-comunitaria-na-gestao-de-residuos/">
-          <img src="https://storage.googleapis.com/terraorganica-media/media/4a555528-7ddb-4fb5-87f0-5e70d7b92fa8.jpg" alt="Aterros sanitários e compostagem"/>
+          <img src="https://terraorganica.s3.sa-east-1.amazonaws.com/media/4a555528-7ddb-4fb5-87f0-5e70d7b92fa8.jpg" alt="Aterros sanitários e compostagem"/>
           <h3>Aterros sanitários, lixões e o papel da compostagem comunitária na gestão de resíduos</h3>
           <p>No Brasil, os aterros sanitários vêm sendo considerados como uma ótima alternativa para a destinação final dos resíduos sólidos urbanos.</p>
           <span class="to-card-more">Continue Lendo</span>
@@ -111,9 +111,15 @@ const htmlSnapshot = `
         <p class="to-supporters-lead">Com o <strong>Selo Terra Orgânica</strong> você mostra ao mundo o <strong>compromisso</strong> de sua empresa com a transformação de resíduos orgânicos em vida!<br><em>Seja um de nossos apoiadores.</em></p>
         <h2 class="to-supporters-title"><strong class="to-supporters-title-bold">Apoiadores</strong><br>da nossa causa</h2>
         <div class="to-supporters-logos">
-          <img class="to-supporters-logo to-supporters-logo--sauva" src="https://storage.googleapis.com/terraorganica-media/media/17fe0d8c-0f48-4d20-ac54-ba82cf7c6c8f.png" alt="" width="1024" height="576"/>
-          <img class="to-supporters-logo to-supporters-logo--partner" src="https://storage.googleapis.com/terraorganica-media/media/9aae62b8-cc4d-4309-a506-7c57cde1ca79.png" alt="" width="280" height="300"/>
-          <img class="to-supporters-logo to-supporters-logo--muda" src="https://storage.googleapis.com/terraorganica-media/media/8a73ea2e-1381-4daa-8914-21e143a314de.png" alt="" width="1024" height="1024"/>
+          <div class="to-supporters-logo-cell">
+            <img class="to-supporters-logo to-supporters-logo--sauva" src="https://terraorganica.s3.sa-east-1.amazonaws.com/media/17fe0d8c-0f48-4d20-ac54-ba82cf7c6c8f.png" alt="" width="1024" height="576"/>
+          </div>
+          <div class="to-supporters-logo-cell">
+            <img class="to-supporters-logo to-supporters-logo--partner" src="https://terraorganica.s3.sa-east-1.amazonaws.com/media/9aae62b8-cc4d-4309-a506-7c57cde1ca79.png" alt="" width="280" height="300"/>
+          </div>
+          <div class="to-supporters-logo-cell">
+            <img class="to-supporters-logo to-supporters-logo--muda" src="https://terraorganica.s3.sa-east-1.amazonaws.com/media/8a73ea2e-1381-4daa-8914-21e143a314de.png" alt="" width="1024" height="1024"/>
+          </div>
         </div>
         <p class="to-supporters-cta"><a class="to-btn to-btn-supporter" href="https://compostagemterraorganica.com.br/cadastro-de-apoiador/">QUERO SER UM APOIADOR</a></p>
       </div>
@@ -123,23 +129,27 @@ const htmlSnapshot = `
   <section class="to-impact-section">
     <div class="to-impact-outer">
       <div class="to-impact-wrap">
-        <div class="to-impact-content">
+        <header class="to-impact-header">
           <h2 class="to-impact-heading">Impactos positivos da sua<br><strong class="to-impact-heading-bold">contribuição</strong></h2>
           <p class="to-impact-lead">Entenda os benefícios de separar e compostar<br>seus resíduos orgânicos.</p>
-          <div class="to-impact-icons">
-            <img src="https://storage.googleapis.com/terraorganica-media/media/0e6c774c-ceef-42ab-b209-68748a848ef6.png" alt="" width="410" height="278"/>
-            <img src="https://storage.googleapis.com/terraorganica-media/media/0a7a8860-86e1-4743-b255-33961df6d274.png" alt="" width="410" height="278"/>
-            <img src="https://storage.googleapis.com/terraorganica-media/media/e3e8f26f-4565-4bf6-a7ee-0b5c9c7cd804.png" alt="" width="407" height="276"/>
-          </div>
-          <div class="to-impact-cards">
+        </header>
+        <div class="to-impact-columns">
+          <div class="to-impact-col">
+            <img class="to-impact-icon" src="https://terraorganica.s3.sa-east-1.amazonaws.com/media/0e6c774c-ceef-42ab-b209-68748a848ef6.png" alt="" width="410" height="278"/>
             <div class="to-impact-card">
               <h3>Solo saudável, comida saudável</h3>
               <p>Onde há compostagem o solo é mais fértil e elimina a necessidade de agrotóxicos no plantio. A compostagem é uma forte aliada da agricultura orgânica que além de produzir alimentos saudáveis, ajuda a recuperar a vida no solo</p>
             </div>
+          </div>
+          <div class="to-impact-col">
+            <img class="to-impact-icon" src="https://terraorganica.s3.sa-east-1.amazonaws.com/media/0a7a8860-86e1-4743-b255-33961df6d274.png" alt="" width="410" height="278"/>
             <div class="to-impact-card">
               <h3>Mais resíduos secos reciclados</h3>
               <p>Os resíduos orgânicos são os vilões da reciclagem de material seco. Quando descartados juntos, a reciclagem do material seco não pode acontecer, pois os resíduos são contaminados. Fazendo a separação para a compostagem, você evita a contaminação de mais materiais recicláveis</p>
             </div>
+          </div>
+          <div class="to-impact-col">
+            <img class="to-impact-icon" src="https://terraorganica.s3.sa-east-1.amazonaws.com/media/e3e8f26f-4565-4bf6-a7ee-0b5c9c7cd804.png" alt="" width="407" height="276"/>
             <div class="to-impact-card">
               <h3>Menos aterros e gastos com transporte</h3>
               <p>Quanto mais pessoas fazem a compostagem dos resíduos orgânicos, menos áreas são necessárias para aterros sanitários e menor é a necessidade de transporte dos resíduos por grandes distâncias</p>
@@ -169,8 +179,10 @@ const htmlSnapshot = `
           <span>de compostagem?</span><br>
           <strong class="to-participate-heading-bold">Participe!</strong>
         </h2>
-        <a class="to-participate-btn" href="/cadastro-de-centrais">CADASTRAR</a>
-        <p class="to-participate-lead">Conheço uma iniciativa<br>e quero indicar!</p>
+        <div class="to-participate-actions">
+          <a class="to-participate-btn" href="/cadastro-de-centrais">CADASTRAR</a>
+          <p class="to-participate-lead">Conheço uma iniciativa<br>e quero indicar!</p>
+        </div>
       </div>
     </div>
   </section>
@@ -186,21 +198,21 @@ const htmlSnapshot = `
       <div class="to-card-grid to-centrals-grid">
       <article class="to-card">
         <a href="/blog/lab-terra-organica-tem-maior-volume-de-residuos-compostados-do-ano/">
-          <img src="https://storage.googleapis.com/terraorganica-media/media/79a07d6c-65e2-4068-8c59-bfff16582d8e.jpg" alt="Lab Terra Orgânica"/>
+          <img src="https://terraorganica.s3.sa-east-1.amazonaws.com/media/79a07d6c-65e2-4068-8c59-bfff16582d8e.jpg" alt="Lab Terra Orgânica"/>
           <h3>Lab. Terra Orgânica tem Maior Volume de Resíduos Compostados do Ano.</h3>
           <p>No manejo de Compostagem feito no dia 17/03/2023, a central modelo de compostagem comunitária e CSAA Laboratório Terra Orgânica, atingiu a maior marca do ano até então.</p>
         </a>
       </article>
       <article class="to-card">
         <a href="/blog/educacao-ambiental-na-horta-e-compostagem-comunitaria/">
-          <img src="https://storage.googleapis.com/terraorganica-media/media/ce6740a1-1426-4304-adb1-13b3458645bb.jpg" alt="Educação Ambiental"/>
+          <img src="https://terraorganica.s3.sa-east-1.amazonaws.com/media/ce6740a1-1426-4304-adb1-13b3458645bb.jpg" alt="Educação Ambiental"/>
           <h3>Educação Ambiental na Horta e Compostagem Comunitária</h3>
           <p>Crianças do Núcleo de Educação Infantil Municipal tem manhã de experiências agroecológicas com direito a plantio e compostagem.</p>
         </a>
       </article>
       <article class="to-card">
         <a href="/blog/novidades-da-central-5/">
-          <img src="https://storage.googleapis.com/terraorganica-media/media/aeaad988-dc13-417a-81d0-0f49705874bc.jpg" alt="Instituto Caeté"/>
+          <img src="https://terraorganica.s3.sa-east-1.amazonaws.com/media/aeaad988-dc13-417a-81d0-0f49705874bc.jpg" alt="Instituto Caeté"/>
           <h3>Cerimonia de Inauguração Instituto Caeté, Comuna Amarildo de Souza</h3>
           <p>Essa e outras atualizações, você encontra no nosso post semanal: Novidades da Central. Edição 5.</p>
         </a>
@@ -212,21 +224,21 @@ const htmlSnapshot = `
 `.trim()
 
 const cssSnapshot = `
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@200;300;400;600;700&display=swap');
-.to-home { font-family: "Raleway", sans-serif; color: #3a3a3a; width: 100%; max-width: none; margin: 0; padding: 0; }
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+.to-home { font-family: "DM Sans", sans-serif; color: #3a3a3a; width: 100%; max-width: none; margin: 0; padding: 0; }
 .to-section { max-width: 1200px; margin: 0 auto; padding: 48px 20px; }
 .to-section-title { color: #0274be; font-size: 2rem; margin: 0 0 16px; text-align: center; }
 .to-section-lead { text-align: center; margin: 0 0 32px; max-width: 720px; margin-left: auto; margin-right: auto; }
 .to-section-cta { text-align: center; margin-top: 24px; }
-.to-hero { background-color: #99420e; background-image: url('https://storage.googleapis.com/terraorganica-media/media/9f167e03-9191-4bc9-9028-146b60dee0b6.jpg'); background-position: center center; background-repeat: no-repeat; background-size: cover; min-height: 571px; display: flex; align-items: center; justify-content: flex-start; text-align: left; padding: 0 0 20px; }
+.to-hero { background-color: #99420e; background-image: url('https://terraorganica.s3.sa-east-1.amazonaws.com/media/9f167e03-9191-4bc9-9028-146b60dee0b6.jpg'); background-position: center center; background-repeat: no-repeat; background-size: cover; min-height: 571px; display: flex; align-items: center; justify-content: flex-start; text-align: left; padding: 0 0 20px; }
 .to-hero-inner { width: 100%; max-width: 1140px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; }
-.to-hero-heading { font-family: "Raleway", sans-serif; color: #fff; margin: 0; line-height: 1.1; }
+.to-hero-heading { font-family: "DM Sans", sans-serif; color: #fff; margin: 0; line-height: 1.1; }
 .to-hero-heading--thin { font-size: 53px; font-weight: 200; }
-.to-hero-heading--bold { font-size: 62px; font-weight: 700; margin-top: -15px; position: relative; display: inline-block; }
+.to-hero-heading--bold { font-size: 62px; font-weight: 700; margin-top: 12px; position: relative; display: inline-block; }
 .to-hero-heading--underline::after { content: ''; position: absolute; left: 0; width: 100%; top: 110%; border-top: 2px solid #fff; }
-.to-hero-sub { margin: 0; padding: 40px 0; text-align: left; font-family: "Raleway", sans-serif; font-size: 28px; font-weight: 400; line-height: 33px; letter-spacing: 0.03px; color: #fff; }
+.to-hero-sub { margin: 0; padding: 40px 0; text-align: left; font-family: "DM Sans", sans-serif; font-size: 28px; font-weight: 400; line-height: 33px; letter-spacing: 0.03px; color: #fff; }
 .to-hero-sub p { margin: 0; }
-.to-hero-quem { margin: 24px 0 0; font-family: "Raleway", sans-serif; font-size: 36px; font-weight: 700; color: #fff; text-align: left; border-radius: 8px; }
+.to-hero-quem { margin: 24px 0 0; font-family: "DM Sans", sans-serif; font-size: 36px; font-weight: 700; color: #fff; text-align: left; border-radius: 8px; }
 .to-cta-band { max-width: 1140px; margin: -70px auto 0; padding: 0 20px 60px; position: relative; z-index: 2; box-sizing: border-box; }
 .to-cta-grid { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: stretch; gap: 50px; }
 .to-cta-card { flex: 1 1 280px; max-width: 340px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: #fff; color: #54595f; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.24); text-decoration: none; box-sizing: border-box; transition: transform 0.2s ease, box-shadow 0.2s ease; }
@@ -239,14 +251,14 @@ const cssSnapshot = `
 .to-cta-icon--separar svg { fill: #9d7b4e; }
 .to-cta-icon--registrar { background-color: #cfffd0; }
 .to-cta-icon--registrar svg { fill: #53b854; }
-.to-cta-title { margin: 0 0 12px; font-family: "Raleway", sans-serif; font-size: 24px; font-weight: 600; text-transform: uppercase; color: #54595f; line-height: 1.2; }
-.to-cta-text { margin: 0; font-family: "Raleway", sans-serif; font-size: 20px; font-weight: 400; color: #54595f; line-height: 1.4; }
-.to-video-section { max-width: none; padding: 100px 20px; background: #fff; box-sizing: border-box; }
+.to-cta-title { margin: 0 0 12px; font-family: "DM Sans", sans-serif; font-size: 24px; font-weight: 600; text-transform: uppercase; color: #54595f; line-height: 1.2; }
+.to-cta-text { margin: 0; font-family: "DM Sans", sans-serif; font-size: 20px; font-weight: 400; color: #54595f; line-height: 1.4; }
+.to-video-section { max-width: none; padding: 50px 20px 100px; background: #fff; box-sizing: border-box; }
 .to-video-inner { max-width: 1140px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 50px; }
-.to-video-heading { margin: 0 auto; position: relative; text-align: center; font-family: "Raleway", sans-serif; font-size: 28px; font-weight: 300; line-height: 1.3; color: #54595f; }
+.to-video-heading { margin: 0 auto; position: relative; text-align: center; font-family: "DM Sans", sans-serif; font-size: 28px; font-weight: 300; line-height: 1.3; color: #54595f; }
 .to-video-heading-bold { font-size: 34px; font-weight: 700; letter-spacing: 0.02em; }
 .to-video-heading::after { content: ''; position: absolute; left: 0; top: 108%; width: 100%; border-top: 1px solid #ccc; }
-.to-video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 20px; width: 100%; max-width: 900px; margin: 0 auto; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12); }
+.to-video-wrap { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 20px; width: 100%; max-width: 1024px; margin: 0 auto; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12); }
 .to-video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
 .to-blog-section { max-width: none; margin: 0; padding: 0; background: transparent; box-sizing: border-box; }
 .to-blog-outer { position: relative; background-color: #9d7b4e; padding: 60px 0 10px; overflow: hidden; box-sizing: border-box; }
@@ -258,17 +270,17 @@ const cssSnapshot = `
 .to-blog-outer .elementor-shape-bottom svg { height: 30px; }
 .to-blog-outer .elementor-shape-fill { fill: #fff; }
 .to-blog-inner { position: relative; z-index: 2; max-width: 1140px; margin: 0 auto; padding: 0 20px 50px; box-sizing: border-box; }
-.to-blog-heading { margin: 0 auto; position: relative; text-align: center; font-family: "Raleway", sans-serif; font-size: 55px; font-weight: 300; line-height: 0.8em; letter-spacing: 1.6px; color: #fff; }
+.to-blog-heading { margin: 40px auto 0; position: relative; text-align: center; font-family: "DM Sans", sans-serif; font-size: 55px; font-weight: 300; line-height: 0.8em; letter-spacing: 1.6px; color: #fff; }
 .to-blog-heading-bold { font-size: 40px; font-weight: 700; letter-spacing: 0; }
 .to-blog-divider { width: min(100%, 420px); height: 2px; margin: 28px auto 40px; background: rgba(255, 255, 255, 0.85); border: none; }
-.to-blog-lead { margin: 0 auto 40px; max-width: 720px; text-align: center; font-family: "Raleway", sans-serif; font-size: 18px; font-weight: 400; line-height: 30px; letter-spacing: 0.1px; color: #fff; padding: 0 20px; box-sizing: border-box; }
+.to-blog-lead { margin: 0 auto 40px; max-width: 720px; text-align: center; font-family: "DM Sans", sans-serif; font-size: 18px; font-weight: 400; line-height: 30px; letter-spacing: 0.1px; color: #fff; padding: 0 20px; box-sizing: border-box; }
 .to-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 50px 50px; }
 .to-card { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15); display: flex; flex-direction: column; }
 .to-card a { text-decoration: none; color: inherit; display: flex; flex-direction: column; flex: 1; }
 .to-card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
-.to-card h3 { font-family: "Raleway", sans-serif; font-size: 20px; font-weight: 700; color: #404040; margin: 0; padding: 20px 30px 8px; text-decoration: underline; line-height: 1.35; }
-.to-card p { margin: 0; padding: 0 30px 16px; font-family: "Raleway", sans-serif; font-size: 15px; line-height: 1.5; color: #54595f; flex: 1; }
-.to-card .to-card-more { display: inline-block; margin: auto 30px 24px; font-family: "Raleway", sans-serif; font-size: 14px; font-weight: 400; text-transform: uppercase; text-decoration: underline; color: #404040; letter-spacing: 0; }
+.to-card h3 { font-family: "DM Sans", sans-serif; font-size: 20px; font-weight: 700; color: #404040; margin: 0; padding: 20px 30px 8px; text-decoration: underline; line-height: 1.35; }
+.to-card p { margin: 0; padding: 0 30px 16px; font-family: "DM Sans", sans-serif; font-size: 15px; line-height: 1.5; color: #54595f; flex: 1; }
+.to-card .to-card-more { display: inline-block; margin: auto 30px 24px; font-family: "DM Sans", sans-serif; font-size: 14px; font-weight: 400; text-transform: uppercase; text-decoration: underline; color: #404040; letter-spacing: 0; }
 .to-section-cta { text-align: center; margin-top: 32px; }
 .to-btn { display: inline-block; background: #0274be; color: #fff; padding: 12px 32px; border-radius: 4px; text-decoration: none; font-weight: 600; transition: background 0.2s; }
 .to-btn:hover { background: #3a3a3a; color: #fff; }
@@ -276,38 +288,39 @@ const cssSnapshot = `
 .to-btn-blog:hover { background: #fff; color: #9d7b4e; }
 .to-supporters { width: 100%; }
 .to-supporters-banner { max-width: 1140px; margin: 80px auto 60px; padding: 0 20px; box-sizing: border-box; }
-.to-supporters-banner-bg { min-height: 430px; display: flex; align-items: center; justify-content: flex-end; padding: 40px 48px; border-radius: 8px; background-color: #99420e; background-image: url('https://storage.googleapis.com/terraorganica-media/media/1eea73ef-bb68-4abd-a0e3-e07eb2a1b99f.jpg'); background-position: center center; background-repeat: no-repeat; background-size: cover; box-sizing: border-box; }
-.to-supporters-banner-heading { margin: 0; text-align: right; font-family: "Raleway", sans-serif; font-size: 32px; font-weight: 400; line-height: 1.3em; letter-spacing: 1.3px; color: #fff; }
+.to-supporters-banner-bg { min-height: 430px; display: flex; align-items: center; justify-content: flex-end; padding: 40px 48px; border-radius: 8px; background-color: #99420e; background-image: url('https://terraorganica.s3.sa-east-1.amazonaws.com/media/1eea73ef-bb68-4abd-a0e3-e07eb2a1b99f.jpg'); background-position: center center; background-repeat: no-repeat; background-size: cover; box-sizing: border-box; }
+.to-supporters-banner-heading { margin: 0; text-align: right; font-family: "DM Sans", sans-serif; font-size: 32px; font-weight: 400; line-height: 1.3em; letter-spacing: 1.3px; color: #fff; }
 .to-supporters-banner-heading strong { font-weight: 700; }
 .to-supporters-body { width: 100%; background-color: #99420e; padding: 60px 0; box-sizing: border-box; }
 .to-supporters-body-inner { max-width: 733px; margin: 0 auto; padding: 0 20px; text-align: center; box-sizing: border-box; }
-.to-supporters-lead { margin: 0 0 40px; font-family: "Raleway", sans-serif; font-size: 22px; font-weight: 400; line-height: 30px; letter-spacing: 0.1px; color: #f5f5f5; }
-.to-supporters-title { position: relative; display: inline-block; margin: 0 auto; font-family: "Raleway", sans-serif; font-size: 28px; font-weight: 300; line-height: 1.3; color: #f5f5f5; }
+.to-supporters-lead { margin: 0 0 40px; font-family: "DM Sans", sans-serif; font-size: 22px; font-weight: 400; line-height: 30px; letter-spacing: 0.1px; color: #f5f5f5; }
+.to-supporters-title { position: relative; display: inline-block; margin: 0 auto; font-family: "DM Sans", sans-serif; font-size: 28px; font-weight: 300; line-height: 1.3; color: #f5f5f5; }
 .to-supporters-title::after { content: ''; position: absolute; left: 0; top: 108%; width: 100%; border-top: 1px solid #fff; }
 .to-supporters-title-bold { font-size: 34px; font-weight: 700; letter-spacing: 0.02em; }
-.to-supporters-logos { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; margin: 50px 0; padding: 0; background-color: #fff; border-radius: 25px; }
-.to-supporters-logo { display: block; height: auto; object-fit: contain; }
-.to-supporters-logo--sauva { width: 250px; max-width: 100%; }
-.to-supporters-logo--partner { width: 193px; max-width: 100%; margin: 8px; }
-.to-supporters-logo--muda { width: 250px; max-width: 100%; }
+.to-supporters-logos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 50px 0; padding: 0; background-color: #fff; border-radius: 25px; overflow: hidden; }
+.to-supporters-logo-cell { display: flex; align-items: center; justify-content: center; min-height: 200px; padding: 24px 20px; box-sizing: border-box; }
+.to-supporters-logo { display: block; width: auto; max-width: 100%; max-height: 140px; height: auto; object-fit: contain; }
+.to-supporters-logo--sauva { max-width: 250px; }
+.to-supporters-logo--partner { max-width: 193px; }
+.to-supporters-logo--muda { max-width: 290px; max-height: 165px; }
 .to-supporters-cta { margin: 0; text-align: center; }
-.to-btn-supporter { background: #3CAA59; border-radius: 50px; font-family: "Roboto", sans-serif; font-weight: 600; text-transform: uppercase; }
+.to-btn-supporter { background: #3CAA59; border-radius: 50px; font-family: "DM Sans", sans-serif; font-weight: 600; text-transform: uppercase; }
 .to-btn-supporter:hover { background: #2d8a45; }
 .to-impact-section { max-width: none; margin: 0; padding: 0; }
-.to-impact-outer { width: 100%; padding: 80px 0; background-color: #9d7b4e; background-image: url('https://storage.googleapis.com/terraorganica-media/media/d27e2d7c-5e7d-4c39-88d9-db31e478354f.jpg'); background-position: center left; background-repeat: no-repeat; background-size: 550px auto; box-sizing: border-box; }
+.to-impact-outer { width: 100%; padding: 80px 0; background-color: #9d7b4e; background-image: url('https://terraorganica.s3.sa-east-1.amazonaws.com/media/d27e2d7c-5e7d-4c39-88d9-db31e478354f.jpg'); background-position: center; background-repeat: no-repeat; background-size: cover; box-sizing: border-box; }
 .to-impact-wrap { max-width: 1140px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; }
-.to-impact-content { width: 70%; box-sizing: border-box; }
-.to-impact-heading { margin: 0 0 16px; text-align: right; font-family: "Raleway", sans-serif; font-size: 40px; font-weight: 300; line-height: 1.3; color: #fff; }
+.to-impact-header { margin: 0 0 48px auto; max-width: 560px; text-align: right; }
+.to-impact-heading { margin: 0 0 16px; font-family: "DM Sans", sans-serif; font-size: 40px; font-weight: 300; line-height: 1.3; color: #fff; }
 .to-impact-heading-bold { font-size: 50px; font-weight: 700; }
-.to-impact-lead { margin: 0 0 32px; text-align: right; font-family: "Open Sans", sans-serif; font-size: 20px; font-weight: 400; line-height: 30px; letter-spacing: 0.1px; color: #fff; }
-.to-impact-icons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
-.to-impact-icons img { width: 50%; max-width: 205px; height: auto; display: block; margin: 0 auto; object-fit: contain; }
-.to-impact-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
-.to-impact-card { background: #fff; border-radius: 8px; box-shadow: 2px 2px 13px 3px rgba(0, 0, 0, 0.15); margin-top: 50px; padding: 30px; text-align: left; }
-.to-impact-card h3 { margin: 0 0 12px; font-family: "Raleway", sans-serif; font-size: 20px; font-weight: 600; color: #404040; }
-.to-impact-card p { margin: 0; font-family: "Open Sans", sans-serif; font-size: 18px; font-weight: 400; line-height: 1.5; color: #404040; }
+.to-impact-lead { margin: 0; font-family: "DM Sans", sans-serif; font-size: 20px; font-weight: 400; line-height: 30px; letter-spacing: 0.1px; color: #fff; }
+.to-impact-columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; align-items: stretch; }
+.to-impact-col { display: flex; flex-direction: column; align-items: center; gap: 24px; min-width: 0; }
+.to-impact-icon { width: auto; max-width: 205px; height: auto; display: block; object-fit: contain; }
+.to-impact-card { width: 100%; background: #fff; border-radius: 8px; box-shadow: 2px 2px 13px 3px rgba(0, 0, 0, 0.15); padding: 30px; text-align: left; box-sizing: border-box; flex: 1; }
+.to-impact-card h3 { margin: 0 0 12px; font-family: "DM Sans", sans-serif; font-size: 20px; font-weight: 600; color: #404040; }
+.to-impact-card p { margin: 0; font-family: "DM Sans", sans-serif; font-size: 18px; font-weight: 400; line-height: 1.5; color: #404040; }
 .to-participate-section { max-width: none; margin: 0; padding: 0; }
-.to-participate-outer { position: relative; min-height: 645px; display: flex; align-items: center; background-image: url('https://storage.googleapis.com/terraorganica-media/media/218c3a3e-2045-4ef8-a087-34bb257a1d3e.jpg'); background-position: bottom right; background-repeat: no-repeat; background-size: cover; background-attachment: fixed; overflow: hidden; }
+.to-participate-outer { position: relative; min-height: 645px; display: flex; align-items: center; background-image: url('https://terraorganica.s3.sa-east-1.amazonaws.com/media/218c3a3e-2045-4ef8-a087-34bb257a1d3e.jpg'); background-position: bottom right; background-repeat: no-repeat; background-size: cover; background-attachment: fixed; overflow: hidden; }
 .to-participate-overlay { position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, #fff 40%, rgba(255, 255, 255, 0) 80%); opacity: 0.92; pointer-events: none; }
 .to-participate-outer .elementor-shape { overflow: hidden; position: absolute; left: 0; width: 100%; line-height: 0; direction: ltr; pointer-events: none; z-index: 2; }
 .to-participate-outer .elementor-shape-top { top: -1px; }
@@ -317,30 +330,31 @@ const cssSnapshot = `
 .to-participate-outer .elementor-shape-bottom svg { height: 40px; }
 .to-participate-outer .elementor-shape-top .elementor-shape-fill { fill: #9d7b4e; }
 .to-participate-outer .elementor-shape-bottom .elementor-shape-fill { fill: #fff; }
-.to-participate-inner { position: relative; z-index: 3; display: flex; flex-wrap: wrap; align-items: center; max-width: 1048px; width: 75%; margin: 0 auto; padding: 80px 20px; box-sizing: border-box; }
-.to-participate-heading { margin: 0; position: relative; flex: 0 0 auto; text-align: start; font-family: "Raleway", sans-serif; font-size: 41px; font-weight: 300; line-height: 48px; letter-spacing: 1.17px; color: #404040; }
+.to-participate-inner { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: flex-start; max-width: 1048px; width: 75%; margin: 0 auto; padding: 80px 20px; box-sizing: border-box; }
+.to-participate-heading { margin: 0; position: relative; text-align: start; font-family: "DM Sans", sans-serif; font-size: 41px; font-weight: 300; line-height: 48px; letter-spacing: 1.17px; color: #404040; }
 .to-participate-heading-bold { font-size: 41px; font-weight: 700; letter-spacing: 0.06em; line-height: 48px; }
 .to-participate-heading::after { content: ''; position: absolute; left: 0; top: 105%; width: 207px; border-top: 2px solid #404040; }
-.to-participate-btn { display: inline-block; flex: 0 0 auto; margin: 30px 0 0; padding: 14px 32px; background: #3caa59; color: #fff; font-family: "Roboto", sans-serif; font-size: 15px; font-weight: 600; text-decoration: none; border-radius: 50px; transition: background 0.2s ease; }
+.to-participate-actions { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 40px; }
+.to-participate-btn { display: inline-block; margin: 0; padding: 14px 32px; background: #3caa59; color: #fff; font-family: "DM Sans", sans-serif; font-size: 15px; font-weight: 600; text-decoration: none; border-radius: 50px; transition: background 0.2s ease; }
 .to-participate-btn:hover { background: #2d8a45; color: #fff; }
-.to-participate-lead { margin: 0 0 0 10px; flex: 0 0 auto; text-align: center; font-family: "Raleway", sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; letter-spacing: 1.1px; color: #404040; }
-.to-centrals-section { max-width: none; margin: 0; padding: 60px 0; box-sizing: border-box; }
+.to-participate-lead { margin: 0; text-align: center; font-family: "DM Sans", sans-serif; font-size: 18px; font-weight: 400; line-height: 24px; letter-spacing: 1.1px; color: #404040; }
+.to-centrals-section { max-width: none; margin: 0; padding: 60px 0; background-color: #fff; box-sizing: border-box; }
 .to-centrals-inner { max-width: 1140px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; }
-.to-centrals-heading { margin: 0 auto; text-align: center; font-family: "Raleway", sans-serif; font-size: 30px; font-weight: 300; line-height: 1.3; color: #404040; }
+.to-centrals-heading { margin: 0 auto; text-align: center; font-family: "DM Sans", sans-serif; font-size: 30px; font-weight: 300; line-height: 1.3; color: #404040; }
 .to-centrals-heading-bold { font-size: 40px; font-weight: 700; letter-spacing: 0.02em; }
 .to-centrals-divider { width: min(100%, 420px); height: 2px; margin: 28px auto 0; background: #404040; border: none; }
-.to-centrals-lead { margin: 40px auto 25px; max-width: 720px; text-align: center; font-family: "Raleway", sans-serif; font-size: 18px; font-weight: 400; line-height: 30px; letter-spacing: 0.1px; color: #404040; padding: 0 20px; box-sizing: border-box; }
+.to-centrals-lead { margin: 40px auto 25px; max-width: 720px; text-align: center; font-family: "DM Sans", sans-serif; font-size: 18px; font-weight: 400; line-height: 30px; letter-spacing: 0.1px; color: #404040; padding: 0 20px; box-sizing: border-box; }
 .to-centrals-grid { margin: 25px; gap: 45px 50px; }
 @media (max-width: 767px) {
-  .to-hero { min-height: 50vh; background-image: url('https://storage.googleapis.com/terraorganica-media/media/c1cc9e5e-b0b7-4201-a341-a81b0a74e409.jpg'); }
+  .to-hero { min-height: 50vh; background-image: url('https://terraorganica.s3.sa-east-1.amazonaws.com/media/c1cc9e5e-b0b7-4201-a341-a81b0a74e409.jpg'); }
   .to-hero-heading--thin { font-size: 28px; }
-  .to-hero-heading--bold { font-size: 32.5px; margin-top: -17px; }
+  .to-hero-heading--bold { font-size: 32.5px; margin-top: 8px; }
   .to-hero-sub { font-size: 20px; line-height: 22px; letter-spacing: 1.3px; padding-top: 30px; max-width: 145px; }
   .to-hero-quem { font-size: 26px; }
   .to-cta-band { margin-top: -40px; padding-bottom: 40px; }
   .to-cta-grid { flex-direction: column; align-items: center; gap: 24px; }
   .to-cta-card { max-width: 100%; width: 100%; }
-  .to-video-section { padding: 60px 16px; }
+  .to-video-section { padding: 32px 16px 60px; }
   .to-video-inner { gap: 32px; }
   .to-video-heading { font-size: 22px; }
   .to-video-heading-bold { font-size: 28px; }
@@ -354,23 +368,29 @@ const cssSnapshot = `
   .to-supporters-banner-heading { font-size: 28px; }
   .to-supporters-body { padding: 40px 0; }
   .to-supporters-lead { font-size: 16px; }
-  .to-supporters-logos { flex-direction: column; gap: 16px; padding: 16px 0; }
-  .to-impact-outer { background-image: none; padding: 50px 0; }
-  .to-impact-content { width: 70%; }
+  .to-supporters-logos { grid-template-columns: 1fr; }
+  .to-supporters-logo-cell { min-height: 140px; padding: 20px 16px; }
+  .to-supporters-logo { max-height: 120px; }
+  .to-supporters-logo--muda { max-height: 140px; max-width: 260px; }
+  .to-impact-outer { padding: 50px 0; }
+  .to-impact-header { margin: 0 auto 32px; max-width: none; text-align: center; }
+  .to-impact-heading { font-size: 32px; }
+  .to-impact-heading-bold { font-size: 40px; }
   .to-impact-lead { font-size: 16px; }
-  .to-impact-icons, .to-impact-cards { grid-template-columns: 1fr; gap: 24px; }
-  .to-impact-card { margin-top: 24px; text-align: center; }
+  .to-impact-columns { grid-template-columns: 1fr; gap: 32px; }
+  .to-impact-card { text-align: center; }
   .to-impact-card h3 { font-size: 16px; line-height: 19px; letter-spacing: 0.075px; }
   .to-impact-card p { font-size: 14px; letter-spacing: 0.1px; }
   .to-participate-outer { background-attachment: scroll; background-position: center center; margin-top: 80px; }
   .to-participate-overlay { background: #fff; opacity: 0.85; }
   .to-participate-outer .elementor-shape-top svg,
   .to-participate-outer .elementor-shape-bottom svg { height: 0; }
-  .to-participate-inner { flex-direction: column; width: 100%; align-items: center; text-align: center; padding: 60px 20px; }
+  .to-participate-inner { width: 100%; align-items: center; text-align: center; padding: 60px 20px; }
   .to-participate-heading { font-size: 24px; line-height: 28px; letter-spacing: 0.6px; text-align: center; }
   .to-participate-heading-bold { font-size: 41px; letter-spacing: 0.06em; line-height: 48px; }
+  .to-participate-actions { flex-direction: column; align-items: center; margin-top: 24px; }
   .to-participate-btn { display: none; }
-  .to-participate-lead { margin: 16px 0 0; text-align: center; }
+  .to-participate-lead { text-align: center; }
   .to-centrals-section { padding: 40px 0; }
   .to-centrals-lead { font-size: 16px; margin-top: 32px; }
   .to-centrals-grid { margin: 16px 0; gap: 32px; }
@@ -379,7 +399,7 @@ const cssSnapshot = `
   .to-participate-heading::after { width: 100%; }
 }
 @media (max-width: 900px) {
-  .to-card-grid, .to-impact-icons, .to-impact-cards { grid-template-columns: 1fr; }
+  .to-card-grid, .to-impact-columns { grid-template-columns: 1fr; }
 }
 `.trim()
 

@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-06-19T19:39:27.183Z",
+  "dryRun": true,
+  "force": false,
+  "xml": "/home/felipe/Projects/appterraorganica/platform/scripts/terraorgnica.WordPress.2026-06-19).xml",
+  "storage": "s3",
+  "uploaded": 0,
+  "reusedSha": 0,
+  "reusedMapping": 0,
+  "updated": 0,
+  "wouldUpdate": 1,
+  "skippedAlreadyCorrect": 0,
+  "skippedUnresolved": 0,
+  "skippedNotInDb": 0,
+  "failed": 0,
+  "planned": [
+    {
+      "slug": "laboratorio-terra-organica",
+      "wpId": "4757",
+      "fotoDaCapaId": 5700,
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2024/01/IMG_8349-scaled-e1709835821882.jpg",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/laboratorio-terra-organica-3e4d1e4b-a575-4e9a-9bba-b079405de290.jpg",
+      "previousCoverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/elementor/thumbs/IMG_8349-scaled-e1709835821882-qkvfmxxad8hww4tp5ywq0qiaelpg720308r07sx260.jpg"
+    }
+  ],
+  "updatedRows": [],
+  "skipped": [],
+  "notInDb": [],
+  "errors": []
+}

@@ -1,3 +1,4 @@
+@import './styles/fonts.css';
 @import './styles/blog.css';
 
 * {
@@ -6,7 +7,7 @@
 
 body {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-family);
   background: #f6f8f7;
   color: #1f2937;
 }
@@ -29,8 +30,25 @@ a {
   padding: 24px;
 }
 
-.page-content:has(.public-page) {
+.page-content:has(.public-page),
+.page-content:has(.to-blog-list),
+.page-content:has(.to-blog-single) {
   max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.page-content:has(.dados-coletas-page) {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.page-content:has(.to-central-detail) {
+  max-width: none;
+  width: 100%;
   margin: 0;
   padding: 0;
 }

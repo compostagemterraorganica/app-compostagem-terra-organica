@@ -1,5 +1,5 @@
 import { getConfig } from '../config/environment';
-import { cookieFetch } from './cookieClient';
+import { apiFetch } from './apiFetch';
 import authService from './authService';
 
 function isAbsoluteUrl(url) {
@@ -22,8 +22,13 @@ async function withTimeout(promiseFactory, timeoutMs) {
 }
 
 async function parseJsonResponse(response) {
-  const text = await response.text();
-  if (!text) return null;
+  const text = typeof response.text === 'function' ? await response.text() : '';
+  if (!text) {
+    if (response.status >= 200 && response.status < 300) {
+      return { success: true };
+    }
+    return null;
+  }
   try {
     return JSON.parse(text);
   } catch {
@@ -42,7 +47,7 @@ export const apiClient = {
 
     const response = await withTimeout(
       (signal) =>
-        cookieFetch(url, {
+        apiFetch(url, {
           ...options,
           signal: signal ?? options.signal
         }),
@@ -87,6 +92,25 @@ export const apiClient = {
         ...(options.headers || {})
       },
       body: JSON.stringify(body)
+    });
+  },
+
+  async putJson(pathOrUrl, body, options = {}) {
+    return this.getJson(pathOrUrl, {
+      ...options,
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers || {})
+      },
+      body: JSON.stringify(body)
+    });
+  },
+
+  async deleteJson(pathOrUrl, options = {}) {
+    return this.getJson(pathOrUrl, {
+      ...options,
+      method: 'DELETE'
     });
   }
 };

@@ -1,0 +1,21 @@
+{
+  "dryRun": true,
+  "xmlPath": "/home/felipe/Projects/appterraorganica/platform/scripts/terraorgnica.WordPress.2026-05-07.xml",
+  "wp": {
+    "attachments": 267,
+    "postsWithThumbnail": 43,
+    "postsWithResolvedUrl": 43
+  },
+  "db": {
+    "totalPosts": 45,
+    "updated": 0,
+    "alreadyCorrect": 0,
+    "noWpThumbnail": 45,
+    "unresolvedMapping": 0,
+    "skipped": 0
+  },
+  "samples": {
+    "updated": [],
+    "unresolved": []
+  }
+}

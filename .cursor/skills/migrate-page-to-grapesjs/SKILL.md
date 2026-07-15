@@ -24,8 +24,9 @@ Workflow para mapear paginas do site ao vivo e salvar no CMS com HTML/CSS limpos
 | Componente | Caminho |
 |------------|---------|
 | Editor GrapesJS | `platform/web/src/pages/admin-editor/EditorPageBuilder.jsx` |
+| Export/config GrapesJS | `platform/web/src/pages/admin-editor/grapesjs-page-export.js` |
 | Render publico | `platform/web/src/pages/public/PublicPage.jsx` (slug `home` = `/`) |
-| API pages | `api/src/modules/pages/` |
+| API pages | `platform/api/src/modules/pages/` |
 | Seed home | `platform/scripts/seed-home-page-grapesjs.js` |
 | Conteudo home | `platform/scripts/lib/home-page-content.js` |
 
@@ -71,6 +72,19 @@ O editor carrega nesta ordem (`EditorPageBuilder.jsx`):
 
 Para migracao inicial, basta `html_snapshot` + `css_snapshot` com `grapes_project_json: {}`. O JSON GrapesJS e gerado ao salvar no editor.
 
+**Breakpoints alinhados ao site** (`grapesjs-page-export.js`):
+
+| Device GrapesJS | widthMedia | Uso |
+|-----------------|------------|-----|
+| Desktop | — | estilos base |
+| Tablet | 992px | ajustes tablet |
+| Mobile landscape | 768px | landscape |
+| Mobile portrait | **767px** | mobile principal (nao usar 480px) |
+
+O site publico renderiza **somente** `html_snapshot` + `css_snapshot`. O editor recarrega via `grapes_project_json`. Ao salvar, o export usa `getCss({ keepUnusedStyles: true })` e `avoidInlineStyle: true` para paridade editor/site.
+
+**CSS seedado:** preferir `@media (max-width: 767px)` para mobile e `@media (max-width: 900px)` para grids quando aplicavel.
+
 ### 5. Salvar no banco
 
 **Opcao A — Seed script (recomendado para home e paginas estaticas)**
@@ -115,6 +129,30 @@ POST /pages/:id/publish
 - `GET /pages/public/home` retorna `html_snapshot` e `css_snapshot`
 - Abrir editor admin em `/admin/editor/:id` — conteudo carrega automaticamente
 - Verificar imagens carregam de `compostagemterraorganica.com.br/wp-content/uploads/`
+
+**Responsivo (editor vs site publico):**
+
+```bash
+cd platform
+npm run validate:grapes-css-export
+npm run test:grapes-mobile-export
+```
+
+Checklist apos editar no modo Mobile do GrapesJS:
+
+- [ ] Salvar rascunho + publicar
+- [ ] `css_snapshot` contem `@media (max-width: 767px)` com a propriedade alterada (nao `480px`)
+- [ ] Site em viewport ~600px mostra a alteracao
+- [ ] Site em viewport ~900px nao aplica estilo mobile
+- [ ] Recarregar editor no modo Mobile — alteracao persiste
+
+Se existirem regras legadas em `480px` no banco:
+
+```bash
+cd platform
+npm run migrate:grapes-breakpoint        # dry-run
+npm run migrate:grapes-breakpoint:apply  # gravar
+```
 
 ## Exemplo: Home Page
 

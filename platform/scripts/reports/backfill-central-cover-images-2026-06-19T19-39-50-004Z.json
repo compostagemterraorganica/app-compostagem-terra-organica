@@ -1,0 +1,118 @@
+{
+  "generatedAt": "2026-06-19T19:39:42.884Z",
+  "dryRun": false,
+  "force": false,
+  "xml": "/home/felipe/Projects/appterraorganica/platform/scripts/terraorgnica.WordPress.2026-06-19).xml",
+  "storage": "s3",
+  "uploaded": 0,
+  "reusedSha": 0,
+  "reusedMapping": 16,
+  "updated": 16,
+  "wouldUpdate": 0,
+  "skippedAlreadyCorrect": 0,
+  "skippedUnresolved": 0,
+  "skippedNotInDb": 0,
+  "failed": 0,
+  "planned": [],
+  "updatedRows": [
+    {
+      "slug": "laboratorio-terra-organica",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2024/01/IMG_8349-scaled-e1709835821882.jpg",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/c6c84d43-3e10-4723-a163-7a799807813c.jpg",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/laboratorio-terra-organica-3e4d1e4b-a575-4e9a-9bba-b079405de290.jpg"
+    },
+    {
+      "slug": "comunidade-de-aprendizagem-colo-da-montanha",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2024/03/2023-10-14.png",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/f9930465-cfde-45dd-a21d-73b4bd79e2e5.png",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/comunidade-de-aprendizagem-colo-da-montanha-acfecf31-f924-4902-8d69-7a94d560fa1c.png"
+    },
+    {
+      "slug": "revolucao-dos-baixinhos",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2024/03/b817d9f1-81e0-4aa2-8b23-b1a0b648913a.jpg",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/7d66c78c-7e3b-437c-9d0d-3cee97237a19.jpg",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/revolucao-dos-baixinhos-05773c68-d99e-4134-95c2-0a370914d03e.jpg"
+    },
+    {
+      "slug": "ile-axe-egi-omin",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2024/03/Design-sem-nome-17.png",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/ac9dcd72-ec2d-4bb8-9cde-a7904d78626a.png",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/ile-axe-egi-omin-b4cd9a45-380a-448a-beeb-52d2afdbc237.png"
+    },
+    {
+      "slug": "iniciativa-social-rural-jardim-do-beija-flor",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2024/03/WhatsApp-Image-2024-07-24-at-10.04.24-1.jpeg",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/94aa2208-93b2-4241-97ce-dfc188711145.jpeg",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/iniciativa-social-rural-jardim-do-beija-flor-e5bd36be-d1fa-4679-b400-1b7e9c55c300.jpg"
+    },
+    {
+      "slug": "goj-ty-sa",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2024/08/IMG_1665-scaled.jpg",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/c7e42ab9-c234-49f0-9e81-196844ee93f9.jpg",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/goj-ty-sa-13a5f83e-4581-4680-9759-b49a479ff154.jpg"
+    },
+    {
+      "slug": "cem-centro-de-integracao-na-serra-da-misericordia",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2025/05/Imagem-do-WhatsApp-de-2025-05-03-as-10.55.36_862f4d5c.jpg",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/6982bf67-682a-466b-988c-dea9ecb7901a.jpg",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/cem-centro-de-integracao-na-serra-da-misericordia-783009b9-1346-465f-8f80-bf2879e9bcbf.jpg"
+    },
+    {
+      "slug": "compostagem-comunitaria-parque-do-itajai",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2025/05/Imagem-do-WhatsApp-de-2025-03-27-as-14-53-42_2ab12063-1.jpg",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/746ce599-a133-4273-a0ea-86239834442f.jpg",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/compostagem-comunitaria-parque-do-itajai-d6d9ee0e-bb4c-40b7-96cc-37d41d7294f1.jpg"
+    },
+    {
+      "slug": "instituto-arandu",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2025/05/Imagem-do-WhatsApp-de-2025-05-07-as-20.40.29_793a29eb.jpg",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/37eb3534-d8d7-4310-bd3c-485108b7ab5e.jpg",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/instituto-arandu-70937f68-3734-4d44-8821-f0ef294761f3.jpg"
+    },
+    {
+      "slug": "compostagem-comunitaria-maloka",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2025/08/va2-e1754521024486.jpg",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/e4051f94-f054-4a60-b468-9d8c0268248b.jpg",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/compostagem-comunitaria-maloka-f6ec119e-8e61-47aa-a278-3dd89c0a499e.jpg"
+    },
+    {
+      "slug": "escola-comunitaria-da-lagoa-do-peri-asmope",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2025/08/Imagem-do-WhatsApp-de-2025-08-11-as-12-54-23_f754af37.jpg",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/d1358832-3209-42f4-b330-08646ca76c73.jpg",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/escola-comunitaria-da-lagoa-do-peri-asmope-e1dd0f24-98ec-4af5-afa1-6e2722a29281.jpg"
+    },
+    {
+      "slug": "quintal-magico",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2025/08/Quinta-Magico.jpg",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/c1c11d9a-4fba-4e5d-82ae-9ea734728c9f.jpg",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/quintal-magico-7441c5aa-2830-41c1-8a2f-34f6553dfc41.jpg"
+    },
+    {
+      "slug": "compostagem-santa-margarida",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2025/09/20230107_070458750-scaled.jpg",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/948cebc2-d9b7-4190-bdce-8bea3601d157.jpg",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/compostagem-santa-margarida-aa669376-dbef-4ff7-acba-e1a39c4ff2a3.jpg"
+    },
+    {
+      "slug": "instituto-cresce",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2026/04/imagem-CRESCE-scaled.jpg",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/a6069b68-1d8e-466b-ac79-b7cb25ce1bd7.jpg",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/instituto-cresce-95803b44-35fe-45e5-a785-aa9befe93385.jpg"
+    },
+    {
+      "slug": "instituto-ouro-verde",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2026/04/imagem-inov-scaled.jpg",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/0c9745ea-8f3f-443a-8df6-b0adf8acd033.jpg",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/instituto-ouro-verde-ee7d5ae7-f122-44b5-ad1f-6e8f6a9b78b6.jpg"
+    },
+    {
+      "slug": "agroescola",
+      "coverWpUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2026/04/Agroecola.jpeg",
+      "publicUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/d59d02ea-a8d2-4ca0-9a25-b1028c03a983.jpeg",
+      "previousImageUrl": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/centrals/agroescola-0126521e-3700-4457-9541-260557b062c3.jpg"
+    }
+  ],
+  "skipped": [],
+  "notInDb": [],
+  "errors": []
+}

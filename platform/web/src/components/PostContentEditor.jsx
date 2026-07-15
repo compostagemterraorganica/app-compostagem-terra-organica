@@ -23,7 +23,7 @@ function ToolbarButton({ active, disabled, onClick, title, children }) {
   )
 }
 
-export default function PostContentEditor({ value, onChange }) {
+export default function PostContentEditor({ value, onChange, placeholder = 'Escreva o conteúdo do post...' }) {
   const fileInputRef = useRef(null)
   const isInternalUpdate = useRef(false)
 
@@ -40,7 +40,7 @@ export default function PostContentEditor({ value, onChange }) {
         HTMLAttributes: { rel: 'noopener noreferrer', target: '_blank' }
       }),
       Image.configure({ inline: false, allowBase64: false }),
-      Placeholder.configure({ placeholder: 'Escreva o conteúdo do post...' })
+      Placeholder.configure({ placeholder })
     ],
     content: htmlForEditor(value),
     onUpdate: ({ editor: ed }) => {

@@ -1,0 +1,27 @@
+{
+  "scanned": 1,
+  "ok": 1,
+  "issues": 0,
+  "pages": [
+    {
+      "slug": "home",
+      "versionNumber": 45,
+      "isPublished": true,
+      "ok": true,
+      "cssBreakpoints": [
+        "max-width: 900px",
+        "max-width: 767px",
+        "max-width: 360px"
+      ],
+      "jsonBreakpoints": [
+        "(max-width: 767px)",
+        "(max-width: 360px)",
+        "(max-width: 900px)"
+      ],
+      "legacy480InCss": false,
+      "legacy480InJson": false,
+      "missingRulesCount": 0,
+      "missingRulesSample": []
+    }
+  ]
+}

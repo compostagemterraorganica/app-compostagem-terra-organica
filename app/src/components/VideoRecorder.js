@@ -5,7 +5,8 @@ import {
   View, 
   TouchableOpacity, 
   Alert,
-  Dimensions
+  Dimensions,
+  ActivityIndicator
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -261,6 +262,10 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
     }
 
     setIsStoppingRecording(true);
+    setIsRecording(false);
+    isRecordingRef.current = false;
+    setIsRecordingStarted(false);
+    setShowCamera(false);
     
     try {
       // Parar a gravação e aguardar resultado
@@ -293,8 +298,7 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
           };
                     
           console.log('✅ [VideoRecorder] Vídeo salvo com sucesso:', videoData.uri);
-          // Chamar callback para salvar
-          onVideoRecorded(videoData);
+          await Promise.resolve(onVideoRecorded(videoData));
           
         } else {
           throw new Error('Nenhum vídeo foi produzido - URI inválida');
@@ -306,6 +310,7 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
       
     } catch (error) {
       console.error('Erro ao parar gravação:', error);
+      setShowCamera(true);
       
       // Se o erro for específico sobre não ter dados, tentar uma abordagem diferente
       if (error.message.includes('before any data could be produced')) {
@@ -322,14 +327,10 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
         Alert.alert('Erro', 'Não foi possível finalizar a gravação. Tente novamente.');
       }
     } finally {
-      // Limpar estado independentemente do resultado
-      setIsRecording(false);
-      isRecordingRef.current = false; // Atualizar ref
-      setIsRecordingStarted(false);
       setIsStoppingRecording(false);
       setRecordingStartTime(null);
       recordingRef.current = null;
-      // Garantir que a câmera está pronta após parar a gravação
+      setShowCamera(true);
       if (cameraRef.current) {
         setIsCameraReady(true);
       }
@@ -464,32 +465,34 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
       </View>
 
       {/* Controles da câmera */}
-      <View style={styles.controls}>
-        <TouchableOpacity style={styles.controlButton} onPress={cancelRecording}>
-          <Text style={styles.controlButtonText}>✕</Text>
-        </TouchableOpacity>
+      {!isStoppingRecording && (
+        <View style={styles.controls}>
+          <TouchableOpacity style={styles.controlButton} onPress={cancelRecording}>
+            <Text style={styles.controlButtonText}>✕</Text>
+          </TouchableOpacity>
 
-        <View style={styles.recordingControls}>
-          {!isRecording ? (
-            <TouchableOpacity
-              style={[styles.recordButtonCamera, !isCameraReady && styles.recordButtonDisabled]}
-              onPress={startRecording}
-              disabled={isLoading || !isCameraReady}
-            >
-              <View style={styles.recordButtonInner} />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.stopButton}
-              onPress={stopRecording}
-            >
-              <View style={styles.stopButtonInner} />
-            </TouchableOpacity>
-          )}
+          <View style={styles.recordingControls}>
+            {!isRecording ? (
+              <TouchableOpacity
+                style={[styles.recordButtonCamera, !isCameraReady && styles.recordButtonDisabled]}
+                onPress={startRecording}
+                disabled={isLoading || !isCameraReady}
+              >
+                <View style={styles.recordButtonInner} />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.stopButton}
+                onPress={stopRecording}
+              >
+                <View style={styles.stopButtonInner} />
+              </TouchableOpacity>
+            )}
+          </View>
+
+          <View style={styles.controlButton} />
         </View>
-
-        <View style={styles.controlButton} />
-      </View>
+      )}
 
       {/* Loader de geolocalização */}
       {isLoading && (
@@ -508,6 +511,16 @@ export default function VideoRecorder({ onVideoRecorded, onCancel }) {
           <Text style={styles.recordingText}>
             {isRecordingStarted ? `GRAVANDO ${recordingDuration}s` : 'INICIANDO...'}
           </Text>
+        </View>
+      )}
+
+      {/* Loader de salvamento do vídeo */}
+      {isStoppingRecording && (
+        <View style={styles.loadingOverlay}>
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#ffffff" />
+            <Text style={styles.loadingText}>Salvando vídeo...</Text>
+          </View>
         </View>
       )}
     </SafeAreaView>
@@ -664,6 +677,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
+    marginTop: 15,
   },
   recordingIndicator: {
     position: 'absolute',

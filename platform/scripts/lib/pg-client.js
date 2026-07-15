@@ -94,11 +94,11 @@ async function upsertCentrals(pool, centrals) {
 async function upsertVolumeVerifications(pool, verifications) {
   const query = `
     INSERT INTO volume_verifications (
-      id, title, published_at, measurement_date, central_id, volume_liters,
-      video_link, post_link, status, raw_json, updated_at
+      id, title, published_at, measurement_date, central_id, volume_liters, volume_kg,
+      waste_type, video_link, post_link, status, raw_json, updated_at
     ) VALUES (
-      $1, $2, $3, $4, $5, $6,
-      $7, $8, $9, $10::jsonb, NOW()
+      $1, $2, $3, $4, $5, $6, $7,
+      $8, $9, $10, $11, $12::jsonb, NOW()
     )
     ON CONFLICT (id) DO UPDATE SET
       title = EXCLUDED.title,
@@ -106,6 +106,8 @@ async function upsertVolumeVerifications(pool, verifications) {
       measurement_date = EXCLUDED.measurement_date,
       central_id = EXCLUDED.central_id,
       volume_liters = EXCLUDED.volume_liters,
+      volume_kg = EXCLUDED.volume_kg,
+      waste_type = EXCLUDED.waste_type,
       video_link = EXCLUDED.video_link,
       post_link = EXCLUDED.post_link,
       status = EXCLUDED.status,
@@ -121,12 +123,55 @@ async function upsertVolumeVerifications(pool, verifications) {
       row.measurement_date,
       row.central_id,
       row.volume_liters,
+      row.volume_kg ?? null,
+      row.waste_type || 'alimentares',
       row.video_link,
       row.post_link,
       row.status,
       JSON.stringify(row.raw_json || {})
     ]);
   }
+}
+
+async function ensureOrCreateTag(pool, centralId, name) {
+  const trimmed = String(name || '').trim();
+  if (!trimmed) return null;
+
+  const existing = await pool.query(
+    `SELECT id, central_id, name FROM tags WHERE central_id = $1 AND name = $2`,
+    [centralId, trimmed]
+  );
+  if (existing.rows[0]) return existing.rows[0];
+
+  const inserted = await pool.query(
+    `INSERT INTO tags (central_id, name, created_at, updated_at)
+     VALUES ($1, $2, NOW(), NOW())
+     ON CONFLICT (central_id, name) DO UPDATE SET updated_at = NOW()
+     RETURNING id, central_id, name`,
+    [centralId, trimmed]
+  );
+  return inserted.rows[0] || null;
+}
+
+async function replaceVerificationTagNames(pool, verificationId, centralId, tagNames = []) {
+  await pool.query('DELETE FROM volume_verification_tags WHERE volume_verification_id = $1', [verificationId]);
+
+  const uniqueNames = [...new Set((tagNames || []).map((n) => String(n).trim()).filter(Boolean))];
+  const tagIds = [];
+  for (const name of uniqueNames) {
+    const tag = await ensureOrCreateTag(pool, centralId, name);
+    if (tag?.id) tagIds.push(tag.id);
+  }
+
+  if (!tagIds.length) return [];
+
+  const values = tagIds.map((_, i) => `($1, $${i + 2})`).join(', ');
+  await pool.query(
+    `INSERT INTO volume_verification_tags (volume_verification_id, tag_id) VALUES ${values}
+     ON CONFLICT DO NOTHING`,
+    [verificationId, ...tagIds]
+  );
+  return tagIds;
 }
 
 async function upsertUserCentralRelations(pool, relations) {
@@ -200,10 +245,13 @@ async function upsertPosts(pool, posts) {
 module.exports = {
   getPoolFromEnv,
   runMigrations,
+  runSqlFile,
   truncateAllTables,
   upsertUsers,
   upsertCentrals,
   upsertVolumeVerifications,
+  ensureOrCreateTag,
+  replaceVerificationTagNames,
   upsertUserCentralRelations,
   upsertPosts
 };

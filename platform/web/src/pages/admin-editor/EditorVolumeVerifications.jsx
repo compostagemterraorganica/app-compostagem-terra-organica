@@ -37,6 +37,7 @@ import AdminPageHeader from '../../components/AdminPageHeader'
 import AdminSearchField from '../../components/AdminSearchField'
 import SortableTableHeadCell from '../../components/SortableTableHeadCell'
 import { filterBySearch } from '../../lib/adminSearch'
+import { formatVolumeTotal } from '../../lib/format'
 import { sortItems, toggleSortKey } from '../../lib/tableSort'
 import { toVideoEmbedUrl } from '../../lib/videoEmbed'
 import { adminService } from '../../services/adminService'
@@ -46,6 +47,7 @@ const VERIFICATION_SORT_ACCESSORS = {
   measurement_date: (item) => (item.measurement_date ? new Date(item.measurement_date).getTime() : null),
   title: (item) => item.title || '',
   volume_liters: (item) => Number(item.volume_liters) || 0,
+  volume_kg: (item) => Number(item.volume_kg) || 0,
   published_at: (item) => (item.published_at ? new Date(item.published_at).getTime() : null)
 }
 
@@ -81,10 +83,28 @@ function formatDateTime(value) {
   return date.toLocaleString('pt-BR')
 }
 
-function formatVolume(value) {
+function formatVolumeLiters(value) {
   const amount = Number(value)
   if (Number.isNaN(amount)) return '—'
   return `${amount.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} L`
+}
+
+function resolveWeightKg(volumeKg, volumeLiters) {
+  const kg = Number(volumeKg)
+  if (volumeKg != null && volumeKg !== '' && !Number.isNaN(kg) && kg > 0) {
+    return kg
+  }
+  const liters = Number(volumeLiters)
+  if (!Number.isNaN(liters) && liters > 0) {
+    return Math.round(liters * 0.55 * 100) / 100
+  }
+  return null
+}
+
+function formatKg(volumeKg, volumeLiters) {
+  const amount = resolveWeightKg(volumeKg, volumeLiters)
+  if (amount === null) return '—'
+  return `${amount.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} kg`
 }
 
 function getErrorMessage(err, fallback) {
@@ -185,14 +205,37 @@ export default function EditorVolumeVerifications() {
     load()
   }, [centralFilter])
 
+  const removeVerification = (id) => {
+    setVerifications((prev) => prev.filter((item) => item.id !== id))
+  }
+
+  const applyVerificationUpdate = (updated) => {
+    const centralName =
+      centrals.find((central) => central.id === updated.central_id)?.name ||
+      `Central #${updated.central_id}`
+
+    setVerifications((prev) => {
+      const next = prev.map((item) =>
+        item.id === updated.id ? { ...item, ...updated, central_name: centralName } : item
+      )
+
+      if (centralFilter && String(updated.central_id) !== centralFilter) {
+        return next.filter((item) => item.id !== updated.id)
+      }
+
+      return next
+    })
+  }
+
   const handleDelete = async () => {
     if (!deleteTarget) return
+    const { id } = deleteTarget
     setSubmitting(true)
     setError('')
     try {
-      await adminService.deleteVolumeVerification(deleteTarget.id)
+      await adminService.deleteVolumeVerification(id)
       setDeleteTarget(null)
-      await load()
+      removeVerification(id)
     } catch (err) {
       setError(getErrorMessage(err, 'Não foi possível excluir a verificação.'))
     } finally {
@@ -240,7 +283,7 @@ export default function EditorVolumeVerifications() {
     setSubmitting(true)
     setError('')
     try {
-      await adminService.updateVolumeVerification(editingId, {
+      const updated = await adminService.updateVolumeVerification(editingId, {
         title: form.title.trim(),
         central_id: Number(form.central_id),
         measurement_date: form.measurement_date || undefined,
@@ -249,7 +292,7 @@ export default function EditorVolumeVerifications() {
         status: form.status || 'publish'
       })
       closeForm()
-      await load()
+      applyVerificationUpdate(updated)
     } catch (err) {
       setError(getErrorMessage(err, 'Não foi possível salvar a verificação.'))
     } finally {
@@ -266,7 +309,9 @@ export default function EditorVolumeVerifications() {
         item.central_id,
         item.video_link,
         item.measurement_date,
-        item.volume_liters
+        item.volume_liters,
+        item.volume_kg,
+        ...(Array.isArray(item.tags) ? item.tags.map((tag) => tag.name) : [])
       ]),
     [verifications, search]
   )
@@ -362,7 +407,7 @@ export default function EditorVolumeVerifications() {
           <Chip
             label={
               <>
-                Volume total: <BoldNumber>{formatVolume(summary.totalVolume)}</BoldNumber>
+                Volume total: <BoldNumber>{formatVolumeTotal(summary.totalVolume)}</BoldNumber>
               </>
             }
             color="secondary"
@@ -405,7 +450,7 @@ export default function EditorVolumeVerifications() {
                 <Chip
                   size="small"
                   color="secondary"
-                  label={<BoldNumber>{formatVolume(group.totalVolume)}</BoldNumber>}
+                  label={<BoldNumber>{formatVolumeTotal(group.totalVolume)}</BoldNumber>}
                 />
               </Stack>
             </AccordionSummary>
@@ -418,6 +463,8 @@ export default function EditorVolumeVerifications() {
                       <SortableTableHeadCell label="Data medição" column="measurement_date" sort={itemSort} onSort={handleItemSort} />
                       <SortableTableHeadCell label="Título" column="title" sort={itemSort} onSort={handleItemSort} />
                       <SortableTableHeadCell label="Volume" column="volume_liters" sort={itemSort} onSort={handleItemSort} align="right" />
+                      <SortableTableHeadCell label="Peso" column="volume_kg" sort={itemSort} onSort={handleItemSort} align="right" />
+                      <TableCell>Tags</TableCell>
                       <SortableTableHeadCell label="Publicado em" column="published_at" sort={itemSort} onSort={handleItemSort} />
                       <TableCell>Vídeo</TableCell>
                       <TableCell align="right">Ações</TableCell>
@@ -439,10 +486,28 @@ export default function EditorVolumeVerifications() {
                         </TableCell>
                         <TableCell align="right">
                           <Typography variant="body2" fontWeight={700} color="secondary.main">
-                            {formatVolume(item.volume_liters)}
+                            {formatVolumeLiters(item.volume_liters)}
                           </Typography>
                         </TableCell>
-                        <TableCell>{formatDateTime(item.published_at)}</TableCell>
+                        <TableCell align="right">
+                          <Typography variant="body2" fontWeight={700}>
+                            {formatKg(item.volume_kg, item.volume_liters)}
+                          </Typography>
+                        </TableCell>
+                        <TableCell sx={{ maxWidth: 200 }}>
+                          {Array.isArray(item.tags) && item.tags.length > 0 ? (
+                            <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                              {item.tags.map((tag) => (
+                                <Chip key={tag.id} label={tag.name} size="small" variant="outlined" />
+                              ))}
+                            </Stack>
+                          ) : (
+                            <Typography variant="body2" color="text.secondary">
+                              —
+                            </Typography>
+                          )}
+                        </TableCell>
+                        <TableCell>{formatDate(item.published_at)}</TableCell>
                         <TableCell>
                           <VideoButton href={item.video_link} onClick={() => openVideoModal(item)} />
                         </TableCell>
@@ -474,28 +539,54 @@ export default function EditorVolumeVerifications() {
         ))
       )}
 
-      <Dialog open={videoModal.open} onClose={closeVideoModal} maxWidth="md" fullWidth>
-        <DialogTitle>{videoModal.title}</DialogTitle>
-        <DialogContent>
+      <Dialog
+        open={videoModal.open}
+        onClose={closeVideoModal}
+        maxWidth={false}
+        scroll="body"
+        PaperProps={{
+          sx: {
+            bgcolor: '#000',
+            color: '#fff',
+            width: 'auto',
+            maxWidth: 'min(720px, 92vw)',
+            m: 2
+          }
+        }}
+      >
+        <DialogTitle sx={{ bgcolor: '#000', color: '#fff', pb: 1 }}>{videoModal.title}</DialogTitle>
+        <DialogContent sx={{ bgcolor: '#000', p: 2, pt: 0, overflow: 'hidden' }}>
           {videoEmbedUrl ? (
-            <Box sx={{ position: 'relative', pt: '56.25%', bgcolor: '#000', borderRadius: 1, overflow: 'hidden' }}>
+            <Box
+              sx={{
+                mx: 'auto',
+                aspectRatio: '16 / 9',
+                width: 'min(680px, 88vw, calc((100vh - 11rem) * 16 / 9))',
+                maxHeight: 'calc(100vh - 11rem)',
+                bgcolor: '#000',
+                borderRadius: 1,
+                overflow: 'hidden'
+              }}
+            >
               <Box
                 component="iframe"
                 src={videoEmbedUrl}
                 title={videoModal.title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
-                sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }}
+                sx={{ display: 'block', width: '100%', height: '100%', border: 0 }}
               />
             </Box>
           ) : (
-            <Typography color="text.secondary" py={2}>
+            <Typography color="grey.400" py={2}>
               Não foi possível exibir este vídeo no player embutido.
             </Typography>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={closeVideoModal}>Fechar</Button>
+        <DialogActions sx={{ bgcolor: '#000', pt: 0, px: 2, pb: 2 }}>
+          <Button onClick={closeVideoModal} sx={{ color: '#fff' }}>
+            Fechar
+          </Button>
         </DialogActions>
       </Dialog>
 
@@ -603,7 +694,7 @@ export default function EditorVolumeVerifications() {
             Detalhes adicionais
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Cada verificação registra a medição de volume (litros), a data da medição e o
+            Cada verificação registra a medição de volume (litros e kg), tags associadas, a data da medição e o
             link de comprovação em vídeo, quando disponível.
           </Typography>
         </Card>

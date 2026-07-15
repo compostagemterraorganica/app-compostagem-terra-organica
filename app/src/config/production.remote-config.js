@@ -3,13 +3,8 @@
 
 const REMOTE_CONFIG = {
   // API Configuration - URLs de produção
-  API_BASE_URL: 'https://api.terraorganica.com.br', // Altere para sua URL de produção
-  YOUTUBE_UPLOAD_URL: 'https://api.terraorganica.com.br/youtube/upload',
-  
-  // WordPress Configuration - URLs de produção
-  WORDPRESS_BASE_URL: 'https://compostagemterraorganica.com.br',
-  WORDPRESS_OAUTH_CLIENT_ID: 'seu-client-id-producao', // Altere
-  WORDPRESS_OAUTH_REDIRECT_URI: 'https://api.terraorganica.com.br/auth/callback',
+  API_BASE_URL: 'https://api-terraorganica-production.up.railway.app',
+  YOUTUBE_UPLOAD_URL: 'https://api-terraorganica-production.up.railway.app/youtube/upload',
   
   // Features toggles
   ENABLE_DEBUG: false,

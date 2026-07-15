@@ -1,13 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import TerraLoader from '../../components/TerraLoader'
+import TerraImage, { TERRA_IMAGE_PLACEHOLDER } from '../../components/TerraImage'
 import { cmsService } from '../../services/cmsService'
 
-const PLACEHOLDER_IMG =
-  'data:image/svg+xml,' +
-  encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="260" viewBox="0 0 400 260"><rect fill="#e8e4df" width="400" height="260"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9d7b4e" font-family="sans-serif" font-size="16">Terra Orgânica</text></svg>'
-  )
+const PLACEHOLDER_CARD_COUNT = 6
 
 function formatDate(iso) {
   if (!iso) return ''
@@ -64,7 +60,22 @@ export default function PublicBlogList() {
       </header>
 
       <div className="to-blog-main">
-        {loading && <TerraLoader layout="centered" label="Carregando posts..." />}
+        {loading && (
+          <div className="to-blog-grid" aria-busy="true" aria-label="Carregando posts">
+            {Array.from({ length: PLACEHOLDER_CARD_COUNT }, (_, i) => (
+              <article key={`placeholder-${i}`} className="to-blog-card to-blog-card--placeholder">
+                <div className="to-blog-card-thumb to-blog-card-thumb--placeholder" />
+                <div className="to-blog-card-body">
+                  <span className="to-blog-skeleton-line to-blog-skeleton-line--short" />
+                  <span className="to-blog-skeleton-line to-blog-skeleton-line--title" />
+                  <span className="to-blog-skeleton-line" />
+                  <span className="to-blog-skeleton-line to-blog-skeleton-line--short" />
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+
         {error && <p className="to-blog-error">{error}</p>}
         {!loading && !error && posts.length === 0 && (
           <p className="to-blog-empty">Nenhum post publicado no momento.</p>
@@ -73,14 +84,15 @@ export default function PublicBlogList() {
         {!loading && !error && posts.length > 0 && (
           <>
             <div className="to-blog-grid">
-              {posts.map((post) => (
+              {posts.map((post, index) => (
                 <article key={post.id} className="to-blog-card">
                   <Link to={`/blog/${post.slug}`} className="to-blog-card-link">
                     <div className="to-blog-card-thumb">
-                      <img
-                        src={post.featuredImageUrl || PLACEHOLDER_IMG}
+                      <TerraImage
+                        src={post.featuredImageUrl || TERRA_IMAGE_PLACEHOLDER}
                         alt={post.title}
-                        loading="lazy"
+                        fill
+                        priority={index === 0}
                       />
                     </div>
                     <div className="to-blog-card-body">

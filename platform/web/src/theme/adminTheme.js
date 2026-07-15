@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material/styles'
+import { FONT_FAMILY } from './fonts'
 
 export const adminTheme = createTheme({
   palette: {
@@ -34,7 +35,7 @@ export const adminTheme = createTheme({
     divider: '#e5e7eb'
   },
   typography: {
-    fontFamily: '"Raleway", "Open Sans", Arial, Helvetica, sans-serif',
+    fontFamily: FONT_FAMILY,
     h1: { fontWeight: 700, color: '#3a3a3a' },
     h2: { fontWeight: 600, color: '#3a3a3a' },
     h3: { fontWeight: 600 },

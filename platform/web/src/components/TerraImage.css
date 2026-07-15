@@ -1,0 +1,172 @@
+.terra-image {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: #e8e4df;
+}
+
+.terra-image--fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.terra-image--inline {
+  display: inline-block;
+  width: auto;
+  max-width: 100%;
+  vertical-align: middle;
+  background: transparent;
+  overflow: visible;
+}
+
+.terra-image--transparent {
+  background: transparent !important;
+  overflow: visible;
+}
+
+.terra-image--transparent .terra-image__skeleton {
+  display: none;
+}
+
+.terra-image--transparent .terra-image__img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.public-page-body .to-supporters-logos .terra-image,
+.public-page-body .to-fin-partners-logos .terra-image {
+  display: inline-block;
+  width: auto;
+  max-width: 100%;
+  background: transparent;
+}
+
+.public-page-body .to-supporters-logos .terra-image__img,
+.public-page-body .to-fin-partners-logos .terra-image__img {
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.terra-image--transparent.terra-image--loading .terra-image__img {
+  opacity: 0;
+}
+
+.terra-image--transparent.terra-image--loaded .terra-image__img {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.terra-image--fixed {
+  flex-shrink: 0;
+}
+
+.terra-image__skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    90deg,
+    #e8e4df 0%,
+    #f3f0ec 40%,
+    #e8e4df 80%
+  );
+  background-size: 200% 100%;
+  animation: terra-image-shimmer 1.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.terra-image--loaded .terra-image__skeleton,
+.terra-image--error .terra-image__skeleton {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.terra-image__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.terra-image--loading:not(.terra-image--inline) .terra-image__img {
+  opacity: 0;
+}
+
+.terra-image--loaded .terra-image__img,
+.terra-image--inline .terra-image__img {
+  opacity: 1;
+  transition: opacity 0.28s ease;
+}
+
+.terra-image--inline .terra-image__img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+}
+
+.terra-image__fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  text-align: center;
+  font-family: var(--font-family, sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: #9d7b4e;
+  line-height: 1.3;
+}
+
+.terra-image--error .terra-image__img {
+  display: none;
+}
+
+/* HTML injetado (GrapesJS, posts, centrais) */
+.public-page-body .terra-image,
+.to-post-body .terra-image,
+.to-central-detail-content .terra-image {
+  max-width: 100%;
+}
+
+.public-page-body .terra-image:not(.terra-image--fill),
+.to-post-body .terra-image:not(.terra-image--fill),
+.to-central-detail-content .terra-image:not(.terra-image--fill) {
+  margin: 1rem 0;
+}
+
+.public-page-body .terra-image--loading .terra-image__img,
+.to-post-body .terra-image--loading .terra-image__img,
+.to-central-detail-content .terra-image--loading .terra-image__img {
+  opacity: 0;
+}
+
+.public-page-body .terra-image--loaded .terra-image__img,
+.to-post-body .terra-image--loaded .terra-image__img,
+.to-central-detail-content .terra-image--loaded .terra-image__img {
+  opacity: 1;
+  transition: opacity 0.28s ease;
+}
+
+.to-post-body .terra-image .terra-image__img,
+.to-central-detail-content .terra-image .terra-image__img {
+  object-fit: contain;
+  width: 100%;
+  height: auto;
+}
+
+@keyframes terra-image-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

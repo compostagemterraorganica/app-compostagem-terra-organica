@@ -2,7 +2,7 @@
   "expo": {
     "name": "Terra Orgânica",
     "slug": "terraorganica",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "platforms": ["ios", "android"],
     "extra": {
       "eas": {
@@ -11,7 +11,10 @@
     },
     "runtimeVersion": "1.0.0",
     "updates": {
-      "url": "https://u.expo.dev/4fb9c308-8299-48dd-bc99-6c37a9005c62"
+      "enabled": false,
+      "url": "https://u.expo.dev/4fb9c308-8299-48dd-bc99-6c37a9005c62",
+      "checkAutomatically": "NEVER",
+      "fallbackToCacheTimeout": 0
     },
     "orientation": "default",
     "userInterfaceStyle": "light",
@@ -37,7 +40,7 @@
     },
     "android": {
       "package": "com.terraorganica.app",
-      "versionCode": 1,
+      "versionCode": 2,
       "icon": "./assets/app-icon.png",
       "permissions": [
         "android.permission.CAMERA",

@@ -1,0 +1,78 @@
+{
+  "dryRun": false,
+  "xmlPath": "/home/felipe/Projects/appterraorganica/platform/scripts/terraorgnica.WordPress.2026-05-07.xml",
+  "wp": {
+    "attachments": 267,
+    "postsWithThumbnail": 43,
+    "postsWithResolvedUrl": 43
+  },
+  "db": {
+    "totalPosts": 45,
+    "updated": 43,
+    "alreadyCorrect": 0,
+    "noWpThumbnail": 2,
+    "unresolvedMapping": 0,
+    "skipped": 0
+  },
+  "samples": {
+    "updated": [
+      {
+        "id": 642,
+        "slug": "aterros-sanitarios-lixoes-e-o-papel-da-compostagem-comunitaria-na-gestao-de-residuos",
+        "before": null,
+        "after": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/4a555528-7ddb-4fb5-87f0-5e70d7b92fa8.jpg",
+        "wpLegacyUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2020/10/aterro-red.jpg"
+      },
+      {
+        "id": 644,
+        "slug": "compostagem-comunitaria-e-a-onu",
+        "before": "https://lh3.googleusercontent.com/0CP16uNu2FDRXeUZ2t59Ds28yppKJRILdG9K7xX4CNyWQPLcd0STEtwCkaUZFgDt_PNWM1uwHTKkpOGKAmXjN6UDPznAiSuqBxGiXjkPUTZ34_FJHbxzexkkGQkSFAmKBXxB3Oo8",
+        "after": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/bd12b832-0253-428c-bf80-57ed5fe2d35f.jpg",
+        "wpLegacyUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2020/10/desenv-sust-red.jpg"
+      },
+      {
+        "id": 646,
+        "slug": "5-dicas-para-mudar-o-mundo",
+        "before": null,
+        "after": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/206bccd1-d45f-42ae-82f6-9de6cfff5c4d.jpg",
+        "wpLegacyUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2020/11/Fields-scaled.jpg"
+      },
+      {
+        "id": 1525,
+        "slug": "preparacao-de-mudas-de-ora-pronobis",
+        "before": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/8decc3a5-bee7-4485-8da9-456bdf5fbdb7.jpg",
+        "after": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/a0d28e86-9c51-49f5-86bb-8e1dc56132eb.jpg",
+        "wpLegacyUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2020/12/20200510_181349-scaled.jpg"
+      },
+      {
+        "id": 1562,
+        "slug": "compostagem-comunitaria-no-residencial-norbecker",
+        "before": null,
+        "after": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/ff5545d6-f35e-47dd-82d9-0549cdf7b71c.png",
+        "wpLegacyUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2020/12/video-compostagem-norbecker-red.png"
+      },
+      {
+        "id": 1661,
+        "slug": "parceria-com-os-vizinhos-coleta-de-esterco-para-ampliar-o-volume-melhorar-a-qualidade-do-composto",
+        "before": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/d09e4e74-a509-4ac5-a3e4-4c00fdf4adf9.jpg",
+        "after": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/d60ab1d3-30f4-4aa7-979f-1c2cc441fc8b.jpg",
+        "wpLegacyUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2020/05/20200717_145039-capa.jpg"
+      },
+      {
+        "id": 2856,
+        "slug": "cobra-jararaca-o-que-fazemos-com-os-animais-silvestres-em-nosso-patio-de-compostagem",
+        "before": null,
+        "after": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/5a6e2ee0-44d2-4d7e-b5b9-274d4c731529.jpg",
+        "wpLegacyUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2020/12/2020-12-18-jararaca-red.jpg"
+      },
+      {
+        "id": 2869,
+        "slug": "breve-historico-da-compostagem-comunitaria-no-residencial-norbecker-campeche-florianopolis",
+        "before": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/ff52d42a-2fa0-4121-b605-e5a2fd0a41c8.jpg",
+        "after": "https://terraorganica.s3.sa-east-1.amazonaws.com/media/46ff6176-d4fd-4d83-8e0d-371c58b00f29.jpg",
+        "wpLegacyUrl": "https://compostagemterraorganica.com.br/wp-content/uploads/2020/11/our-history-03.jpg"
+      }
+    ],
+    "unresolved": []
+  }
+}

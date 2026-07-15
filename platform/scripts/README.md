@@ -39,6 +39,23 @@ npm install
 npm run migrate:legacy-to-postgres
 ```
 
+### Import incremental de verificações de volume
+
+Busca no WordPress do mais recente ao mais antigo e **para** ao achar o primeiro ID já cadastrado.
+Garante schema de `volume_kg` / `waste_type` / `tags`, calcula `volume_kg` (fator 0.55) e vincula tags se existirem no meta WP.
+
+Dry-run por padrão:
+
+```bash
+npm run import:volume-verifications
+```
+
+Para gravar:
+
+```bash
+npm run import:volume-verifications:apply
+```
+
 ## Saída e relatório
 
 O script gera relatório JSON em:

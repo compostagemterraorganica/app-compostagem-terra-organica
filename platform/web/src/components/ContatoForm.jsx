@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import api from '../lib/api'
 
-export default function ContatoForm() {
+export default function ContatoForm({ pageSlug = 'contato' }) {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
   const [status, setStatus] = useState('')
   const [error, setError] = useState('')
@@ -11,7 +11,7 @@ export default function ContatoForm() {
     setStatus('')
     setError('')
     try {
-      await api.post('/forms/contato', form)
+      await api.post('/forms/contato', { ...form, pageSlug })
       setStatus('Mensagem enviada com sucesso.')
       setForm({ name: '', email: '', phone: '', message: '' })
     } catch {

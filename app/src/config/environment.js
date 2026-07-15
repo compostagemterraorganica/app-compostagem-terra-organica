@@ -1,6 +1,4 @@
 import {
-  API_BASE_URL,
-  YOUTUBE_UPLOAD_URL,
   APP_NAME,
   APP_VERSION,
   APP_ENVIRONMENT,
@@ -15,22 +13,21 @@ import {
   LOCATION_ACCURACY,
   LOCATION_TIMEOUT,
   LOCATION_MAX_AGE,
-  LOGO_URL,
-  BACKGROUND_URL,
   DEBUG_MODE,
   LOG_LEVEL,
   ENABLE_CONSOLE_LOGS,
 } from '@env';
 
 import REMOTE_CONFIG from './remote-config';
+import { getApiBaseUrl, getYoutubeUploadUrl } from './apiUrls';
 
 const BASE_ENVIRONMENT = {
-  API_BASE_URL: API_BASE_URL || 'http://192.168.0.111:3000',
-  YOUTUBE_UPLOAD_URL: YOUTUBE_UPLOAD_URL || 'http://192.168.0.111:3000/youtube/upload',
+  API_BASE_URL: getApiBaseUrl(),
+  YOUTUBE_UPLOAD_URL: getYoutubeUploadUrl(),
 
   APP_NAME: APP_NAME || 'Terra Orgânica',
   APP_VERSION: APP_VERSION || '1.0.0',
-  APP_ENVIRONMENT: APP_ENVIRONMENT || 'development',
+  APP_ENVIRONMENT: __DEV__ ? (APP_ENVIRONMENT || 'development') : 'production',
 
   DEEP_LINK_SCHEME: DEEP_LINK_SCHEME || 'terraorganica',
   DEEP_LINK_HOST: DEEP_LINK_HOST || 'app',
@@ -48,12 +45,9 @@ const BASE_ENVIRONMENT = {
   LOCATION_TIMEOUT: parseInt(LOCATION_TIMEOUT || '15000'),
   LOCATION_MAX_AGE: parseInt(LOCATION_MAX_AGE || '10000'),
 
-  LOGO_URL: LOGO_URL || 'https://compostagemterraorganica.com.br/wp-content/uploads/2020/11/cropped-LOGO_CTO_HORIZ-2.png',
-  BACKGROUND_URL: BACKGROUND_URL || 'https://compostagemterraorganica.com.br/wp-content/uploads/2021/01/site-principal-red.jpg',
-
-  DEBUG_MODE: DEBUG_MODE === 'true' || true,
-  LOG_LEVEL: LOG_LEVEL || 'debug',
-  ENABLE_CONSOLE_LOGS: ENABLE_CONSOLE_LOGS === 'true' || true,
+  DEBUG_MODE: __DEV__ && String(DEBUG_MODE) === 'true',
+  LOG_LEVEL: LOG_LEVEL || (__DEV__ ? 'debug' : 'error'),
+  ENABLE_CONSOLE_LOGS: __DEV__ && String(ENABLE_CONSOLE_LOGS) === 'true',
 };
 
 const ENVIRONMENT = Object.keys(BASE_ENVIRONMENT).reduce((acc, key) => {
@@ -66,13 +60,9 @@ export const getConfig = (key) => {
   return ENVIRONMENT[key];
 };
 
-export const isDevelopment = () => {
-  return ENVIRONMENT.APP_ENVIRONMENT === 'development';
-};
+export const isDevelopment = () => __DEV__;
 
-export const isProduction = () => {
-  return ENVIRONMENT.APP_ENVIRONMENT === 'production';
-};
+export const isProduction = () => !__DEV__;
 
 export const log = (level, message, data = null) => {
   if (!ENVIRONMENT.ENABLE_CONSOLE_LOGS) return;

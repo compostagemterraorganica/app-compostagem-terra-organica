@@ -1,5 +1,7 @@
-module.exports = function(api) {
-  api.cache(true);
+module.exports = function (api) {
+  const appEnv = process.env.APP_ENV || 'development';
+  api.cache.using(() => appEnv);
+
   return {
     presets: ['babel-preset-expo'],
     plugins: [
@@ -8,7 +10,7 @@ module.exports = function(api) {
         {
           envName: 'APP_ENV',
           moduleName: '@env',
-          path: '.env',
+          path: appEnv === 'production' ? '.env.production' : '.env',
           blocklist: null,
           allowlist: null,
           safe: false,
@@ -19,4 +21,3 @@ module.exports = function(api) {
     ],
   };
 };
-

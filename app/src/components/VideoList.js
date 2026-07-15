@@ -232,6 +232,7 @@ export default function VideoList({ videos, onDeleteVideo, onUpdateVideo, ListHe
       >
         <UploadModal 
           video={videoToUpload}
+          userLoggedIn={userLoggedIn}
           onClose={closeUploadModal}
           onUploadSuccess={handleUploadSuccess}
         />

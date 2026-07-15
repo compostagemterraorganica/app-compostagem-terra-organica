@@ -1,6 +1,7 @@
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
+import TerraImage from '../../components/TerraImage'
 import TerraLoader from '../../components/TerraLoader'
 import PersonRemoveOutlinedIcon from '@mui/icons-material/PersonRemoveOutlined'
 import {
@@ -14,12 +15,15 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
+  FormControlLabel,
   IconButton,
   List,
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
   Stack,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -34,17 +38,25 @@ import AdminAddButton from '../../components/AdminAddButton'
 import AdminPageHeader from '../../components/AdminPageHeader'
 import AdminSearchField from '../../components/AdminSearchField'
 import SortableTableHeadCell from '../../components/SortableTableHeadCell'
+import PostContentEditor from '../../components/PostContentEditor'
+import { EMPTY_META_FORM, formToMeta, metaToForm } from '../../lib/centralMetaForm'
+import { serializePostContent, unwrapPostBody } from '../../lib/postContentHtml'
 import { filterBySearch } from '../../lib/adminSearch'
 import { sortItems, toggleSortKey } from '../../lib/tableSort'
 import { adminService } from '../../services/adminService'
 
 const CENTRAL_SORT_ACCESSORS = {
-  id: (central) => Number(central.id),
   name: (central) => central.name || '',
-  slug: (central) => central.slug || ''
+  slug: (central) => central.slug || '',
+  is_active: (central) => (central.is_active ? 1 : 0)
 }
 
-const emptyCentral = { name: '', slug: '' }
+const emptyCentral = {
+  name: '',
+  slug: '',
+  is_active: true,
+  meta: { ...EMPTY_META_FORM }
+}
 
 function slugify(text) {
   return text
@@ -78,7 +90,12 @@ export default function EditorCentrals() {
   const [sort, setSort] = useState({ key: 'name', direction: 'asc' })
 
   const filteredCentrals = useMemo(
-    () => filterBySearch(centrals, search, (central) => [central.id, central.name, central.slug]),
+    () =>
+      filterBySearch(centrals, search, (central) => [
+        central.name,
+        central.slug,
+        central.is_active ? 'ativa' : 'inativa'
+      ]),
     [centrals, search]
   )
 
@@ -121,7 +138,12 @@ export default function EditorCentrals() {
 
   const openEdit = (central) => {
     setEditingId(central.id)
-    setForm({ name: central.name || '', slug: central.slug || '' })
+    setForm({
+      name: central.name || '',
+      slug: central.slug || '',
+      is_active: central.is_active !== false,
+      meta: metaToForm(central.meta)
+    })
     setFormOpen(true)
   }
 
@@ -139,15 +161,29 @@ export default function EditorCentrals() {
     }))
   }
 
+  const handleMetaChange = (field, value) => {
+    setForm((prev) => ({ ...prev, meta: { ...prev.meta, [field]: value } }))
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault()
     setSubmitting(true)
     setError('')
     try {
+      const serializedCentralText = serializePostContent(form.meta.central_text)
+      const payload = {
+        name: form.name,
+        slug: form.slug,
+        is_active: form.is_active,
+        meta: formToMeta({
+          ...form.meta,
+          central_text: unwrapPostBody(serializedCentralText) ? serializedCentralText : ''
+        })
+      }
       if (editingId) {
-        await adminService.updateCentral(editingId, form)
+        await adminService.updateCentral(editingId, payload)
       } else {
-        await adminService.createCentral(form)
+        await adminService.createCentral(payload)
       }
       closeForm()
       await loadCentrals()
@@ -242,7 +278,7 @@ export default function EditorCentrals() {
         <AdminSearchField
           value={search}
           onChange={setSearch}
-          placeholder="Pesquisar por nome, slug ou ID..."
+          placeholder="Pesquisar por nome, slug ou status..."
         />
       ) : null}
 
@@ -258,9 +294,9 @@ export default function EditorCentrals() {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <SortableTableHeadCell label="ID" column="id" sort={sort} onSort={(column) => setSort((current) => toggleSortKey(current, column))} />
                   <SortableTableHeadCell label="Nome" column="name" sort={sort} onSort={(column) => setSort((current) => toggleSortKey(current, column))} />
                   <SortableTableHeadCell label="Slug" column="slug" sort={sort} onSort={(column) => setSort((current) => toggleSortKey(current, column))} />
+                  <SortableTableHeadCell label="Status" column="is_active" sort={sort} onSort={(column) => setSort((current) => toggleSortKey(current, column))} />
                   <TableCell align="right">Ações</TableCell>
                 </TableRow>
               </TableHead>
@@ -268,26 +304,14 @@ export default function EditorCentrals() {
                 {sortedCentrals.map((central) => (
                   <TableRow key={central.id} hover>
                     <TableCell>
-                      <Typography variant="body2" fontWeight={700}>
-                        {central.id}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
                       <Stack direction="row" spacing={1.5} alignItems="center">
                         {central.image_url ? (
-                          <Box
-                            component="img"
+                          <TerraImage
                             src={central.image_url}
                             alt={central.name}
-                            loading="lazy"
-                            sx={{
-                              width: 48,
-                              height: 48,
-                              borderRadius: 1,
-                              objectFit: 'cover',
-                              bgcolor: '#e8e4df',
-                              flexShrink: 0
-                            }}
+                            width={48}
+                            height={48}
+                            style={{ borderRadius: 4, flexShrink: 0 }}
                           />
                         ) : null}
                         <Typography variant="body2" fontWeight={600} noWrap title={central.name}>
@@ -297,6 +321,14 @@ export default function EditorCentrals() {
                     </TableCell>
                     <TableCell>
                       <Chip label={central.slug || 'sem slug'} size="small" variant="outlined" color="primary" />
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={central.is_active !== false ? 'Ativa' : 'Inativa'}
+                        size="small"
+                        color={central.is_active !== false ? 'success' : 'default'}
+                        variant={central.is_active !== false ? 'filled' : 'outlined'}
+                      />
                     </TableCell>
                     <TableCell align="right">
                       <Button
@@ -333,26 +365,161 @@ export default function EditorCentrals() {
         </Typography>
       ) : null}
 
-      <Dialog open={formOpen} onClose={closeForm} maxWidth="sm" fullWidth>
+      <Dialog open={formOpen} onClose={closeForm} maxWidth="md" fullWidth>
         <form onSubmit={handleSubmit}>
           <DialogTitle>{editingId ? 'Editar central' : 'Nova central'}</DialogTitle>
-          <DialogContent>
-            <Stack spacing={2} sx={{ mt: 1 }}>
-              <TextField
-                label="Nome"
-                value={form.name}
-                onChange={(e) => handleNameChange(e.target.value)}
-                required
-                fullWidth
-              />
-              <TextField
-                label="Slug"
-                value={form.slug}
-                onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                required
-                fullWidth
-                helperText="Identificador usado na URL pública"
-              />
+          <DialogContent dividers>
+            <Stack spacing={3} sx={{ mt: 0.5 }}>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Dados básicos
+                </Typography>
+                <Stack spacing={2}>
+                  <TextField
+                    label="Nome"
+                    value={form.name}
+                    onChange={(e) => handleNameChange(e.target.value)}
+                    required
+                    fullWidth
+                  />
+                  <TextField
+                    label="Slug"
+                    value={form.slug}
+                    onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                    required
+                    fullWidth
+                    helperText="Identificador usado na URL pública"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={form.is_active}
+                        onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
+                        color="primary"
+                      />
+                    }
+                    label={form.is_active ? 'Central ativa' : 'Central inativa'}
+                  />
+                </Stack>
+              </Box>
+
+              <Divider />
+
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Informações da central
+                </Typography>
+                <Stack spacing={2}>
+                  <TextField
+                    label="Data de publicação"
+                    type="datetime-local"
+                    value={form.meta.published}
+                    onChange={(e) => handleMetaChange('published', e.target.value)}
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
+                  />
+                  <TextField
+                    label="Responsável"
+                    value={form.meta.responsible}
+                    onChange={(e) => handleMetaChange('responsible', e.target.value)}
+                    fullWidth
+                  />
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                      Texto da central
+                    </Typography>
+                    <PostContentEditor
+                      value={form.meta.central_text}
+                      onChange={(html) => handleMetaChange('central_text', html)}
+                      placeholder="Escreva o conteúdo da central..."
+                    />
+                  </Box>
+                </Stack>
+              </Box>
+
+              <Divider />
+
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Localização
+                </Typography>
+                <Stack spacing={2}>
+                  <TextField
+                    label="Endereço"
+                    value={form.meta.address}
+                    onChange={(e) => handleMetaChange('address', e.target.value)}
+                    fullWidth
+                  />
+                  <TextField
+                    label="Cidade"
+                    value={form.meta.city_name}
+                    onChange={(e) => handleMetaChange('city_name', e.target.value)}
+                    fullWidth
+                  />
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                    <TextField
+                      label="Estado"
+                      value={form.meta.state_name}
+                      onChange={(e) => handleMetaChange('state_name', e.target.value)}
+                      fullWidth
+                    />
+                    <TextField
+                      label="UF"
+                      value={form.meta.state_uf}
+                      onChange={(e) => handleMetaChange('state_uf', e.target.value)}
+                      fullWidth
+                      inputProps={{ maxLength: 2 }}
+                    />
+                  </Stack>
+                </Stack>
+              </Box>
+
+              <Divider />
+
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Contato
+                </Typography>
+                <Stack spacing={2}>
+                  <TextField
+                    label="E-mail"
+                    type="email"
+                    value={form.meta.email}
+                    onChange={(e) => handleMetaChange('email', e.target.value)}
+                    fullWidth
+                  />
+                  <TextField
+                    label="Telefone"
+                    value={form.meta.phone}
+                    onChange={(e) => handleMetaChange('phone', e.target.value)}
+                    fullWidth
+                  />
+                </Stack>
+              </Box>
+
+              <Divider />
+
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Redes sociais
+                </Typography>
+                <Stack spacing={2}>
+                  <TextField
+                    label="Instagram"
+                    value={form.meta.instagram}
+                    onChange={(e) => handleMetaChange('instagram', e.target.value)}
+                    fullWidth
+                    placeholder="https://instagram.com/..."
+                  />
+                  <TextField
+                    label="Facebook"
+                    value={form.meta.facebook}
+                    onChange={(e) => handleMetaChange('facebook', e.target.value)}
+                    fullWidth
+                    placeholder="https://facebook.com/..."
+                  />
+                </Stack>
+              </Box>
             </Stack>
           </DialogContent>
           <DialogActions>

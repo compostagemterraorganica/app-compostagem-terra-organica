@@ -13,7 +13,7 @@ export default function CentralRegistrationPage() {
 
   const submit = async (event) => {
     event.preventDefault()
-    await api.post('/forms/central-registration', form)
+    await api.post('/forms/central-registration', { ...form, pageSlug: 'cadastro-de-centrais' })
     setStatus('Cadastro enviado com sucesso.')
   }
 
