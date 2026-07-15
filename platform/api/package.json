@@ -9,7 +9,10 @@
     "dev": "nodemon src/server.js",
     "test:s3": "node scripts/test-s3-connection.js",
     "test:ses": "node scripts/test-ses-connection.js",
-    "db:backup-restore": "node scripts/backup-restore-postgres.js"
+    "db:backup-restore": "node scripts/backup-restore-postgres.js",
+    "backup:run": "npm --prefix backup run backup",
+    "backup:validate": "npm --prefix backup run backup:validate",
+    "backup:start": "npm --prefix backup start"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.840.0",
