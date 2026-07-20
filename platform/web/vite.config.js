@@ -5,6 +5,16 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: '0.0.0.0',
+    port: Number(process.env.PORT) || 5900,
+    strictPort: true,
+    watch: {
+      usePolling: true,
+      interval: 300
+    },
+    hmr: {
+      clientPort: Number(process.env.PORT) || 5900
+    },
     proxy: {
       '/api': {
         // API local do monorepo (docker-compose root: 5700→3000)

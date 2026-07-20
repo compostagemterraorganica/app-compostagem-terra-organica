@@ -53,8 +53,8 @@ const htmlSnapshot = `
   <div class="to-section to-fin-partners">
     <h2 class="to-fin-heading">Nossos<br><strong>Financiadores</strong></h2>
     <div class="to-fin-partners-logos">
-      <img class="to-fin-partners-logo to-fin-partners-logo--sauva" src="${LOGO_SAUVA}" alt="" width="1024" height="576"/>
-      <img class="to-fin-partners-logo to-fin-partners-logo--muda" src="${LOGO_MUDA}" alt="" width="1024" height="1024"/>
+      <img class="to-fin-partners-logo to-fin-partners-logo--sauva" src="${LOGO_SAUVA}" alt="Sauva" width="220" height="124"/>
+      <img class="to-fin-partners-logo to-fin-partners-logo--muda" src="${LOGO_MUDA}" alt="Muda" width="150" height="150"/>
     </div>
   </div>
 
@@ -87,8 +87,23 @@ const pageCss = `
 .to-fin-benefit-text { flex: 1; }
 .to-fin-partners { text-align: center; padding-top: 0; }
 .to-fin-partners-logos { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: center; gap: 40px; margin: 0 auto; }
-.to-fin-partners-logo { display: block; width: 150px; max-width: 100%; height: auto; object-fit: contain; }
-.to-fin-partners-logo--muda { width: 150px; }
+/* !important vence TerraImage (width:auto / max-width:100%). Sauva um pouco maior (horizontal). */
+.to-fin-partners-logos .terra-image,
+.to-fin-partners-logos .to-fin-partners-logo,
+.to-fin-partners-logos img {
+  display: block !important;
+  width: 150px !important;
+  max-width: 150px !important;
+  max-height: 150px !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
+.to-fin-partners-logos .to-fin-partners-logo--sauva,
+.to-fin-partners-logos .terra-image:has(.to-fin-partners-logo--sauva) {
+  width: 220px !important;
+  max-width: 220px !important;
+  max-height: 140px !important;
+}
 .to-fin-form-section { max-width: none; padding: 0 20px 80px; box-sizing: border-box; }
 .to-fin-form-wrap { max-width: 920px; margin: 0 auto; }
 .to-fin-form-card { display: flex; flex-direction: row; align-items: stretch; background: #fff; border-radius: 8px; box-shadow: 2px 2px 13px 3px rgba(0, 0, 0, 0.15); overflow: hidden; margin: 50px 0; }

@@ -9,9 +9,35 @@ function round2(value) {
   return Math.round(value * 100) / 100;
 }
 
-/** Data de postagem do registro; fallback para created_at. Não usa measurement_date (data da coleta). */
+/**
+ * Data da postagem (dia da coleta mostrado no título, ex.: "… – 16/05/2026").
+ * Nunca usa created_at (criação/import no banco).
+ * published_at só como fallback quando o título não traz data BR válida.
+ */
+function parseTitleDateBR(title) {
+  if (!title) return null;
+  const match = String(title).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (!match) return null;
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+  if (year < 2019 || year > 2100 || month < 1 || month > 12 || day < 1 || day > 31) return null;
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    return null;
+  }
+  return date;
+}
+
 function parsePostingDate(row) {
-  const val = row.published_at || row.created_at;
+  const fromTitle = parseTitleDateBR(row.title);
+  if (fromTitle) return fromTitle;
+
+  const val = row.published_at;
   if (!val) return null;
   const date = val instanceof Date ? val : new Date(val);
   return Number.isFinite(date.getTime()) ? date : null;
@@ -56,6 +82,8 @@ function buildCentralInfo(central) {
 function buildByState(results) {
   const volumeMap = new Map();
   const countMap = new Map();
+  const postsMap = new Map();
+  const avgMonthlyPostsMap = new Map();
 
   for (const item of results) {
     const { state_uf: stateUf, state_name: stateName } = item.central;
@@ -69,14 +97,113 @@ function buildByState(results) {
     const countEntry = countMap.get(state) || { state, stateLabel, count: 0 };
     countEntry.count += 1;
     countMap.set(state, countEntry);
+
+    const postsEntry = postsMap.get(state) || { state, stateLabel, posts: 0 };
+    postsEntry.posts += item.metrics.postCount;
+    postsMap.set(state, postsEntry);
+
+    const avgEntry = avgMonthlyPostsMap.get(state) || {
+      state,
+      stateLabel,
+      sum: 0,
+      centrals: 0
+    };
+    avgEntry.sum += item.metrics.averageMonthlyPosts || 0;
+    avgEntry.centrals += 1;
+    avgMonthlyPostsMap.set(state, avgEntry);
   }
 
   return {
     volume: [...volumeMap.values()]
       .sort((a, b) => b.volume - a.volume)
       .map((row) => ({ ...row, volume: Math.round(row.volume) })),
-    centralsCount: [...countMap.values()].sort((a, b) => b.count - a.count)
+    centralsCount: [...countMap.values()].sort((a, b) => b.count - a.count),
+    posts: [...postsMap.values()].sort((a, b) => b.posts - a.posts),
+    averageMonthlyPosts: [...avgMonthlyPostsMap.values()]
+      .map((row) => ({
+        state: row.state,
+        stateLabel: row.stateLabel,
+        averageMonthlyPosts: row.centrals > 0 ? round2(row.sum / row.centrals) : 0
+      }))
+      .sort((a, b) => b.averageMonthlyPosts - a.averageMonthlyPosts)
   };
+}
+
+function parseIdList(value) {
+  if (value == null || value === '') return [];
+  const raw = Array.isArray(value) ? value : String(value).split(',');
+  const ids = [];
+  for (const item of raw) {
+    const n = Number(String(item).trim());
+    if (Number.isInteger(n) && n > 0) ids.push(n);
+  }
+  return [...new Set(ids)];
+}
+
+function parseNameList(value) {
+  if (value == null || value === '') return [];
+  const raw = Array.isArray(value) ? value : String(value).split(',');
+  return [...new Set(raw.map((item) => String(item).trim()).filter(Boolean))];
+}
+
+function normalizeWasteType(value) {
+  if (!value) return null;
+  const normalized = String(value).trim().toLowerCase();
+  if (normalized === 'alimentares' || normalized === 'verdes') return normalized;
+  return null;
+}
+
+/**
+ * Filtros compartilhados entre análise e exportação (data de postagem).
+ * @returns {{ clauses: string[], values: any[] }}
+ */
+function buildVerificationFilterClauses(filters = {}, bindStart = 1) {
+  const {
+    fromDate = null,
+    toDate = null,
+    centralIds = [],
+    tagIds = [],
+    tagNames = [],
+    wasteType = null
+  } = filters;
+
+  const clauses = [];
+  const values = [];
+
+  if (fromDate) {
+    clauses.push(`v.published_at::date >= $${bindStart + values.length}`);
+    values.push(fromDate);
+  }
+  if (toDate) {
+    clauses.push(`v.published_at::date <= $${bindStart + values.length}`);
+    values.push(toDate);
+  }
+  if (centralIds.length > 0) {
+    clauses.push(`v.central_id = ANY($${bindStart + values.length}::bigint[])`);
+    values.push(centralIds);
+  }
+  if (wasteType) {
+    clauses.push(`v.waste_type = $${bindStart + values.length}`);
+    values.push(wasteType);
+  }
+  if (tagIds.length > 0) {
+    clauses.push(`EXISTS (
+      SELECT 1 FROM volume_verification_tags vt
+      WHERE vt.volume_verification_id = v.id
+        AND vt.tag_id = ANY($${bindStart + values.length}::bigint[])
+    )`);
+    values.push(tagIds);
+  } else if (tagNames.length > 0) {
+    clauses.push(`EXISTS (
+      SELECT 1 FROM volume_verification_tags vt
+      JOIN tags t ON t.id = vt.tag_id
+      WHERE vt.volume_verification_id = v.id
+        AND t.name = ANY($${bindStart + values.length}::text[])
+    )`);
+    values.push(tagNames);
+  }
+
+  return { clauses, values };
 }
 
 function normalizeVerificationRows(rows) {
@@ -203,10 +330,16 @@ function calculateCentralMetrics(central, verificationRows) {
       averageMonthlyPosts: round2(averageMonthlyPosts),
       averageVolumePerMonthlyCollection: round2(averageVolumePerMonthlyCollection),
       monthlyPosts: allMonths.map((month) => ({ month, count: monthlyPosts[month] || 0 })),
-      monthlyVolumes: allMonths.map((month) => ({
-        month,
-        volume: Math.round(monthlyVolumes[month] || 0)
-      })),
+      monthlyVolumes: allMonths.map((month) => {
+        const volume = Math.round(monthlyVolumes[month] || 0);
+        const posts = monthlyPosts[month] || 0;
+        return {
+          month,
+          volume,
+          posts,
+          averagePerCollection: posts > 0 ? Math.round(volume / posts) : 0
+        };
+      }),
       yearlyVolumes: allYears.map((year) => ({
         year,
         volume: Math.round(yearlyVolumes[year] || 0)
@@ -221,15 +354,65 @@ function calculateCentralMetrics(central, verificationRows) {
   };
 }
 
-async function getCentralsAnalysis() {
-  const [centralsResult, verificationsResult] = await Promise.all([
-    pool.query('SELECT id, slug, name, meta FROM centrals ORDER BY id'),
+async function loadFilterOptions() {
+  const [centralsResult, tagsResult] = await Promise.all([
+    pool.query('SELECT id, name FROM centrals ORDER BY name ASC'),
     pool.query(
-      `SELECT central_id, volume_liters, published_at, created_at
-       FROM volume_verifications
-       WHERE volume_liters > 0
-       ORDER BY central_id, COALESCE(published_at, created_at) ASC NULLS LAST, id ASC`
+      `SELECT id, name
+       FROM tags
+       WHERE TRIM(name) <> ''
+       ORDER BY LOWER(TRIM(name)) ASC, id ASC`
     )
+  ]);
+
+  const tagsByName = new Map();
+  for (const row of tagsResult.rows) {
+    const name = decodeHtmlEntities(String(row.name || '').trim());
+    if (!name) continue;
+    const key = name.toLowerCase();
+    const entry = tagsByName.get(key) || { name, ids: [] };
+    entry.ids.push(row.id);
+    tagsByName.set(key, entry);
+  }
+
+  return {
+    centrals: centralsResult.rows.map((row) => ({
+      id: row.id,
+      name: decodeHtmlEntities(row.name || '')
+    })),
+    tags: [...tagsByName.values()].map((tag) => ({
+      name: tag.name,
+      ids: tag.ids
+    })),
+    categories: [
+      { value: 'alimentares', label: 'Resíduos alimentares' },
+      { value: 'verdes', label: 'Resíduos verdes' }
+    ]
+  };
+}
+
+async function getCentralsAnalysis(filters = {}) {
+  const centralIds = filters.centralIds || [];
+  const { clauses, values } = buildVerificationFilterClauses(filters, 1);
+  const verificationWhere = ['v.volume_liters > 0', ...clauses];
+
+  const centralsSql =
+    centralIds.length > 0
+      ? 'SELECT id, slug, name, meta FROM centrals WHERE id = ANY($1::bigint[]) ORDER BY id'
+      : 'SELECT id, slug, name, meta FROM centrals ORDER BY id';
+  const centralsParams = centralIds.length > 0 ? [centralIds] : [];
+
+  const [centralsResult, verificationsResult, filterOptions] = await Promise.all([
+    pool.query(centralsSql, centralsParams),
+    pool.query(
+      `SELECT v.central_id, v.volume_liters, v.published_at, v.title
+       FROM volume_verifications v
+       WHERE ${verificationWhere.join(' AND ')}
+         AND (v.published_at IS NOT NULL OR v.title IS NOT NULL)
+       ORDER BY v.central_id, v.published_at ASC NULLS LAST, v.id ASC`,
+      values
+    ),
+    loadFilterOptions()
   ]);
 
   const verificationsByCentral = new Map();
@@ -266,6 +449,7 @@ async function getCentralsAnalysis() {
       totalPosts,
       byState: buildByState(results)
     },
+    filterOptions,
     generatedAt: new Date().toISOString()
   };
 }
@@ -333,19 +517,10 @@ async function getVolumeTimeSeries({ fromDate, toDate }) {
   return result.rows;
 }
 
-const REPORT_HEADER = ['Data da postagem', 'Central', 'Volume', 'Link do vídeo'];
+const REPORT_HEADER = ['Data da postagem', 'Central', 'Volume', 'Categoria', 'Tags', 'Link do vídeo'];
 
-function buildVerificationExportFilter(fromDate, toDate, bindStart = 1) {
-  const clauses = [];
-  const values = [];
-  if (fromDate) {
-    clauses.push(`COALESCE(v.published_at::date, v.created_at::date) >= $${bindStart + values.length}`);
-    values.push(fromDate);
-  }
-  if (toDate) {
-    clauses.push(`COALESCE(v.published_at::date, v.created_at::date) <= $${bindStart + values.length}`);
-    values.push(toDate);
-  }
+function buildVerificationExportFilter(filters = {}, bindStart = 1) {
+  const { clauses, values } = buildVerificationFilterClauses(filters, bindStart);
   return {
     whereSql: clauses.length ? `AND ${clauses.join(' AND ')}` : '',
     values
@@ -356,44 +531,68 @@ function formatDateBR(value) {
   if (!value) return '';
   const d = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(d.getTime())) return '';
-  const dd = String(d.getDate()).padStart(2, '0');
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const yyyy = d.getFullYear();
+  const dd = String(d.getUTCDate()).padStart(2, '0');
+  const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const yyyy = d.getUTCFullYear();
   return `${dd}/${mm}/${yyyy}`;
 }
 
+function formatWasteTypeLabel(value) {
+  if (value === 'verdes') return 'Resíduos verdes';
+  if (value === 'alimentares') return 'Resíduos alimentares';
+  return value || '';
+}
+
 /**
- * Relatório completo (uma folha): todas as verificações, ordenadas por data de postagem crescente.
+ * Relatório completo (uma folha): verificações filtradas, ordenadas por data de postagem crescente.
  */
-async function getVolumeExportReport({ fromDate, toDate }) {
-  const { whereSql, values } = buildVerificationExportFilter(fromDate, toDate);
+async function getVolumeExportReport(filters = {}) {
+  const { whereSql, values } = buildVerificationExportFilter(filters);
   const result = await pool.query(
     `SELECT v.id,
+            v.title,
             v.published_at,
-            v.created_at,
+            v.waste_type,
             c.name AS central_name,
             v.volume_liters,
-            COALESCE(NULLIF(TRIM(v.video_link), ''), NULLIF(TRIM(v.post_link), ''), '') AS link_video
+            COALESCE(NULLIF(TRIM(v.video_link), ''), NULLIF(TRIM(v.post_link), ''), '') AS link_video,
+            COALESCE((
+              SELECT string_agg(t.name, '; ' ORDER BY t.name)
+              FROM volume_verification_tags vt
+              JOIN tags t ON t.id = vt.tag_id
+              WHERE vt.volume_verification_id = v.id
+            ), '') AS tags
      FROM volume_verifications v
      JOIN centrals c ON c.id = v.central_id
-     WHERE 1 = 1
+     WHERE (v.published_at IS NOT NULL OR COALESCE(v.title, '') <> '')
      ${whereSql}
-     ORDER BY COALESCE(v.published_at, v.created_at) ASC NULLS LAST, v.id ASC`,
+     ORDER BY v.published_at ASC NULLS LAST, v.id ASC`,
     values
   );
 
-  const data = result.rows.map((row) => {
-    const dateVal = row.published_at || row.created_at;
-    const vol = Number(row.volume_liters);
-    return {
-      dataPostagem: formatDateBR(dateVal),
-      central: decodeHtmlEntities(row.central_name || ''),
-      volume: Number.isFinite(vol) ? vol : 0,
-      linkVideo: decodeHtmlEntities(row.link_video || '')
-    };
-  });
+  const data = result.rows
+    .map((row) => {
+      const dateVal = parsePostingDate(row);
+      if (!dateVal) return null;
+      const vol = Number(row.volume_liters);
+      return {
+        dataPostagem: formatDateBR(dateVal),
+        _sort: dateVal.getTime(),
+        central: decodeHtmlEntities(row.central_name || ''),
+        volume: Number.isFinite(vol) ? vol : 0,
+        categoria: formatWasteTypeLabel(row.waste_type),
+        tags: decodeHtmlEntities(row.tags || ''),
+        linkVideo: decodeHtmlEntities(row.link_video || '')
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a._sort - b._sort)
+    .map(({ _sort, ...row }) => row);
 
-  const sheet = [[...REPORT_HEADER], ...data.map((r) => [r.dataPostagem, r.central, r.volume, r.linkVideo])];
+  const sheet = [
+    [...REPORT_HEADER],
+    ...data.map((r) => [r.dataPostagem, r.central, r.volume, r.categoria, r.tags, r.linkVideo])
+  ];
 
   return {
     sheet,
@@ -402,10 +601,106 @@ async function getVolumeExportReport({ fromDate, toDate }) {
   };
 }
 
+async function getCentralVerifications(centralId, filters = {}, { page = 1, limit = 50 } = {}) {
+  const safePage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+  const safeLimit = Number.isFinite(limit) && limit > 0 ? Math.min(Math.floor(limit), 100) : 50;
+  const offset = (safePage - 1) * safeLimit;
+
+  const scopedFilters = {
+    ...filters,
+    centralIds: [centralId]
+  };
+  const { clauses, values } = buildVerificationFilterClauses(scopedFilters, 1);
+  const where = [
+    'v.volume_liters > 0',
+    '(v.published_at IS NOT NULL OR v.title IS NOT NULL)',
+    ...clauses
+  ];
+  const whereSql = `WHERE ${where.join(' AND ')}`;
+
+  const countResult = await pool.query(
+    `SELECT COUNT(*)::int AS total
+     FROM volume_verifications v
+     ${whereSql}`,
+    values
+  );
+  const total = countResult.rows[0]?.total || 0;
+
+  const listValues = [...values, safeLimit, offset];
+  const result = await pool.query(
+    `SELECT v.id,
+            v.title,
+            v.published_at,
+            v.measurement_date,
+            v.central_id,
+            v.volume_liters,
+            COALESCE(
+              NULLIF(v.volume_kg, 0),
+              CASE WHEN v.volume_liters > 0 THEN ROUND(v.volume_liters * 0.55, 2) ELSE NULL END
+            ) AS volume_kg,
+            v.waste_type,
+            COALESCE(NULLIF(TRIM(v.video_link), ''), NULLIF(TRIM(v.post_link), ''), '') AS video_link
+     FROM volume_verifications v
+     ${whereSql}
+     ORDER BY v.published_at DESC NULLS LAST, v.id DESC
+     LIMIT $${values.length + 1} OFFSET $${values.length + 2}`,
+    listValues
+  );
+
+  const ids = result.rows.map((row) => row.id);
+  const tagsByVerification = new Map();
+  if (ids.length > 0) {
+    const tagsResult = await pool.query(
+      `SELECT vt.volume_verification_id, t.id, t.name
+       FROM volume_verification_tags vt
+       JOIN tags t ON t.id = vt.tag_id
+       WHERE vt.volume_verification_id = ANY($1::bigint[])
+       ORDER BY t.name ASC`,
+      [ids]
+    );
+    for (const row of tagsResult.rows) {
+      const list = tagsByVerification.get(row.volume_verification_id) || [];
+      list.push({ id: row.id, name: decodeHtmlEntities(row.name || '') });
+      tagsByVerification.set(row.volume_verification_id, list);
+    }
+  }
+
+  const items = result.rows.map((row) => {
+    const postingDate = parsePostingDate(row);
+    return {
+      id: row.id,
+      title: decodeHtmlEntities(row.title || ''),
+      published_at: row.published_at,
+      measurement_date: row.measurement_date,
+      posting_date: postingDate ? postingDate.toISOString() : null,
+      central_id: row.central_id,
+      volume_liters: row.volume_liters,
+      volume_kg: row.volume_kg,
+      waste_type: row.waste_type,
+      video_link: decodeHtmlEntities(row.video_link || ''),
+      tags: tagsByVerification.get(row.id) || []
+    };
+  });
+
+  return {
+    items,
+    pagination: {
+      page: safePage,
+      limit: safeLimit,
+      total,
+      totalPages: total > 0 ? Math.ceil(total / safeLimit) : 0
+    }
+  };
+}
+
 module.exports = {
   getKpis,
   getVolumeByCentral,
   getVolumeTimeSeries,
   getVolumeExportReport,
-  getCentralsAnalysis
+  getCentralsAnalysis,
+  getCentralVerifications,
+  parseIdList,
+  parseNameList,
+  normalizeWasteType
 };

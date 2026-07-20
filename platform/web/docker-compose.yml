@@ -2,13 +2,21 @@ services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile
-      args:
-        VITE_API_URL: http://localhost:5700
+      dockerfile: Dockerfile.dev
     container_name: terraorganica-web
     ports:
       - "5900:5900"
     environment:
       PORT: 5900
-      NODE_ENV: production
+      NODE_ENV: development
+      VITE_API_URL: http://localhost:5700
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - .:/app
+      - web_node_modules:/app/node_modules
+    command: npm run dev -- --host 0.0.0.0 --port 5900
     restart: unless-stopped
+
+volumes:
+  web_node_modules:

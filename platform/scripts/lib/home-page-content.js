@@ -268,7 +268,7 @@ const cssSnapshot = `
 .to-blog-outer .elementor-shape svg { display: block; width: calc(100% + 1.3px); position: relative; left: 50%; transform: translateX(-50%); }
 .to-blog-outer .elementor-shape-top svg { height: 50px; }
 .to-blog-outer .elementor-shape-bottom svg { height: 30px; }
-.to-blog-outer .elementor-shape-fill { fill: #fff; }
+.to-blog-outer .elementor-shape-fill { fill: #f6f8f7; }
 .to-blog-inner { position: relative; z-index: 2; max-width: 1140px; margin: 0 auto; padding: 0 20px 50px; box-sizing: border-box; }
 .to-blog-heading { margin: 40px auto 0; position: relative; text-align: center; font-family: "DM Sans", sans-serif; font-size: 55px; font-weight: 300; line-height: 0.8em; letter-spacing: 1.6px; color: #fff; }
 .to-blog-heading-bold { font-size: 40px; font-weight: 700; letter-spacing: 0; }
@@ -277,7 +277,10 @@ const cssSnapshot = `
 .to-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 50px 50px; }
 .to-card { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15); display: flex; flex-direction: column; }
 .to-card a { text-decoration: none; color: inherit; display: flex; flex-direction: column; flex: 1; }
-.to-card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+.to-card img,
+.to-card .terra-image,
+.to-card .terra-image__img { width: 100%; margin: 0 !important; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+.to-card .terra-image { height: auto; overflow: hidden; background: #e8e4df; }
 .to-card h3 { font-family: "DM Sans", sans-serif; font-size: 20px; font-weight: 700; color: #404040; margin: 0; padding: 20px 30px 8px; text-decoration: underline; line-height: 1.35; }
 .to-card p { margin: 0; padding: 0 30px 16px; font-family: "DM Sans", sans-serif; font-size: 15px; line-height: 1.5; color: #54595f; flex: 1; }
 .to-card .to-card-more { display: inline-block; margin: auto 30px 24px; font-family: "DM Sans", sans-serif; font-size: 14px; font-weight: 400; text-transform: uppercase; text-decoration: underline; color: #404040; letter-spacing: 0; }
@@ -315,7 +318,9 @@ const cssSnapshot = `
 .to-impact-lead { margin: 0; font-family: "DM Sans", sans-serif; font-size: 20px; font-weight: 400; line-height: 30px; letter-spacing: 0.1px; color: #fff; }
 .to-impact-columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; align-items: stretch; }
 .to-impact-col { display: flex; flex-direction: column; align-items: center; gap: 24px; min-width: 0; }
-.to-impact-icon { width: auto; max-width: 205px; height: auto; display: block; object-fit: contain; }
+.to-impact-icon { width: auto; max-width: 205px; height: auto; display: block; object-fit: contain; border-radius: 12px; }
+.to-impact-col .terra-image { margin: 0 !important; border-radius: 12px; overflow: hidden; background: transparent; }
+.to-impact-col .terra-image__img { border-radius: 12px; }
 .to-impact-card { width: 100%; background: #fff; border-radius: 8px; box-shadow: 2px 2px 13px 3px rgba(0, 0, 0, 0.15); padding: 30px; text-align: left; box-sizing: border-box; flex: 1; }
 .to-impact-card h3 { margin: 0 0 12px; font-family: "DM Sans", sans-serif; font-size: 20px; font-weight: 600; color: #404040; }
 .to-impact-card p { margin: 0; font-family: "DM Sans", sans-serif; font-size: 18px; font-weight: 400; line-height: 1.5; color: #404040; }
@@ -328,7 +333,7 @@ const cssSnapshot = `
 .to-participate-outer .elementor-shape svg { display: block; width: calc(100% + 1.3px); position: relative; left: 50%; transform: translateX(-50%); }
 .to-participate-outer .elementor-shape-top svg { height: 50px; }
 .to-participate-outer .elementor-shape-bottom svg { height: 40px; }
-.to-participate-outer .elementor-shape-top .elementor-shape-fill { fill: #9d7b4e; }
+.to-participate-outer .elementor-shape-top .elementor-shape-fill { fill: #ffffff; }
 .to-participate-outer .elementor-shape-bottom .elementor-shape-fill { fill: #fff; }
 .to-participate-inner { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: flex-start; max-width: 1048px; width: 75%; margin: 0 auto; padding: 80px 20px; box-sizing: border-box; }
 .to-participate-heading { margin: 0; position: relative; text-align: start; font-family: "DM Sans", sans-serif; font-size: 41px; font-weight: 300; line-height: 48px; letter-spacing: 1.17px; color: #404040; }

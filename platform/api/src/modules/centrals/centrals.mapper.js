@@ -118,8 +118,15 @@ function mapPublicCentral(row, { verifications = [], listingImageUrl = null } = 
       title: decodeHtmlEntities(v.title || ''),
       volume_liters: roundVolume(v.volume_liters),
       volume_kg: roundVolume(v.volume_kg),
+      waste_type: v.waste_type || 'alimentares',
       measurement_date: v.measurement_date,
-      video_link: v.video_link || null
+      video_link: v.video_link || null,
+      tags: Array.isArray(v.tags)
+        ? v.tags.map((tag) => ({
+            id: tag.id,
+            name: decodeHtmlEntities(tag.name || '')
+          }))
+        : []
     }))
   };
 }

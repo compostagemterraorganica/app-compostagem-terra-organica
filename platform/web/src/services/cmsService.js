@@ -34,7 +34,10 @@ export const cmsService = {
   analyticsKpis: async (params) => (await api.get('/analytics/kpis', { params })).data.data,
   analyticsByCentral: async (params) => (await api.get('/analytics/volume-by-central', { params })).data.data,
   analyticsTimeSeries: async (params) => (await api.get('/analytics/volume-timeseries', { params })).data.data,
-  analyticsCentralsAnalysis: async () => (await api.get('/analytics/centrals-analysis')).data.data,
+  analyticsCentralsAnalysis: async (params = {}) =>
+    (await api.get('/analytics/centrals-analysis', { params })).data.data,
+  analyticsCentralVerifications: async (centralId, params = {}) =>
+    (await api.get(`/analytics/centrals/${centralId}/verifications`, { params })).data.data,
   exportVolumeReportCsv: async (params = {}) => {
     const res = await api.get('/analytics/export-volume-report', {
       params,

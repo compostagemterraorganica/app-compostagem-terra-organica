@@ -180,6 +180,29 @@ const detailCss = `
 .to-central-verifications-table .to-central-verifications-volume,
 .to-central-verifications-table .to-central-verifications-weight { text-align: right; white-space: nowrap; font-weight: 600; color: #3CAA59; }
 .to-central-verifications-table .to-central-verifications-date { white-space: nowrap; }
+.to-central-verifications-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.to-central-verifications-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 140px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #d0d5d2;
+  background: #f6f8f7;
+  color: #3a3a3a;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.to-central-verifications-chip--category {
+  border-color: #c5e6cf;
+  background: #eef8f1;
+  color: #2d8a45;
+}
+.to-central-verifications-muted { color: #888; }
 .to-central-verifications-video { color: #0274be; font-weight: 600; text-decoration: none; }
 .to-central-verifications-video:hover { text-decoration: underline; }
 .to-central-verifications-cta { margin-top: 24px; text-align: center; }
@@ -218,6 +241,15 @@ const detailCss = `
 }
 `.trim()
 
+const WASTE_TYPE_LABELS = {
+  alimentares: 'Resíduos alimentares',
+  verdes: 'Resíduos verdes'
+}
+
+function formatWasteType(value) {
+  return WASTE_TYPE_LABELS[value] || value || '—'
+}
+
 export default function CentralDetailPage() {
   const { slug } = useParams()
   const [central, setCentral] = useState(null)
@@ -234,6 +266,9 @@ export default function CentralDetailPage() {
   if (!central) return <TerraLoader layout="fullscreen" size="lg" label="Carregando..." />
 
   const locationLine = formatCentralLocation(central)
+  const dadosColetasTo = central.id
+    ? `/dados-de-coletas?central_id=${central.id}`
+    : '/dados-de-coletas'
 
   return (
     <article className="to-central-detail">
@@ -296,6 +331,8 @@ export default function CentralDetailPage() {
                   <th>Título</th>
                   <th>Volume</th>
                   <th>Peso</th>
+                  <th>Categoria</th>
+                  <th>Tags</th>
                   <th>Vídeo</th>
                 </tr>
               </thead>
@@ -307,6 +344,24 @@ export default function CentralDetailPage() {
                     <td className="to-central-verifications-volume">{formatVolume(v.volume_liters)}</td>
                     <td className="to-central-verifications-weight">
                       {formatWeight(v.volume_kg, v.volume_liters)}
+                    </td>
+                    <td>
+                      <span className="to-central-verifications-chip to-central-verifications-chip--category">
+                        {formatWasteType(v.waste_type)}
+                      </span>
+                    </td>
+                    <td>
+                      {Array.isArray(v.tags) && v.tags.length > 0 ? (
+                        <div className="to-central-verifications-chips">
+                          {v.tags.map((tag) => (
+                            <span key={tag.id} className="to-central-verifications-chip" title={tag.name}>
+                              {tag.name}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="to-central-verifications-muted">—</span>
+                      )}
                     </td>
                     <td>
                       {v.video_link ? (
@@ -328,7 +383,7 @@ export default function CentralDetailPage() {
             </table>
           </div>
           <div className="to-central-verifications-cta">
-            <Link className="to-central-verifications-cta-link" to="/dados-de-coletas">
+            <Link className="to-central-verifications-cta-link" to={dadosColetasTo}>
               Todos os dados de coleta
             </Link>
           </div>

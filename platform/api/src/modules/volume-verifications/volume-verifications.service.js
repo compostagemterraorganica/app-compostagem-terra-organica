@@ -14,7 +14,7 @@ const verificationSchema = z.object({
   measurement_date: z.string().optional(),
   volume_liters: z.coerce.number().nonnegative().optional(),
   volume_kg: z.coerce.number().nonnegative().optional(),
-  waste_type: z.enum(['alimentares', 'verdes']).default('alimentares'),
+  waste_type: z.enum(['alimentares', 'verdes']).optional(),
   video_link: z.string().url().optional().or(z.literal('')),
   status: z.string().optional(),
   tag_ids: z.array(z.coerce.number().int().positive()).optional()
@@ -156,7 +156,7 @@ async function createVerification(payload) {
         data.central_id,
         volumes.volume_liters,
         volumes.volume_kg,
-        data.waste_type,
+        data.waste_type || 'alimentares',
         data.video_link || null,
         data.status
       ]

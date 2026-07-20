@@ -10,12 +10,6 @@ function isEmptySortValue(value) {
 }
 
 function compareSortValues(a, b) {
-  const aEmpty = isEmptySortValue(a)
-  const bEmpty = isEmptySortValue(b)
-  if (aEmpty && bEmpty) return 0
-  if (aEmpty) return 1
-  if (bEmpty) return -1
-
   if (typeof a === 'number' && typeof b === 'number') {
     return a - b
   }
@@ -30,7 +24,16 @@ export function sortItems(items, sort, accessors) {
   const direction = sort.direction === 'desc' ? -1 : 1
 
   return [...items].sort((left, right) => {
-    const comparison = compareSortValues(accessor(left), accessor(right))
-    return comparison * direction
+    const a = accessor(left)
+    const b = accessor(right)
+    const aEmpty = isEmptySortValue(a)
+    const bEmpty = isEmptySortValue(b)
+
+    // Valores vazios/null sempre por último, independente da direção.
+    if (aEmpty && bEmpty) return 0
+    if (aEmpty) return 1
+    if (bEmpty) return -1
+
+    return compareSortValues(a, b) * direction
   })
 }

@@ -42,6 +42,7 @@
   display: inline-block;
   width: auto;
   max-width: 100%;
+  margin: 0;
   background: transparent;
 }
 
@@ -49,7 +50,25 @@
 .public-page-body .to-fin-partners-logos .terra-image__img {
   width: auto;
   height: auto;
+  max-width: 100%;
   object-fit: contain;
+}
+
+/* Paridade com legado Elementor (width: 150px nas logos de financiadores) */
+.public-page-body .to-fin-partners-logos .terra-image,
+.public-page-body .to-fin-partners-logos .terra-image__img {
+  width: 150px !important;
+  max-width: 150px !important;
+  max-height: 150px !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
+
+.public-page-body .to-fin-partners-logos .terra-image:has(.to-fin-partners-logo--sauva),
+.public-page-body .to-fin-partners-logos .to-fin-partners-logo--sauva {
+  width: 220px !important;
+  max-width: 220px !important;
+  max-height: 140px !important;
 }
 
 .terra-image--transparent.terra-image--loading .terra-image__img {
@@ -140,6 +159,15 @@
 .to-post-body .terra-image:not(.terra-image--fill),
 .to-central-detail-content .terra-image:not(.terra-image--fill) {
   margin: 1rem 0;
+}
+
+/* Cards da home / listagens: imagem colada no topo, sem faixa */
+.public-page-body .to-card > a > .terra-image:first-child,
+.public-page-body .to-card .terra-image:first-child,
+.public-page-body .to-blog-card-thumb .terra-image,
+.public-page-body .to-central-card > .terra-image:first-child,
+.public-page-body .to-central-card .terra-image:first-child {
+  margin: 0;
 }
 
 .public-page-body .terra-image--loading .terra-image__img,

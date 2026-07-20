@@ -9,4 +9,8 @@ services:
       - .env
     environment:
       PORT: 5700
+      NODE_ENV: development
+    volumes:
+      - ./src:/app/src
+    command: node --watch src/server.js
     restart: unless-stopped

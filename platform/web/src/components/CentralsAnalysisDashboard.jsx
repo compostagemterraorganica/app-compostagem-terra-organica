@@ -1,11 +1,12 @@
-import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined'
 import LocationCityOutlinedIcon from '@mui/icons-material/LocationCityOutlined'
 import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined'
 import RefreshOutlinedIcon from '@mui/icons-material/RefreshOutlined'
+import TableRowsOutlinedIcon from '@mui/icons-material/TableRowsOutlined'
 import WaterDropOutlinedIcon from '@mui/icons-material/WaterDropOutlined'
 import {
   Alert,
   Box,
+  Button,
   Card,
   CardContent,
   FormControl,
@@ -19,6 +20,9 @@ import {
 import AdminAddButton from './AdminAddButton'
 import AdminPageHeader from './AdminPageHeader'
 import AdminSearchField from './AdminSearchField'
+import AnalysisGlobalFilters from './AnalysisGlobalFilters'
+import AnalysisReportExport from './AnalysisReportExport'
+import CentralCollectionDataTable from './CentralCollectionDataTable'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Bar,
@@ -32,6 +36,9 @@ import {
   YAxis
 } from 'recharts'
 import TerraLoader from './TerraLoader'
+import {
+  buildAnalyticsParams
+} from '../lib/analysisFilters'
 import { filterBySearch } from '../lib/adminSearch'
 import { formatVolumeTotal } from '../lib/format'
 import { cmsService } from '../services/cmsService'
@@ -127,20 +134,29 @@ function StateBarChart({ title, data, dataKey, valueFormatter, tooltipFormatter,
   )
 }
 
-function CentralMonthlyChart({ monthlyVolumes, wide = false }) {
+function CentralMonthlyChart({ monthlyVolumes, chartMode = 'volume', wide = false }) {
   const chartHeight = wide ? 360 : 260
+  const isAvgCollections = chartMode === 'avgCollections'
 
   const chartData = useMemo(
     () =>
       monthlyVolumes.map((item) => ({
         month: item.month,
         label: formatMonthLabel(item.month),
-        volume: item.volume
+        value: isAvgCollections
+          ? item.posts ?? item.averagePerCollection ?? 0
+          : item.volume
       })),
-    [monthlyVolumes]
+    [monthlyVolumes, isAvgCollections]
   )
 
-  const tooltipFormatter = (value) => [`${Math.round(value)} L`, 'Volume']
+  const seriesLabel = isAvgCollections ? 'Coletas no mês' : 'Volume'
+  const tooltipFormatter = (value) =>
+    isAvgCollections
+      ? [`${Math.round(value)} coletas`, seriesLabel]
+      : [`${Math.round(value)} L`, seriesLabel]
+  const yTickFormatter = (value) =>
+    isAvgCollections ? `${Math.round(value)}` : `${value} L`
   const tooltipLabelFormatter = (_, payload) => {
     const month = payload?.[0]?.payload?.month
     return month ? formatMonthTooltip(month) : ''
@@ -152,11 +168,11 @@ function CentralMonthlyChart({ monthlyVolumes, wide = false }) {
         <LineChart data={chartData} margin={{ top: 8, right: 16, left: 8, bottom: 8 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis dataKey="label" tick={{ fontSize: 11 }} interval="preserveStartEnd" minTickGap={wide ? 24 : 32} />
-          <YAxis tick={{ fontSize: 12 }} tickFormatter={(value) => `${value} L`} width={wide ? 72 : 60} />
+          <YAxis tick={{ fontSize: 12 }} tickFormatter={yTickFormatter} width={wide ? 72 : 60} />
           <Tooltip formatter={tooltipFormatter} labelFormatter={tooltipLabelFormatter} />
           <Line
             type="monotone"
-            dataKey="volume"
+            dataKey="value"
             stroke="#3CAA59"
             strokeWidth={2}
             dot={{ r: 3 }}
@@ -183,8 +199,9 @@ function MetricBlock({ label, value }) {
   )
 }
 
-function CentralAnalysisCard({ centralData, wide = false }) {
+function CentralAnalysisCard({ centralData, chartMode = 'volume', filters = {}, wide = false }) {
   const { central, metrics } = centralData
+  const [showCollections, setShowCollections] = useState(false)
 
   return (
     <Card variant="outlined" sx={{ borderRadius: 2 }}>
@@ -224,12 +241,32 @@ function CentralAnalysisCard({ centralData, wide = false }) {
         </Grid>
 
         {metrics.monthlyVolumes?.length > 0 ? (
-          <CentralMonthlyChart monthlyVolumes={metrics.monthlyVolumes} wide={wide} />
+          <CentralMonthlyChart
+            monthlyVolumes={metrics.monthlyVolumes}
+            chartMode={chartMode}
+            wide={wide}
+          />
         ) : (
           <Typography variant="body2" color="text.secondary" fontStyle="italic" textAlign="center" py={3}>
             Nenhum dado mensal disponível
           </Typography>
         )}
+
+        <Box mt={2}>
+          <Button
+            size="small"
+            variant={showCollections ? 'contained' : 'outlined'}
+            startIcon={<TableRowsOutlinedIcon />}
+            onClick={() => setShowCollections((open) => !open)}
+            sx={{ textTransform: 'none', fontWeight: 600 }}
+          >
+            {showCollections ? 'Ocultar dados de coleta' : 'Ver dados de coleta'}
+          </Button>
+        </Box>
+
+        {showCollections ? (
+          <CentralCollectionDataTable centralId={central.id} filters={filters} />
+        ) : null}
       </CardContent>
     </Card>
   )
@@ -239,7 +276,8 @@ export default function CentralsAnalysisDashboard({
   title = 'Dashboard de Análises',
   description = 'Análise de volume e performance das centrais de compostagem.',
   showActions = false,
-  wide = false
+  wide = false,
+  initialCentralIds = []
 }) {
   const [analysis, setAnalysis] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -247,12 +285,21 @@ export default function CentralsAnalysisDashboard({
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [stateFilter, setStateFilter] = useState('')
+  const [filters, setFilters] = useState(() => ({
+    fromDate: '',
+    toDate: '',
+    centralIds: Array.isArray(initialCentralIds) ? [...initialCentralIds] : [],
+    tagIds: [],
+    tagNames: [],
+    category: ''
+  }))
+  const [chartMode, setChartMode] = useState('volume')
 
-  const loadAnalysis = useCallback(async () => {
+  const loadAnalysis = useCallback(async (nextFilters) => {
     setLoading(true)
     setError('')
     try {
-      const data = await cmsService.analyticsCentralsAnalysis()
+      const data = await cmsService.analyticsCentralsAnalysis(buildAnalyticsParams(nextFilters))
       setAnalysis(data)
     } catch {
       setAnalysis(null)
@@ -263,28 +310,17 @@ export default function CentralsAnalysisDashboard({
   }, [])
 
   useEffect(() => {
-    loadAnalysis()
-  }, [loadAnalysis])
+    loadAnalysis(filters)
+  }, [filters, loadAnalysis])
 
-  const handleExportCsv = useCallback(async () => {
-    setExporting(true)
-    setError('')
-    try {
-      const { blob, filename } = await cmsService.exportVolumeReportCsv()
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = filename
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      URL.revokeObjectURL(url)
-    } catch {
-      setError('Não foi possível exportar o relatório em CSV.')
-    } finally {
-      setExporting(false)
-    }
-  }, [])
+  const filterOptions = analysis?.filterOptions || {
+    centrals: [],
+    tags: [],
+    categories: [
+      { value: 'alimentares', label: 'Resíduos alimentares' },
+      { value: 'verdes', label: 'Resíduos verdes' }
+    ]
+  }
 
   const summary = analysis?.summary
 
@@ -313,24 +349,41 @@ export default function CentralsAnalysisDashboard({
     <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
       <AdminAddButton
         startIcon={<RefreshOutlinedIcon fontSize="small" />}
-        onClick={loadAnalysis}
+        onClick={() => loadAnalysis(filters)}
         disabled={loading || exporting}
       >
         Atualizar
       </AdminAddButton>
-      <AdminAddButton
-        startIcon={<DownloadOutlinedIcon fontSize="small" />}
-        onClick={handleExportCsv}
+      <AnalysisReportExport
+        filters={filters}
         disabled={loading || exporting}
-      >
-        {exporting ? 'Exportando...' : 'Exportar dados'}
-      </AdminAddButton>
+        loadingLabel="Exportando..."
+        label="Exportar CSV"
+        onExportStart={() => {
+          setExporting(true)
+          setError('')
+        }}
+        onExportEnd={() => setExporting(false)}
+        onError={(message) => setError(message)}
+      />
     </Stack>
   ) : null
+
+  const isAvgCollections = chartMode === 'avgCollections'
+  const hasCentralFilter = Array.isArray(filters.centralIds) && filters.centralIds.length > 0
 
   return (
     <Stack spacing={3} sx={{ width: '100%', minWidth: 0 }}>
       <AdminPageHeader title={title} description={description} action={headerAction} />
+
+      <AnalysisGlobalFilters
+        value={filters}
+        onChange={setFilters}
+        filterOptions={filterOptions}
+        chartMode={chartMode}
+        onChartModeChange={setChartMode}
+        disabled={loading || exporting}
+      />
 
       {error ? <Alert severity="error">{error}</Alert> : null}
 
@@ -365,7 +418,18 @@ export default function CentralsAnalysisDashboard({
             </Grid>
           </Grid>
 
-          {summary.byState?.volume?.length > 0 ? (
+          {!hasCentralFilter && isAvgCollections && summary.byState?.averageMonthlyPosts?.length > 0 ? (
+            <StateBarChart
+              title="Média mensal de coletas por estado"
+              data={summary.byState.averageMonthlyPosts}
+              dataKey="averageMonthlyPosts"
+              valueFormatter={(value) => Math.round(value * 10) / 10}
+              tooltipFormatter={(value) => `${Math.round(value * 100) / 100} coletas/mês`}
+              wide={wide}
+            />
+          ) : null}
+
+          {!hasCentralFilter && !isAvgCollections && summary.byState?.volume?.length > 0 ? (
             <StateBarChart
               title="Total volume por estado"
               data={summary.byState.volume}
@@ -376,7 +440,7 @@ export default function CentralsAnalysisDashboard({
             />
           ) : null}
 
-          {summary.byState?.centralsCount?.length > 0 ? (
+          {!hasCentralFilter && summary.byState?.centralsCount?.length > 0 ? (
             <StateBarChart
               title="Centrais por estado"
               data={summary.byState.centralsCount}
@@ -418,7 +482,7 @@ export default function CentralsAnalysisDashboard({
 
           <Box>
             <Typography variant="h5" fontWeight={700} gutterBottom>
-              Análise por central
+              {hasCentralFilter ? 'Análise da central' : 'Análise por central'}
             </Typography>
             <Stack spacing={2}>
               {filteredCentrals.length === 0 ? (
@@ -430,6 +494,8 @@ export default function CentralsAnalysisDashboard({
                   <CentralAnalysisCard
                     key={centralData.central.id}
                     centralData={centralData}
+                    chartMode={chartMode}
+                    filters={filters}
                     wide={wide}
                   />
                 ))

@@ -63,7 +63,7 @@ async function listPublicCentrals() {
   const result = await pool.query(
     `${PUBLIC_CENTRALS_BASE_QUERY}
      GROUP BY c.id, c.slug, c.name, c.image_url, c.raw_json, c.meta
-     ORDER BY total_volume_liters DESC, verification_count DESC, c.name ASC`
+     ORDER BY avg_volume_liters DESC, verification_count DESC, c.name ASC`
   );
 
   return Promise.all(
@@ -90,6 +90,7 @@ async function getPublicCentralBySlug(slug) {
               NULLIF(volume_kg, 0),
               CASE WHEN volume_liters > 0 THEN ROUND(volume_liters * 0.55, 2) ELSE NULL END
             ) AS volume_kg,
+            waste_type,
             measurement_date, video_link
      FROM volume_verifications
      WHERE central_id = $1
@@ -98,8 +99,31 @@ async function getPublicCentralBySlug(slug) {
     [row.id]
   );
 
+  const verificationIds = verifications.rows.map((v) => v.id);
+  const tagsByVerification = new Map();
+  if (verificationIds.length > 0) {
+    const tagsResult = await pool.query(
+      `SELECT vt.volume_verification_id, t.id, t.name
+       FROM volume_verification_tags vt
+       JOIN tags t ON t.id = vt.tag_id
+       WHERE vt.volume_verification_id = ANY($1::bigint[])
+       ORDER BY t.name ASC`,
+      [verificationIds]
+    );
+    for (const tagRow of tagsResult.rows) {
+      const list = tagsByVerification.get(tagRow.volume_verification_id) || [];
+      list.push({ id: tagRow.id, name: decodeHtmlEntities(tagRow.name || '') });
+      tagsByVerification.set(tagRow.volume_verification_id, list);
+    }
+  }
+
+  const verificationsWithTags = verifications.rows.map((v) => ({
+    ...v,
+    tags: tagsByVerification.get(v.id) || []
+  }));
+
   const listingImageUrl = await resolveCentralImageUrl(row);
-  return mapPublicCentral(row, { verifications: verifications.rows, listingImageUrl });
+  return mapPublicCentral(row, { verifications: verificationsWithTags, listingImageUrl });
 }
 
 async function listCentrals() {

@@ -29,5 +29,8 @@ export const adminService = {
   getVolumeVerification: async (id) => (await api.get(`/volume-verifications/${id}`)).data.data,
   updateVolumeVerification: async (id, payload) =>
     (await api.put(`/volume-verifications/${id}`, payload)).data.data,
-  deleteVolumeVerification: async (id) => (await api.delete(`/volume-verifications/${id}`)).data
+  deleteVolumeVerification: async (id) => (await api.delete(`/volume-verifications/${id}`)).data,
+
+  listCentralTags: async (centralId) =>
+    (await api.get('/central-tags', { params: { central_id: centralId } })).data.data
 }

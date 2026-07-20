@@ -2,9 +2,18 @@ const { asyncHandler } = require('../../utils/asyncHandler');
 const service = require('./analytics.service');
 
 function parseFilters(query) {
+  const wasteType =
+    service.normalizeWasteType(query.waste_type) ||
+    service.normalizeWasteType(query.category) ||
+    null;
+
   return {
     fromDate: query.from_date || null,
-    toDate: query.to_date || null
+    toDate: query.to_date || null,
+    centralIds: service.parseIdList(query.central_ids || query.central_id),
+    tagIds: service.parseIdList(query.tag_ids || query.tag_id),
+    tagNames: service.parseNameList(query.tag_names || query.tag_name),
+    wasteType
   };
 }
 
@@ -23,8 +32,22 @@ const getVolumeTimeSeriesHandler = asyncHandler(async (req, res) => {
   res.json({ success: true, data });
 });
 
-const getCentralsAnalysisHandler = asyncHandler(async (_req, res) => {
-  const data = await service.getCentralsAnalysis();
+const getCentralsAnalysisHandler = asyncHandler(async (req, res) => {
+  const data = await service.getCentralsAnalysis(parseFilters(req.query));
+  res.json({ success: true, data });
+});
+
+const getCentralVerificationsHandler = asyncHandler(async (req, res) => {
+  const centralId = Number(req.params.centralId);
+  if (!Number.isInteger(centralId) || centralId <= 0) {
+    res.status(400).json({ success: false, message: 'centralId invalido' });
+    return;
+  }
+
+  const data = await service.getCentralVerifications(centralId, parseFilters(req.query), {
+    page: Number(req.query.page || 1),
+    limit: Number(req.query.limit || 50)
+  });
   res.json({ success: true, data });
 });
 
@@ -66,5 +89,6 @@ module.exports = {
   getVolumeByCentralHandler,
   getVolumeTimeSeriesHandler,
   getVolumeExportReportHandler,
-  getCentralsAnalysisHandler
+  getCentralsAnalysisHandler,
+  getCentralVerificationsHandler
 };
