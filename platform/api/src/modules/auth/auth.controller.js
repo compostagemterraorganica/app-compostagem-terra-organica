@@ -66,7 +66,7 @@ const refreshHandler = asyncHandler(async (req, res) => {
   const tokens = await refresh(req.auth.sessionId);
   res.cookie(env.sessionCookieName, tokens.sessionToken, cookieOptions());
   res.cookie(env.csrfCookieName, tokens.csrfToken, csrfCookieOptions());
-  res.json({ success: true, csrfToken: tokens.csrfToken });
+  res.json({ success: true, sessionToken: tokens.sessionToken, csrfToken: tokens.csrfToken });
 });
 
 const logoutHandler = asyncHandler(async (req, res) => {

@@ -6,6 +6,7 @@ const api = axios.create({
 })
 
 const CSRF_STORAGE_KEY = 'terra_csrf_token'
+const SESSION_STORAGE_KEY = 'terra_session_token'
 
 const PUBLIC_AUTH_PATHS = [
   '/auth/login',
@@ -14,14 +15,14 @@ const PUBLIC_AUTH_PATHS = [
   '/auth/confirm-password'
 ]
 
-function readStoredCsrfToken() {
+function readStoredValue(key) {
   try {
-    const fromLocal = localStorage.getItem(CSRF_STORAGE_KEY)
+    const fromLocal = localStorage.getItem(key)
     if (fromLocal) return fromLocal
-    const legacy = sessionStorage.getItem(CSRF_STORAGE_KEY)
+    const legacy = sessionStorage.getItem(key)
     if (legacy) {
-      localStorage.setItem(CSRF_STORAGE_KEY, legacy)
-      sessionStorage.removeItem(CSRF_STORAGE_KEY)
+      localStorage.setItem(key, legacy)
+      sessionStorage.removeItem(key)
       return legacy
     }
     return null
@@ -30,21 +31,32 @@ function readStoredCsrfToken() {
   }
 }
 
-let csrfTokenMemory = readStoredCsrfToken()
-let authFailureHandler = null
-
-function storeCsrfToken(token) {
-  csrfTokenMemory = token || null
+function persistValue(key, value) {
   try {
-    if (token) localStorage.setItem(CSRF_STORAGE_KEY, token)
-    else localStorage.removeItem(CSRF_STORAGE_KEY)
+    if (value) localStorage.setItem(key, value)
+    else localStorage.removeItem(key)
   } catch {
     // localStorage indisponivel (modo privado, etc.)
   }
 }
 
+let csrfTokenMemory = readStoredValue(CSRF_STORAGE_KEY)
+let sessionTokenMemory = readStoredValue(SESSION_STORAGE_KEY)
+let authFailureHandler = null
+
+function storeCsrfToken(token) {
+  csrfTokenMemory = token || null
+  persistValue(CSRF_STORAGE_KEY, csrfTokenMemory)
+}
+
+function storeSessionToken(token) {
+  sessionTokenMemory = token || null
+  persistValue(SESSION_STORAGE_KEY, sessionTokenMemory)
+}
+
 export function clearCsrfToken() {
   storeCsrfToken(null)
+  storeSessionToken(null)
 }
 
 export function registerAuthFailureHandler(handler) {
@@ -52,7 +64,11 @@ export function registerAuthFailureHandler(handler) {
 }
 
 function resolveCsrfToken() {
-  return csrfTokenMemory || readStoredCsrfToken()
+  return csrfTokenMemory || readStoredValue(CSRF_STORAGE_KEY)
+}
+
+function resolveSessionToken() {
+  return sessionTokenMemory || readStoredValue(SESSION_STORAGE_KEY)
 }
 
 function isPublicAuthRequest(url = '') {
@@ -69,14 +85,18 @@ function isAuthFailure(error) {
 
 api.interceptors.request.use((config) => {
   const csrfToken = resolveCsrfToken()
+  const sessionToken = resolveSessionToken()
   if (csrfToken) config.headers['x-csrf-token'] = csrfToken
+  if (sessionToken) config.headers.Authorization = `Bearer ${sessionToken}`
   return config
 })
 
 api.interceptors.response.use(
   (response) => {
-    const token = response.data?.csrfToken
-    if (token) storeCsrfToken(token)
+    const csrfToken = response.data?.csrfToken
+    const sessionToken = response.data?.sessionToken
+    if (csrfToken) storeCsrfToken(csrfToken)
+    if (sessionToken) storeSessionToken(sessionToken)
     return response
   },
   (error) => {
